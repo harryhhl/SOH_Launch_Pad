@@ -1,0 +1,198 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>SOH - LaunchPad</title>
+	<meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- <link rel="stylesheet" href="styles/kendo.common.min.css" /> -->
+    <link rel="stylesheet" href="https://kendo.cdn.telerik.com/2019.2.619/styles/kendo.common-office365.min.css" />
+    <link rel="stylesheet" href="https://kendo.cdn.telerik.com/2019.2.619/styles/kendo.office365.min.css" />
+    <!-- <link rel="stylesheet" href="styles/kendo.default.mobile.min.css" /> -->
+    <link rel="stylesheet" href="styles/index.css?151" />
+    <link rel="stylesheet" href="styles/index_T1.css?2" tag="themecss"/>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bluebird/3.3.4/bluebird.min.js"></script>
+    <script src="https://secure.aadcdn.microsoftonline-p.com/lib/1.0.0/js/msal.js"></script> 
+
+    <script src="scripts/jquery.min.js"></script>
+    <script src="scripts/kendo.all.min.js"></script>
+    <script src="scripts/AzureAuth.js?23"></script>  
+    <script src="scripts/iframeResizer.min.js"></script>    
+    <script src="scripts/index.js?192"></script>
+</head>
+<body>
+    <div id="rootDiv">
+        <div id="navBar">
+            <div class="topNavLeft">
+                <button class="btnLauncher" id="btnOpenLauncher">
+                    <span class='k-icon k-i-grid'></span>
+                </button>
+                <button class="btnLogo">
+                    <img style="margin-top: 4px; margin-right: 10px; margin-left: 8px;" src="styles/img/logo2.png"/>
+                </button>
+                <div id="appLauncher">
+                    <button class="btnLauncherClose" id="btnCloseLauncher">
+                        <span class='k-icon k-i-grid'></span>
+                    </button>
+                    <div id="appLauncherContent">
+                        <span style="display: block;
+                            font-size: 22px!important;
+                            margin: 30px 0 20px 18px;
+                            letter-spacing: .01px;color: #666;">Apps</span>
+                        <div id="appListing">                             
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="topNavMiddle">
+                <button class="btnLogo">
+                    <div id="dvSelectedMenuItem"><span>Home</span></div>
+                </button>
+            </div>
+            <div class="topNavRight">
+                <div>
+                    <button class="btnUserProfile" id="btnMe" type="button">
+                        <div class="UserProfileDv" style="width: 32px; height: 32px;">
+                            <div class="UserSpanDv">
+                                <span id="lbUserInitial">NA</span>
+                            </div>
+                            <div class="UserPhotoDv">
+                                <img src="" id="imgUserPhoto" style="display:none"/>
+                            </div>
+                        </div>
+                        <div style="margin-left: 10px;">
+                            <span id="lbUserName"></span>
+                        </div>
+                    </button>
+                </div>                
+                <!-- <div>
+                    <button class="btnOrgUnit">
+                        <span><span id="lbUserOU">CK</span><img style="width:20px;height:20px;margin-top:6px;" src="styles/img/change.png"/></span>    
+                    </button>
+                </div>                
+                <div>
+                    <button class="btnSetting">
+                        <span class="k-icon k-i-gear"></span>
+                    </button>
+                </div> -->
+                <div>
+                    <button class="btnChangeBK">
+                        <img style="margin-top:0px;" src="styles/img/changebk.png"/>
+                    </button>
+                </div>                
+            </div>
+        </div>
+        <div id="mainContainer">
+            <div class="k-content wide">
+                <div id="drawer">
+                    <div id="drawer-content" style="height: 100vh; overflow-y: scroll">
+                        <div id="Home" style="margin-left: 40px; margin-right: 40px;">
+                            <div><br><br></div>
+                            <div class="HomeHeaderTitleSP">
+                                <div style="display: inline-block"><img src='styles/img/Smile01.png'/></div>
+                                <div id="dvWelcome">
+                                    <h2>&nbsp;&nbsp;Welcome!</h2>
+                                </div>
+                            </div>
+                            <!-- <div><br><br></div>
+                            <div>
+                                <h3>&nbsp;&nbsp;Search</h3>
+                                <input id="txtSearch" placeholder="Type any text to search" type="search" style="width:60%;height: 30px;margin-left: 10px;">  
+                            </div> -->
+                            <div><br><br></div>
+                            <div>
+                                <div class="HomeHeaderTitle"><h3>&nbsp;&nbsp;Favourites</h3></div>
+                                <hr>
+                                <div id="Favourites">
+                                    <div class="widgetArea">
+                                        <div class="widgetContainer">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div><br><br></div>
+                            <div>
+                                <div class="HomeHeaderTitle"><h3>&nbsp;&nbsp;Recents</h3></div>
+                                <hr>
+                                <div id="Frequents">
+                                    <div class="widgetArea">
+                                        <div class="widgetContainer">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div><br><br><br></div>
+                        </div>
+                        <!-- <div id="Notifications" class="hidden">
+                            <ul>
+                                <li>[2019-10-31 12:22:11] Report ZSD 097 finished running.</li>
+                                <li>[2019-10-31 10:34:09] You have 1 new Service PO approval pending.</li>
+                                <li>[2019-10-30 11:45:01] Report ZSD 068 finished running.</li>
+                            </ul>
+                        </div>                   -->
+                        <div id="dvFrame" class="hidden">
+                            <iframe id="theframe" src="" name="" frameborder="0" scrolling="auto" funcid="" rptdname=""></iframe>
+                        </div>
+                         <!-- <div id="Favourites">
+                            <div class="widgetArea">
+                                <div class="widgetContainer">
+                                     <div class="widgetCard">
+                                        <div class="widgetCardHeader">
+                                            <div class="widgetCardIcon"><span class='k-icon k-i-report'></span></div>
+                                            <div class="widgetCardText"><span>Leave Approval</span></div>
+                                        </div>
+                                        <div class="widgetNotifyNum">
+                                            <div class="widgetNotifyNumIcon"><span>2</span></div>
+                                        </div>
+                                    </div> 
+                                </div>
+                            </div>
+                        </div>  -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="overlay-container">
+        <div class="overlay-bounding-box" style="top: 48px; right: 0px; height: 100%; width: 100%; align-items: flex-end; justify-content: flex-start;">
+            <div id="userOrgUnitPop">
+                <div style="border-bottom: 1px solid #EAEAEA;">
+                    <span>EIL</span>
+                </div>
+                <div style="border-bottom: 1px solid #EAEAEA;">
+                    <span>CSL</span>
+                </div>                
+            </div>
+            
+            <div id="userProfilePop">
+                <div style="border-bottom: 1px solid #EAEAEA;padding: 10px 20px !important;" id="userProfileLabel">
+                </div>
+                <span id="hrefSignOut">Sign out</span>
+            </div>
+
+            <div id="bkSelectionPop">
+                <div class="btnChangeTheme" theme="T1" style="background: linear-gradient(90deg, rgba(102,188,213,1) 0%, rgba(179,230,234,1) 100%);"></div>
+                <div class="btnChangeTheme" theme="T2" style="background: linear-gradient(90deg, rgba(243,105,69,1) 0%, rgba(255,255,255,1) 100%);"></div>
+                <div class="btnChangeTheme" theme="T3" style="background: linear-gradient(90deg, rgba(236,204,121,1) 0%, rgba(101,126,146,1) 100%);"></div>
+                <div class="btnChangeTheme" theme="T4" style="background: linear-gradient(90deg, rgba(55,135,82,1) 0%, rgba(205,226,221,1) 100%);"></div>
+            </div>
+
+        </div>        
+    </div>
+
+    <div class="overlay-login">
+        <div class="overlay-login-content">
+            <div>
+                <div>
+                    <h1>Welcome to SOH LaunchPad</h1>
+                </div>
+                <div>
+                    <button class="btnLoginMain" style="display:none">Sign in</button>
+                </div>  
+            </div>         
+        </div>
+    </div>
+</body>
+</html>

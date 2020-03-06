@@ -1,0 +1,97 @@
+* {
+    box-sizing: border-box; 
+    font-family: Helvetica, sans-serif;
+  }
+
+  body {
+    margin: 0em;
+    height: 110%;
+    background-color: rgb(215, 215, 238);
+    margin-bottom: 10px;
+  }
+
+  .overlay-loading {
+    height: 100%;
+    width: 100%;
+    position: fixed; 
+    z-index: 99999; 
+    left: 0;
+    top: 0;
+    background-color: rgba(184, 183, 183, 0.5); 
+    overflow-x: hidden; 
+  }
+
+  .overlay-loading-content {
+    position: relative;
+    top: 25%; 
+    width: 100%; 
+    text-align: center;
+    margin-top: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  #dvRequestContent ul {
+    list-style-type: none;
+    margin-top: 1em;
+    margin-bottom: 1em;
+    margin-left: 0;
+    margin-right: 0;    
+  }
+
+  #dvRequestContent li {
+    margin-top: 0.2em;
+    margin-bottom: 0.2em;
+    margin-left: 0;
+    margin-right: 0;    
+  }  
+
+  #frameFooter {
+    display: block;
+    min-height: 200px;
+  }
+
+  .approvalcontrol-submit { 
+    display: inline-block;
+  }
+
+
+  .k-grid  .k-grid-header  .k-header  {
+    height: 24px;
+    white-space: normal;
+    font-size: 12px;
+    background-color: #efe7e7;
+  }
+
+  .k-grid tbody tr {
+    height: 20px;
+    font-size: 12px;
+  }
+
+  .k-grid-pager {
+    height: 48px;
+    min-height: 48px;
+  }
+  
+  .k-pager-wrap {
+    font-size: 10px;
+  }
+
+  .btnDownloadExcel {
+    background: url("img/excel.png");
+    background-size: cover;
+    padding: 2px 2px;
+    width: 32px;
+    height: 32px;
+    display: inline-block;
+    border-width: 0;
+    cursor: pointer;
+  }
+
+  .approvalcontrol {
+    display: inline-block;
+    padding: 2px 2px;
+    width: 14em;
+  }
+

@@ -1,0 +1,436 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+This file is used by the publish/package process of your Web project. You can customize the behavior of this process
+by editing this MSBuild file. In order to learn more about this please visit http://go.microsoft.com/fwlink/?LinkID=208121. 
+-->
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <TimeStampOfAssociatedLegacyPublishXmlFile />
+    <_PublishTargetUrl>E:\Users\chlhuang\Documents\Visual Studio 2015\Projects\SOH_LaunchPad_Web\publish1</_PublishTargetUrl>
+  </PropertyGroup>
+  <ItemGroup>
+    <File Include="Approval/POApproval.ashx">
+      <publishTime>11/11/2019 16:37:14</publishTime>
+    </File>
+    <File Include="Approval/poapproval.css">
+      <publishTime>11/14/2019 16:37:25</publishTime>
+    </File>
+    <File Include="Approval/POApproval.html">
+      <publishTime>03/05/2020 18:50:14</publishTime>
+    </File>
+    <File Include="Approval/poapproval.js">
+      <publishTime>11/19/2019 15:58:06</publishTime>
+    </File>
+    <File Include="Auth.ashx">
+      <publishTime>10/03/2019 16:11:59</publishTime>
+    </File>
+    <File Include="bin/Commons.dll">
+      <publishTime>09/12/2016 11:26:20</publishTime>
+    </File>
+    <File Include="bin/Microsoft.Office.Interop.Excel.dll">
+      <publishTime>01/18/2011 18:27:02</publishTime>
+    </File>
+    <File Include="bin/Microsoft.Vbe.Interop.dll">
+      <publishTime>01/18/2011 18:27:02</publishTime>
+    </File>
+    <File Include="bin/Newtonsoft.Json.dll">
+      <publishTime>04/22/2019 01:06:16</publishTime>
+    </File>
+    <File Include="bin/office.dll">
+      <publishTime>01/18/2011 18:27:02</publishTime>
+    </File>
+    <File Include="bin/SOH_LaunchPad_Web.dll">
+      <publishTime>03/05/2020 18:52:18</publishTime>
+    </File>
+    <File Include="bin/stdole.dll">
+      <publishTime>07/07/2015 00:51:38</publishTime>
+    </File>
+    <File Include="bin/System.Net.Http.dll">
+      <publishTime>09/07/2018 10:59:08</publishTime>
+    </File>
+    <File Include="bin/System.Security.Cryptography.Algorithms.dll">
+      <publishTime>11/05/2016 04:57:14</publishTime>
+    </File>
+    <File Include="bin/System.Security.Cryptography.Encoding.dll">
+      <publishTime>11/05/2016 04:57:08</publishTime>
+    </File>
+    <File Include="bin/System.Security.Cryptography.Primitives.dll">
+      <publishTime>11/05/2016 04:57:18</publishTime>
+    </File>
+    <File Include="bin/System.Security.Cryptography.X509Certificates.dll">
+      <publishTime>11/05/2016 04:57:18</publishTime>
+    </File>
+    <File Include="Favourite.ashx">
+      <publishTime>11/01/2019 12:26:22</publishTime>
+    </File>
+    <File Include="Global.asax">
+      <publishTime>10/29/2019 15:25:39</publishTime>
+    </File>
+    <File Include="index.html">
+      <publishTime>03/05/2020 18:51:30</publishTime>
+    </File>
+    <File Include="Notification/Notification.ashx">
+      <publishTime>11/18/2019 15:22:14</publishTime>
+    </File>
+    <File Include="Notification/Notification.css">
+      <publishTime>02/14/2020 15:26:31</publishTime>
+    </File>
+    <File Include="Notification/Notification.html">
+      <publishTime>03/03/2020 11:54:11</publishTime>
+    </File>
+    <File Include="Notification/Notification.js">
+      <publishTime>03/03/2020 11:54:01</publishTime>
+    </File>
+    <File Include="packages.config">
+      <publishTime>10/28/2019 19:29:07</publishTime>
+    </File>
+    <File Include="POApproval.ashx">
+      <publishTime>11/11/2019 16:37:14</publishTime>
+    </File>
+    <File Include="POApproval.html">
+      <publishTime>11/19/2019 15:57:04</publishTime>
+    </File>
+    <File Include="Queue/ReportQueue.ashx">
+      <publishTime>01/17/2020 17:08:19</publishTime>
+    </File>
+    <File Include="Queue/reportqueue.css">
+      <publishTime>02/12/2020 15:45:19</publishTime>
+    </File>
+    <File Include="Queue/ReportQueue.html">
+      <publishTime>03/05/2020 18:19:03</publishTime>
+    </File>
+    <File Include="Queue/reportqueue.js">
+      <publishTime>03/05/2020 18:18:57</publishTime>
+    </File>
+    <File Include="Queue/reportqueue_T1.css">
+      <publishTime>02/28/2020 12:07:54</publishTime>
+    </File>
+    <File Include="Queue/reportqueue_T2.css">
+      <publishTime>02/28/2020 12:08:26</publishTime>
+    </File>
+    <File Include="Queue/reportqueue_T3.css">
+      <publishTime>02/28/2020 12:09:14</publishTime>
+    </File>
+    <File Include="Queue/reportqueue_T4.css">
+      <publishTime>02/28/2020 12:08:56</publishTime>
+    </File>
+    <File Include="Reports/img/excel.png">
+      <publishTime>01/11/2017 15:00:12</publishTime>
+    </File>
+    <File Include="Reports/img/pdf.png">
+      <publishTime>10/30/2019 16:20:42</publishTime>
+    </File>
+    <File Include="Reports/img/report05.png">
+      <publishTime>01/20/2020 09:40:10</publishTime>
+    </File>
+    <File Include="Reports/SapReport.ashx">
+      <publishTime>10/28/2019 18:40:08</publishTime>
+    </File>
+    <File Include="Reports/sapreport.css">
+      <publishTime>03/05/2020 18:38:31</publishTime>
+    </File>
+    <File Include="Reports/SapReport.html">
+      <publishTime>03/05/2020 18:45:13</publishTime>
+    </File>
+    <File Include="Reports/sapreport.js">
+      <publishTime>03/05/2020 18:45:09</publishTime>
+    </File>
+    <File Include="SapReport.ashx">
+      <publishTime>10/28/2019 18:40:08</publishTime>
+    </File>
+    <File Include="SapReport.html">
+      <publishTime>03/03/2020 11:56:38</publishTime>
+    </File>
+    <File Include="scripts/AzureAuth.js">
+      <publishTime>11/04/2019 11:22:56</publishTime>
+    </File>
+    <File Include="scripts/edgefix.js">
+      <publishTime>06/11/2019 17:03:46</publishTime>
+    </File>
+    <File Include="scripts/iframeResizer.contentWindow.min.js">
+      <publishTime>11/13/2019 12:03:59</publishTime>
+    </File>
+    <File Include="scripts/iframeResizer.min.js">
+      <publishTime>11/13/2019 12:03:59</publishTime>
+    </File>
+    <File Include="scripts/index.js">
+      <publishTime>03/05/2020 18:51:21</publishTime>
+    </File>
+    <File Include="scripts/jquery.min.js">
+      <publishTime>01/12/2017 11:42:01</publishTime>
+    </File>
+    <File Include="scripts/jquery.transit.min.js">
+      <publishTime>05/06/2019 17:45:45</publishTime>
+    </File>
+    <File Include="scripts/jszip.js">
+      <publishTime>01/13/2017 12:22:00</publishTime>
+    </File>
+    <File Include="scripts/kendo.all.min.js">
+      <publishTime>06/19/2019 03:30:54</publishTime>
+    </File>
+    <File Include="scripts/poapproval.js">
+      <publishTime>11/19/2019 15:58:06</publishTime>
+    </File>
+    <File Include="scripts/sapreport.js">
+      <publishTime>03/03/2020 11:56:14</publishTime>
+    </File>
+    <File Include="styles/Default/editor.png">
+      <publishTime>02/20/2019 04:26:12</publishTime>
+    </File>
+    <File Include="styles/Default/imagebrowser.png">
+      <publishTime>02/20/2019 04:26:12</publishTime>
+    </File>
+    <File Include="styles/Default/indeterminate.gif">
+      <publishTime>02/20/2019 04:26:12</publishTime>
+    </File>
+    <File Include="styles/Default/loading-image.gif">
+      <publishTime>02/20/2019 04:26:12</publishTime>
+    </File>
+    <File Include="styles/Default/loading.gif">
+      <publishTime>02/20/2019 04:26:12</publishTime>
+    </File>
+    <File Include="styles/Default/loading_2x.gif">
+      <publishTime>02/20/2019 04:26:12</publishTime>
+    </File>
+    <File Include="styles/Default/markers.png">
+      <publishTime>02/20/2019 04:26:12</publishTime>
+    </File>
+    <File Include="styles/Default/markers_2x.png">
+      <publishTime>02/20/2019 04:26:12</publishTime>
+    </File>
+    <File Include="styles/Default/slider-h.gif">
+      <publishTime>02/20/2019 04:26:12</publishTime>
+    </File>
+    <File Include="styles/Default/slider-v.gif">
+      <publishTime>02/20/2019 04:26:12</publishTime>
+    </File>
+    <File Include="styles/Default/sprite.png">
+      <publishTime>02/20/2019 04:26:12</publishTime>
+    </File>
+    <File Include="styles/Default/sprite_2x.png">
+      <publishTime>02/20/2019 04:26:12</publishTime>
+    </File>
+    <File Include="styles/Default/sprite_kpi.png">
+      <publishTime>02/20/2019 04:26:12</publishTime>
+    </File>
+    <File Include="styles/Default/sprite_kpi_2x.png">
+      <publishTime>02/20/2019 04:26:12</publishTime>
+    </File>
+    <File Include="styles/fonts/glyphs/KendoUIGlyphs.eot">
+      <publishTime>05/03/2019 16:51:34</publishTime>
+    </File>
+    <File Include="styles/fonts/glyphs/KendoUIGlyphs.svg">
+      <publishTime>05/03/2019 16:51:34</publishTime>
+    </File>
+    <File Include="styles/fonts/glyphs/KendoUIGlyphs.ttf">
+      <publishTime>05/03/2019 16:51:34</publishTime>
+    </File>
+    <File Include="styles/fonts/glyphs/KendoUIGlyphs.woff">
+      <publishTime>05/03/2019 16:51:34</publishTime>
+    </File>
+    <File Include="styles/fonts/glyphs/WebComponentsIcons.eot">
+      <publishTime>05/03/2019 16:51:34</publishTime>
+    </File>
+    <File Include="styles/fonts/glyphs/WebComponentsIcons.svg">
+      <publishTime>05/03/2019 16:51:34</publishTime>
+    </File>
+    <File Include="styles/fonts/glyphs/WebComponentsIcons.ttf">
+      <publishTime>05/03/2019 16:51:33</publishTime>
+    </File>
+    <File Include="styles/fonts/glyphs/WebComponentsIcons.woff">
+      <publishTime>05/03/2019 16:51:34</publishTime>
+    </File>
+    <File Include="styles/images/back.png">
+      <publishTime>02/20/2019 04:26:12</publishTime>
+    </File>
+    <File Include="styles/images/kendoui.svg">
+      <publishTime>02/20/2019 04:26:12</publishTime>
+    </File>
+    <File Include="styles/images/kendoui.ttf">
+      <publishTime>02/20/2019 04:26:12</publishTime>
+    </File>
+    <File Include="styles/images/kendoui.woff">
+      <publishTime>02/20/2019 04:26:12</publishTime>
+    </File>
+    <File Include="styles/images/wp8_icons.png">
+      <publishTime>02/20/2019 04:26:12</publishTime>
+    </File>
+    <File Include="styles/images/wp8_inverseicons.png">
+      <publishTime>02/20/2019 04:26:12</publishTime>
+    </File>
+    <File Include="styles/img/appmenu.png">
+      <publishTime>01/20/2020 10:38:30</publishTime>
+    </File>
+    <File Include="styles/img/approval.png">
+      <publishTime>01/20/2020 09:40:10</publishTime>
+    </File>
+    <File Include="styles/img/broken.png">
+      <publishTime>05/24/2019 17:14:33</publishTime>
+    </File>
+    <File Include="styles/img/change.png">
+      <publishTime>01/20/2020 10:55:11</publishTime>
+    </File>
+    <File Include="styles/img/changebk.png">
+      <publishTime>01/20/2020 11:44:22</publishTime>
+    </File>
+    <File Include="styles/img/excel.png">
+      <publishTime>01/11/2017 15:00:12</publishTime>
+    </File>
+    <File Include="styles/img/favstar01.png">
+      <publishTime>02/03/2020 15:42:45</publishTime>
+    </File>
+    <File Include="styles/img/favstar02.png">
+      <publishTime>02/03/2020 15:43:11</publishTime>
+    </File>
+    <File Include="styles/img/home.png">
+      <publishTime>10/04/2019 16:25:22</publishTime>
+    </File>
+    <File Include="styles/img/home1.png">
+      <publishTime>02/28/2020 10:09:23</publishTime>
+    </File>
+    <File Include="styles/img/home2.png">
+      <publishTime>01/20/2020 10:29:11</publishTime>
+    </File>
+    <File Include="styles/img/launcher.png">
+      <publishTime>08/29/2019 15:23:00</publishTime>
+    </File>
+    <File Include="styles/img/loading.gif">
+      <publishTime>05/24/2019 17:14:22</publishTime>
+    </File>
+    <File Include="styles/img/logo.png">
+      <publishTime>01/20/2020 09:40:10</publishTime>
+    </File>
+    <File Include="styles/img/logo2.png">
+      <publishTime>02/26/2020 13:00:34</publishTime>
+    </File>
+    <File Include="styles/img/notifications.png">
+      <publishTime>01/20/2020 09:40:10</publishTime>
+    </File>
+    <File Include="styles/img/Notifications02.png">
+      <publishTime>01/20/2020 09:40:11</publishTime>
+    </File>
+    <File Include="styles/img/pdf.png">
+      <publishTime>10/30/2019 16:20:42</publishTime>
+    </File>
+    <File Include="styles/img/queue.png">
+      <publishTime>01/20/2020 09:40:10</publishTime>
+    </File>
+    <File Include="styles/img/queue02.png">
+      <publishTime>01/20/2020 09:40:11</publishTime>
+    </File>
+    <File Include="styles/img/RawMaterial01.png">
+      <publishTime>01/20/2020 09:40:10</publishTime>
+    </File>
+    <File Include="styles/img/report01.png">
+      <publishTime>01/20/2020 09:40:10</publishTime>
+    </File>
+    <File Include="styles/img/report03.png">
+      <publishTime>01/20/2020 09:40:10</publishTime>
+    </File>
+    <File Include="styles/img/report04.png">
+      <publishTime>01/20/2020 09:40:10</publishTime>
+    </File>
+    <File Include="styles/img/report05.png">
+      <publishTime>01/20/2020 09:40:10</publishTime>
+    </File>
+    <File Include="styles/img/ServicePO01.png">
+      <publishTime>01/20/2020 09:40:10</publishTime>
+    </File>
+    <File Include="styles/img/setting.png">
+      <publishTime>01/20/2020 09:40:10</publishTime>
+    </File>
+    <File Include="styles/img/Smile01.png">
+      <publishTime>01/20/2020 09:40:10</publishTime>
+    </File>
+    <File Include="styles/img/Spinner.gif">
+      <publishTime>05/22/2019 09:26:34</publishTime>
+    </File>
+    <File Include="styles/img/SubMaterial01.png">
+      <publishTime>01/20/2020 09:40:10</publishTime>
+    </File>
+    <File Include="styles/index.css">
+      <publishTime>02/17/2020 14:25:25</publishTime>
+    </File>
+    <File Include="styles/index_T1.css">
+      <publishTime>02/28/2020 09:51:35</publishTime>
+    </File>
+    <File Include="styles/index_T2.css">
+      <publishTime>02/28/2020 12:22:57</publishTime>
+    </File>
+    <File Include="styles/index_T3.css">
+      <publishTime>02/28/2020 12:21:38</publishTime>
+    </File>
+    <File Include="styles/index_T4.css">
+      <publishTime>02/28/2020 12:20:20</publishTime>
+    </File>
+    <File Include="styles/kendo.common.min.css">
+      <publishTime>02/20/2019 04:26:12</publishTime>
+    </File>
+    <File Include="styles/kendo.common.min.css.map">
+      <publishTime>02/20/2019 04:26:12</publishTime>
+    </File>
+    <File Include="styles/kendo.default-v2.min.css">
+      <publishTime>02/20/2019 04:26:12</publishTime>
+    </File>
+    <File Include="styles/kendo.default-v2.min.css.map">
+      <publishTime>02/20/2019 04:26:12</publishTime>
+    </File>
+    <File Include="styles/kendo.default.mobile.min.css">
+      <publishTime>02/20/2019 04:26:12</publishTime>
+    </File>
+    <File Include="styles/kendo.default.mobile.min.css.map">
+      <publishTime>02/20/2019 04:26:12</publishTime>
+    </File>
+    <File Include="styles/Office365/editor.png">
+      <publishTime>06/19/2019 03:30:54</publishTime>
+    </File>
+    <File Include="styles/Office365/imagebrowser.png">
+      <publishTime>06/19/2019 03:30:54</publishTime>
+    </File>
+    <File Include="styles/Office365/indeterminate.gif">
+      <publishTime>06/19/2019 03:30:54</publishTime>
+    </File>
+    <File Include="styles/Office365/loading-image.gif">
+      <publishTime>06/19/2019 03:30:54</publishTime>
+    </File>
+    <File Include="styles/Office365/loading.gif">
+      <publishTime>06/19/2019 03:30:54</publishTime>
+    </File>
+    <File Include="styles/Office365/loading_2x.gif">
+      <publishTime>06/19/2019 03:30:54</publishTime>
+    </File>
+    <File Include="styles/Office365/markers.png">
+      <publishTime>06/19/2019 03:30:54</publishTime>
+    </File>
+    <File Include="styles/Office365/markers_2x.png">
+      <publishTime>06/19/2019 03:30:54</publishTime>
+    </File>
+    <File Include="styles/Office365/slider-h.gif">
+      <publishTime>06/19/2019 03:30:54</publishTime>
+    </File>
+    <File Include="styles/Office365/slider-v.gif">
+      <publishTime>06/19/2019 03:30:54</publishTime>
+    </File>
+    <File Include="styles/Office365/sprite.png">
+      <publishTime>06/19/2019 03:30:54</publishTime>
+    </File>
+    <File Include="styles/Office365/sprite_2x.png">
+      <publishTime>06/19/2019 03:30:54</publishTime>
+    </File>
+    <File Include="styles/Office365/sprite_kpi.png">
+      <publishTime>06/19/2019 03:30:54</publishTime>
+    </File>
+    <File Include="styles/Office365/sprite_kpi_2x.png">
+      <publishTime>06/19/2019 03:30:54</publishTime>
+    </File>
+    <File Include="styles/poapproval.css">
+      <publishTime>11/14/2019 16:37:25</publishTime>
+    </File>
+    <File Include="styles/sapreport.css">
+      <publishTime>02/19/2020 12:13:24</publishTime>
+    </File>
+    <File Include="Web.config">
+      <publishTime>03/05/2020 18:52:19</publishTime>
+    </File>
+  </ItemGroup>
+</Project>

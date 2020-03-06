@@ -1,0 +1,105 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <meta charset="utf-8" />
+    
+    <link rel="stylesheet" href="https://kendo.cdn.telerik.com/2020.1.219/styles/kendo.common.min.css" />
+    <link rel="stylesheet" href="https://kendo.cdn.telerik.com/2020.1.219/styles/kendo.default-v2.min.css" />
+    <link rel="stylesheet" href="sapreport.css?93"/>
+
+    <script src="../scripts/jquery.min.js"></script>
+    <script src="../scripts/jszip.js"></script>
+    <script src="../scripts/kendo.all.min.js"></script>
+    <script src="../scripts/iframeResizer.contentWindow.min.js"></script>
+    <script src="sapreport.js?252"></script>
+</head>
+<body>
+    <div id="dvMainContent">
+        <div style="margin:10px">
+            <div class="HeaderTitle">
+                <div style="display: inline-block; margin: 12px;"><img src='img/report05.png'/></div>
+                <div>
+                    <span id="lbRptName"><h3>Report 01</h3></span>
+                    <button class="k-button" id="btnSubmit">Submit</button>
+                    <button class="k-button" id="btnAddQueue">Add to Queue</button>
+                    <button class="k-button" id="btnAddEmail">Send to Email</button>
+                    <button class="k-button" id="btnBack">Back</button>
+                    <button class="FavorStarBtn" title="Toggle Favorite">
+                        <span class="k-icon k-i-star-outline"></span>
+                    </button>
+                </div>
+            </div>
+            <hr>
+            <div id="dvNewCallContent">
+                <!-- <ul>
+                    <li>
+                        <div class="sspcontrol" type="Range" style="display:flex; align-items:center">
+                            <div class="sspcontrol-Range"><label for="S_VBELN-low">SO No.</label></div>
+                            <div class="sspcontrol-Range"><input id="S_VBELN-low" class="k-textbox"></div>
+                            <div class="sspcontrol-Range"><label for="S_VBELN-high">to </label></div>
+                            <div class="sspcontrol-Range"><input id="S_VBELN-high" class="k-textbox"></div>
+                            <div class="sspcontrol-Range">
+                                <select>
+                                    <option value="BT">Between</option>
+                                    <option value="EQ">Equal</option>
+                                    <option value="GE">Greater or Equal</option>
+                                    <option value="LE">Less or Equal</option>
+                                    <option value="GT">Greater</option>
+                                    <option value="LT">Less</option>
+                                    <option value="NE">Not Equal</option>
+                                    <option value="NB">Not Between</option>
+                                </select>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="sspcontrol" type="Radio">
+                            <ul class="sspcontrol-radiolist">
+                                <li>
+                                    <input type="radio" id="P_SO" name="radio-1" class="k-radio" checked="checked">
+                                    <label class="k-radio-label" for="P_SO">Breakdown by SO</label>
+                                </li>
+                                <li>
+                                    <input type="radio" id="P_PO" name="radio-1" class="k-radio">
+                                    <label class="k-radio-label" for="P_PO">Breakdown by PO</label>
+                                </li>
+                                <li>
+                                    <input type="radio" id="P_ITM" name="radio-1" class="k-radio">
+                                    <label class="k-radio-label" for="P_ITM">Breakdown by Item</label>
+                                </li>
+                            </ul>
+                        </div> 
+                    </li>
+                </ul>    -->           
+            </div>
+            <div id="dvResultPanel_ALV" class="hidden">
+                <div><span>Result Panel ALV</span>
+                    <button class="btnDownloadExcel" title="Download to Excel"></button>
+                    <!-- <button class="btnDownloadPdf" title="Download to PDF"></button>  -->
+                </div>
+                <div id="gridResult" style="width: 95%; margin-top: 6px">
+                </div>
+            </div>
+
+            <div id="dvResultPanel_File" class="hidden">
+                <div><span>Result Panel File</span>
+                </div>
+                <div>
+                    <label>Download File : </label>
+                    <button id="btnDownloadFile" class="k-button" title="Download file">Download</button>
+                </div>
+            </div>     
+            <div id="frameFooter">
+
+            </div>                      
+        </div>
+    </div>
+    <div id="dvLoadingOverlay" class="overlay-loading">
+        <div class="overlay-loading-content">        
+            <p><progress></progress></p>
+        </div>
+    </div>   
+
+</body>
+</html>

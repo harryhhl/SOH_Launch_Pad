@@ -1,0 +1,187 @@
+﻿
+
+#navBar {
+  color: rgb(24, 24, 24);
+  background-color: #378752;
+}
+
+
+.btnLauncher {
+  background-color: #378752;
+  color: #FFF;
+}
+.btnLauncher:hover {background-color: #80BF88}
+
+
+.btnLauncherClose {
+  background-color: #FFF;
+  color: rgb(0, 0, 0);
+}
+.btnLauncherClose:hover {background-color: rgb(219, 219, 219)}
+
+
+.btnLogo{
+  background-color: transparent;
+  color: #FFF;
+}
+
+
+.btnSetting {
+  color: #FFFFFF;
+  background-color: #378752;
+}
+.btnSetting:hover {background-color: #80BF88}
+
+
+.btnChangeBK {
+  color: #FFFFFF;
+  background-color: #378752;
+}
+.btnChangeBK:hover {background-color: #80BF88}
+
+.btnOrgUnit{
+  background-color: transparent;
+  color: #FFFFFF;
+}.btnOrgUnit:hover {background-color: #80BF88}
+
+
+.btnUserProfile {
+  color: #FFFFFF;
+  background-color: transparent;
+}
+.btnUserProfile:hover {background-color: #80BF88}
+
+.btnMenuExpand {
+  color: rgb(32, 32, 32);
+  background-color: #00000000;
+}
+
+
+.UserSpanDv {
+  background-color: rgb(0, 163, 0);
+  color:white; 
+}
+
+#drawer-content {
+  background-color: #FFFFFF;
+}
+
+#appLauncher {
+  background-color: #FFF;
+  border: 1px solid #C8C8C8;
+  box-shadow: 0 1px 15px rgba(0, 0, 0, 0.4);
+}
+
+#appListing {
+  color: rgb(39, 39, 39);
+}
+
+
+#userProfilePop {
+  background: #fff;
+  color: #666666;
+  box-shadow: 0 2px 4px -1px rgba(0,0,0,.2), 0 4px 5px 0 rgba(0,0,0,.14), 0 1px 10px 0 rgba(0,0,0,.12);
+}
+
+#userProfilePop span {
+  color: #666666;
+}
+#userProfilePop span:hover {background-color: rgb(204, 203, 203)}
+
+#userOrgUnitPop {
+  background: #fff;
+  color: #666666;
+  box-shadow: 0 2px 4px -1px rgba(0,0,0,.2), 0 4px 5px 0 rgba(0,0,0,.14), 0 1px 10px 0 rgba(0,0,0,.12);
+}
+
+#userOrgUnitPop span {
+  color: #666666;
+}
+#userOrgUnitPop span:hover {background-color: rgb(204, 203, 203)}
+
+#bkSelectionPop {
+  background: #fff;
+  color: #666666;
+  box-shadow: 0 2px 4px -1px rgba(0,0,0,.2), 0 4px 5px 0 rgba(0,0,0,.14), 0 1px 10px 0 rgba(0,0,0,.12);
+}
+
+#bkSelectionPop div {
+  border: 1px solid rgb(66, 66, 66);
+}
+
+#bkSelectionPop div:hover {
+  box-shadow: 0px 2px 8px 0px rgba(0, 0, 0, 0.2) !important;
+}
+
+.overlay-login {
+  background-color: rgb(184, 183, 183); 
+}
+
+
+.widgetCard {
+  background-color: #FFF;
+  box-shadow: 0px 2px 8px 0px rgba(0, 0, 0, 0.05) !important;
+  border-color: rgb(116, 116, 116);
+  background: #fff;
+  color: rgba(0,0,0,.87);
+}
+
+.widgetCard:hover {
+  box-shadow: 0px 2px 8px 0px rgba(0, 0, 0, 0.2) !important;
+}
+
+
+.widgetFavorStar {
+  color: #605E5C;
+}
+
+.widgetNotifyNum {
+  color: rgb(0, 0, 0);
+}
+
+.widgetNotifyNum div {
+  background: #FCB040;
+}
+
+.widgetNotifyNum2 {
+  color: rgb(0, 0, 0);
+}
+
+.widgetNotifyNum2 div {
+  background: #FCB040;
+}
+
+.k-i-star {
+  color: #FBB040;
+}
+
+
+#drawer-content li {
+    border-color: rgba(33, 37, 41, 0.125);
+}
+
+
+.k-drawer-container {
+  background-color: #CDE2DD;
+  color: #333;
+  border-color: #c9c9c900;
+}
+
+.k-drawer-items .k-drawer-item.k-state-selected {
+  color: #333;
+  background-color: #80BF88;
+}
+
+.k-drawer-items .k-drawer-item.k-drawer-separator {
+  background-color: #313131a8;
+}
+
+.k-drawer-items .k-drawer-item:hover {
+  color: #000;
+  background-color: #80BF88;
+}
+
+.k-drawer-items .k-drawer-item.k-state-selected.k-state-hover, .k-drawer-items .k-drawer-item.k-state-selected:hover {
+  color: #333;
+  background-color: #91BAAA;
+}

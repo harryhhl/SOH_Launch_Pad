@@ -1,0 +1,198 @@
+﻿
+
+#navBar {
+  color: rgb(24, 24, 24);
+  background-color: #ECCC79;
+}
+
+
+.btnLauncher {
+  background-color: #ECCC79;
+  color: #A5A186;
+}
+.btnLauncher:hover {background-color: #EAD8AB}
+
+
+.btnLauncherClose {
+  background-color: #FFF;
+  color: rgb(0, 0, 0);
+}
+.btnLauncherClose:hover {background-color: rgb(219, 219, 219)}
+
+
+.btnLogo{
+  background-color: transparent;
+  color: rgb(66, 66, 65);
+}
+
+
+.btnSetting {
+  color: #A5A186;
+  background-color: #ECCC79;
+}
+.btnSetting:hover {background-color: #EAD8AB}
+
+
+.btnChangeBK {
+  color: #A5A186;
+  background-color: #ECCC79;
+}
+.btnChangeBK:hover {background-color: #EAD8AB}
+
+.btnOrgUnit{
+  background-color: transparent;
+  color: #A5A186;
+}.btnOrgUnit:hover {background-color: #EAD8AB}
+
+
+.btnUserProfile {
+  background-color: transparent;
+}
+.btnUserProfile:hover {background-color: #EAD8AB}
+
+.btnMenuExpand {
+  color: rgb(240, 239, 239);
+  background-color: #00000000;
+}
+
+
+.UserSpanDv {
+  background-color: rgb(0, 163, 0);
+  color:white; 
+}
+
+#drawer-content {
+  background-color: #EAEAEA;
+}
+
+#appLauncher {
+  background-color: #FFF;
+  border: 1px solid #C8C8C8;
+  box-shadow: 0 1px 15px rgba(0, 0, 0, 0.4);
+}
+
+#appListing {
+  color: rgb(39, 39, 39);
+}
+
+
+#userProfilePop {
+  background: #fff;
+  color: #666666;
+  box-shadow: 0 2px 4px -1px rgba(0,0,0,.2), 0 4px 5px 0 rgba(0,0,0,.14), 0 1px 10px 0 rgba(0,0,0,.12);
+}
+
+#userProfilePop span {
+  color: #666666;
+}
+#userProfilePop span:hover {background-color: rgb(204, 203, 203)}
+
+#userOrgUnitPop {
+  background: #fff;
+  color: #666666;
+  box-shadow: 0 2px 4px -1px rgba(0,0,0,.2), 0 4px 5px 0 rgba(0,0,0,.14), 0 1px 10px 0 rgba(0,0,0,.12);
+}
+
+#userOrgUnitPop span {
+  color: #666666;
+}
+#userOrgUnitPop span:hover {background-color: rgb(204, 203, 203)}
+
+#bkSelectionPop {
+  background: #fff;
+  color: #666666;
+  box-shadow: 0 2px 4px -1px rgba(0,0,0,.2), 0 4px 5px 0 rgba(0,0,0,.14), 0 1px 10px 0 rgba(0,0,0,.12);
+}
+
+#bkSelectionPop div {
+  border: 1px solid rgb(66, 66, 66);
+}
+
+#bkSelectionPop div:hover {
+  box-shadow: 0px 2px 8px 0px rgba(0, 0, 0, 0.2) !important;
+}
+
+.overlay-login {
+  background-color: rgb(184, 183, 183); 
+}
+
+
+.widgetCard {
+  background-color: #FFF;
+  box-shadow: 0px 2px 8px 0px rgba(0, 0, 0, 0.05) !important;
+  border-color: rgb(116, 116, 116);
+  background: #fff;
+  color: rgba(0,0,0,.87);
+}
+
+.widgetCard:hover {
+  box-shadow: 0px 2px 8px 0px rgba(0, 0, 0, 0.2) !important;
+}
+
+
+.widgetFavorStar {
+  color: #605E5C;
+}
+
+.widgetNotifyNum {
+  color: rgb(0, 0, 0);
+}
+
+.widgetNotifyNum div {
+  background: #B68A65;
+}
+
+.widgetNotifyNum2 {
+  color: rgb(0, 0, 0);
+}
+
+.widgetNotifyNum2 div {
+  background: #B68A65;
+}
+
+.k-i-star {
+  color: #FBB040;
+}
+
+
+#drawer-content li {
+    border-color: rgba(33, 37, 41, 0.125);
+}
+
+
+.k-drawer-container {
+  background-color: #657E92;
+  color: #FEFFFF;
+  border-color: #c9c9c900;
+}
+
+.k-drawer-items .k-drawer-item.k-state-selected {
+  color: rgb(43, 43, 43);
+  background-color: #ECCC79;
+}
+
+.k-drawer-items .k-drawer-item.k-drawer-separator {
+  background-color: #313131a8;
+}
+
+.k-drawer-items .k-drawer-item:hover {
+  color: #000;
+  background-color: #ECCC79;
+}
+
+.k-drawer-items .k-drawer-item.k-state-selected.k-state-hover, .k-drawer-items .k-drawer-item.k-state-selected:hover {
+  color: #333;
+  background-color: #ECE18F;
+}
+
+.k-drawer-items .k-drawer-item {
+  color: #FEFFFF;
+}
+
+.k-icon, .k-tool-icon {
+  color: #FEFFFF;
+}
+
+span.k-icon.k-i-home {
+  background-image: url(img/home1.png);
+}

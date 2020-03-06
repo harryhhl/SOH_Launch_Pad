@@ -1,0 +1,96 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <meta charset="utf-8" />
+    
+    <link rel="stylesheet" href="https://kendo.cdn.telerik.com/2019.2.619/styles/kendo.common-office365.min.css" />
+    <link rel="stylesheet" href="https://kendo.cdn.telerik.com/2019.2.619/styles/kendo.office365.min.css" />
+    <link rel="stylesheet" href="poapproval.css?15"/>
+
+    <script src="../scripts/jquery.min.js"></script>
+    <script src="../scripts/jszip.js"></script>
+    <script src="../scripts/kendo.all.min.js"></script>
+    <script src="../scripts/iframeResizer.contentWindow.min.js"></script>
+    <script src="poapproval.js?70"></script>    
+</head>
+<body>
+    <div id="dvMainContent">
+        <div>
+            <div id="dvRequestContent" class="k-block k-shadow">
+                <ul>
+                    <li>
+                        <div class="approvalcontrol"><label for="releaseCode">Release Code</label></div>
+                        <div class="approvalcontrol"><input id="releaseCode" class="k-textbox"></div>
+                        <div class="approvalcontrol"><label for="releaseGroup">Release Group</label></div>
+                        <div class="approvalcontrol"><input id="releaseGroup" class="k-textbox"></div>                        
+                    </li>
+                    <li>
+                        <div class="approvalcontrol"><label for="fromDocDate">From Doc Date</label></div>
+                        <div class="approvalcontrol"><input id="fromDocDate" value="01/01/2019"></div>
+                        <div class="approvalcontrol"><label for="toDocDate">To Doc Date</label></div>
+                        <div class="approvalcontrol"><input id="toDocDate" value="31/12/2019"></div>                        
+                    </li>  
+                    <li>
+                        <div class="approvalcontrol"><label for="fromPONumber">From PO Number</label></div>
+                        <div class="approvalcontrol"><input id="fromPONumber" class="k-textbox"></div>
+                        <div class="approvalcontrol"><label for="toPONumber">To PO Number</label></div>
+                        <div class="approvalcontrol"><input id="toPONumber" class="k-textbox"></div>                        
+                    </li>    
+                    <li>
+                        <div class="approvalcontrol"><label for="fromVendorCode">From Vendor Code</label></div>
+                        <div class="approvalcontrol"><input id="fromVendorCode" class="k-textbox"></div>
+                        <div class="approvalcontrol"><label for="toVendorCode">To Vendor Code</label></div>
+                        <div class="approvalcontrol"><input id="toVendorCode" class="k-textbox"></div>                        
+                    </li>  
+                    <li>
+                        <div class="approvalcontrol-submit">
+                            <div><button class="k-button k-primary" id="btnRelease">Show Release</button></div>
+                        </div> 
+                        <div class="approvalcontrol-submit">
+                            <div><button class="k-button k-primary" id="btnUnrelease">Show Cancel Release</button></div>
+                        </div>                             
+                    </li>                                                                           
+                </ul>
+            </div>
+            <div id="dvResultPanel_Header" style="margin:6px;">
+                <div><span>Result Listing</span>
+                    <button class="k-button k-primary" id="btnDoRelease" style="display: none;" disabled>Release</button>
+                    <button class="k-button k-primary" id="btnDoUnrelease" style="display: none;" disabled>Unrelease</button>
+                </div>
+                <div id="gridResultHeader" style="width: 95%; margin-top: 6px">
+                </div>
+            </div>  
+            <div id="dvResultPanel_Detail" style="margin:6px;">
+                <div><span>Item Detail</span>
+                    <!-- <button class="btnDownloadExcel" title="Download to Excel"></button> -->
+                    <!-- <button class="btnDownloadPdf" title="Download to PDF"></button>  -->
+                </div>
+                <div id="gridResultDetail" style="width: 95%; margin-top: 6px">
+                </div>
+                <script type="text/x-kendo-template" id="template">
+                    <div class="tabstrip">
+                        <ul>
+                            <li class="k-state-active">
+                               Discounts
+                            </li>
+                        </ul>
+                        <div>
+                            <div class="discounts"></div>
+                        </div>
+                    </div>
+    
+                </script>
+            </div>   
+            <div id="frameFooter">
+
+            </div>                     
+        </div>
+    </div>
+    <div id="dvLoadingOverlay" class="overlay-loading">
+        <div class="overlay-loading-content">        
+            <p><progress></progress></p>
+        </div>
+    </div> 
+</body>
+</html>

@@ -1,0 +1,175 @@
+* {
+    box-sizing: border-box; 
+    font-family: Helvetica, sans-serif;
+  }
+
+  body {
+    margin: 0em;
+    background-color: rgb(248, 248, 248);
+  }
+  
+  #frameFooter {
+    display: block;
+    min-height: 200px;
+  }
+
+  hr { 
+    display: block;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+    margin-left: auto;
+    margin-right: auto;
+    border-style: solid;
+    border-width: 1px;
+    border-color: #666666;
+  } 
+
+  .HeaderTitle {
+    width: 96%;
+    display: flex;
+    text-align: left;
+    justify-content: flex-start;
+    align-items: center;
+  }
+
+  .overlay-loading {
+    height: 100%;
+    width: 100%;
+    position: fixed; 
+    z-index: 99999; 
+    left: 0;
+    top: 0;
+    background-color: rgba(184, 183, 183, 0.5); 
+    overflow-x: hidden; 
+  }
+
+  .overlay-loading-content {
+    position: relative;
+    top: 25%; 
+    width: 100%; 
+    text-align: center;
+    margin-top: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  #dvNewCall {
+    height: 100%;
+    width: 100%;
+    position: fixed; 
+    z-index: 1000; 
+    left: 0;
+    top: 0;
+    background-color: rgba(139, 139, 139, 0.5); 
+    overflow-x: hidden; 
+    justify-content: center;
+    text-align: center;
+    display: none;
+  }
+
+  #dvNewCall .wrapper {
+    display: inline-block;
+    width: 80%;
+  } 
+
+  #dvNewCallContent {
+    position: relative;
+    top: 15%; 
+    width: 100%; 
+    margin-top: 30px;
+    display: flex;
+    text-align: left;
+  }
+
+  #dvNewCallContent ul {
+    list-style-type: none;
+    margin-top: 2em;
+    margin-bottom: 2em;
+    margin-left: 0;
+    margin-right: 0;    
+  }
+
+  #dvNewCallContent li {
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+    margin-left: 0;
+    margin-right: 0;    
+  }  
+
+  .ss-submit { 
+    display: inline-block;
+  }
+
+  .ss-cancel { 
+    display: inline-block;
+  }
+
+  .k-grid  .k-grid-header  .k-header  .k-link {
+    height: 24px;
+    white-space: normal;
+    font-size: 12px;
+  }
+
+  .k-grid tbody tr {
+    height: 20px;
+    font-size: 12px;
+  }
+
+  .k-grid-pager {
+    height: 48px;
+    min-height: 48px;
+  }
+  
+  .k-pager-wrap {
+    font-size: 10px;
+  }
+
+  .k-header {
+    background-color: #66BCD5;
+  }
+
+  .k-animation-container>form {
+    width: 260px;
+  }
+
+  .k-grid td.k-state-selected, .k-grid tr.k-state-selected>td {
+    color: #656565;
+    background-color: #B2E6EA;
+  }
+
+  .k-button {
+    border-color: rgba(0,0,0,.08);
+    color: rgb(92, 72, 42);
+    background-color: #FBB040;
+    background-image: linear-gradient(#FBB040,#FBB040); 
+  }
+
+  .k-button:hover {
+    border-color: rgba(0,0,0,.08);
+    color: rgb(92, 72, 42);
+    background-color: #FBCC40;
+    background-image: linear-gradient(#FBCC40,#FBCC40); 
+  }
+
+  .btnDownloadExcel {
+    background: url("../styles/img/excel.png");
+    background-size: cover;
+    padding: 2px 2px;
+    width: 32px;
+    height: 32px;
+    display: inline-block;
+    border-width: 0;
+    cursor: pointer;
+  }
+
+  .btnDownloadPdf {
+    background: url("../styles/img/pdf.png");
+    background-size: cover;
+    padding: 2px 2px;
+    width: 32px;
+    height: 32px;
+    display: inline-block;
+    border-width: 0;
+    cursor: pointer;
+  }

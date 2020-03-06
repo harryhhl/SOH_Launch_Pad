@@ -1,0 +1,70 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <meta charset="utf-8" />
+    
+    <link rel="stylesheet" href="https://kendo.cdn.telerik.com/2020.1.219/styles/kendo.default-v2.min.css" />
+    <link rel="stylesheet" href="https://kendo.cdn.telerik.com/2020.1.219/styles/kendo.common.min.css" />
+    <link rel="stylesheet" href="reportqueue.css?11"/>
+    <link rel="stylesheet" href="reportqueue_T1.css" tag="themecss"/>
+
+    <script src="../scripts/jquery.min.js"></script>
+    <script src="../scripts/jszip.js"></script>
+    <script src="../scripts/kendo.all.min.js"></script>
+    <script src="../scripts/iframeResizer.contentWindow.min.js"></script>
+    <script src="reportqueue.js?30"></script>
+</head>
+<body>
+    <div id="dvMainContent">
+        <div>
+            <div style="margin:10px">
+            </div>
+            <div id="dvHistoryQueue" style="margin:10px">
+                <div class="HeaderTitle">
+                    <div style="display: inline-block"><img src='../styles/img/queue02.png'/></div>
+                    <div style="margin-left: 10px;">
+                        <h3>History Queue</h3>
+                        <button class="k-button" id="btnToggle">Toggle History</button>
+                    </div>
+                </div>
+                <hr>
+                <div class="GridHistoryWrapper">
+                    <div id="gridHistory" style="width: 95%; margin-top: 6px">
+                    </div>
+                </div>
+            </div>
+            <div id="dvResultPanel_ALV" style="margin:10px;">
+                <div><span>Result Panel ALV</span>
+                    <button class="btnDownloadExcel" title="Download to Excel"></button>
+                    <!-- <button class="btnDownloadPdf" title="Download to PDF"></button>  -->
+                </div>
+                <div id="gridResult" style="width: 95%; margin-top: 6px">
+                </div>
+            </div>
+            <div id="dvResultPanel_File" style="margin:10px;">
+                <div><span>Result Panel File</span>
+                </div>
+                <div>
+                    <label>Download File :</label>
+                    <button id="btnDownloadFile" class="k-button" title="Download file">Download</button>
+                </div>
+            </div>     
+            <div id="frameFooter">
+
+            </div>                      
+        </div>
+        <div id="dvNewCall">
+            <div class="wrapper">
+                <div id="dvNewCallContent" class="k-block k-shadow">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="dvLoadingOverlay" class="overlay-loading">
+        <div class="overlay-loading-content">        
+            <p><progress></progress></p>
+        </div>
+    </div> 
+</body>
+</html>
