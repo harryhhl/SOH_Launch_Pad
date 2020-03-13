@@ -8,6 +8,7 @@ function Start()
 
     var FuncID = urlParams.get('fid');
     var AccessToken = localStorage.getItem('SOH_Token');
+    var UserName = localStorage.getItem('SOH_Username');
     var LookID = urlParams.get('lookup');
 
     var histgridDataSource = null;
@@ -20,6 +21,9 @@ function Start()
 
     var dvResultALV = null;
     var dvResultFile = null;
+
+    var listLayout = null;
+    var listLayoutDS = null;
 
     var selectedReport = "";
 
@@ -58,11 +62,31 @@ function Start()
             }
         });
 
+        $('.btnDownloadExcel').on( 'click', function() {
+            var grid = alvgrid.data("kendoGrid");
+            grid.saveAsExcel();
+        });
+
         $('#btnToggle').on( 'click', function(){
             $('.GridHistoryWrapper').toggle();
 
             if(alvgrid != null)
                 alvgrid.children(".k-grid-content").height(window.parent.innerHeight - 400);
+        });
+
+        $('#btnLayoutSave').on( 'click', function(){
+            if (confirm("Are you sure to update this layout?")) {
+                var dataItem = listLayout.data("kendoDropDownList").dataItem();
+                var gridoption = alvgrid.data("kendoGrid").getOptions();
+                UpdateLayout(dataItem.Id, dataItem.LayoutName, JSON.stringify(gridoption));
+            }
+        });
+
+        $('#btnLayoutDefault').on( 'click', function(){
+            if (confirm("Are you sure to make this layout default?")) {
+                var dataItem = listLayout.data("kendoDropDownList").dataItem();
+                MakeLayoutDefault(dataItem.Id);
+            }
         });
 
         var eventMethod = window.addEventListener? "addEventListener" : "attachEvent";
@@ -75,6 +99,89 @@ function Start()
 
         });
     }
+
+    function InitLayoutDropList()
+    {
+        listLayoutDS = new kendo.data.DataSource({
+            transport: {
+                read:  {
+                    url: "../Reports/SapReport.ashx",
+                    dataType: "json",
+                    type: "POST",
+                    contentType: "application/json; charset=utf-8",
+                    xhrFields: {
+                        withCredentials: true
+                    },
+                    data: LayoutListDataSourceFilter("getrptlayout")
+                },
+                create: {
+                    url: "../Reports/SapReport.ashx",
+                    dataType: "json",
+                    type: "POST",
+                    contentType: "application/json; charset=utf-8",
+                    xhrFields: {
+                        withCredentials: true
+                    },
+                    data: LayoutListDataSourceFilter("newrptlayout")
+                }
+            },
+            schema: {
+                model: {
+                    id: "Id",
+                    fields: {
+                        Id:  { type: "string" },
+                        LayoutName: { type: "string" },
+                        LayoutContent: { type: "string" },
+                        IsDefault: { type: "boolean" }
+                    }
+                }
+            }
+        });
+
+        listLayout = $("#listLayout").kendoDropDownList({
+            filter: "startswith",
+            dataTextField: "LayoutName",
+            dataValueField: "LayoutContent",
+            dataSource: listLayoutDS,
+            noDataTemplate: $("#noLayoutListDataTemplate").html(),
+            select: function(e) {
+                var dataItem = e.dataItem;
+                if(dataItem.LayoutContent.length > 1) {
+                    alvgrid.data("kendoGrid").setOptions(JSON.parse(dataItem.LayoutContent));
+                }
+                else {
+                    ALVGridLoadCurrentOption();
+                }
+            },
+            dataBound: function(e) {
+                listLayout.data("kendoDropDownList").select(function(dataItem) {
+
+                    if(dataItem.IsDefault == true)
+                    {
+                        alvgrid.data("kendoGrid").setOptions(JSON.parse(dataItem.LayoutContent));
+                        return true;
+                    }
+
+                    return false;
+                });
+            }
+
+        });
+    }
+
+    function LayoutListDataSourceFilter(action)
+    {
+        var results = {};
+
+        results.Action = action;
+        results.Token = AccessToken;
+        results.FuncID = FuncID;
+        results.Report = selectedReport;
+        results.User = UserName;
+
+        return results;
+    }
+
 
     function InitHistGrid()
     {
@@ -261,7 +368,7 @@ function Start()
         });
 
         alvgrid = $("#gridResult").kendoGrid({
-            autoBind: false,
+            autoBind: true,
             dataSource: alvgridDataSource,
             height: window.parent.innerHeight - 400,
             theme: "default",
@@ -269,9 +376,7 @@ function Start()
             reorderable: true,
             groupable: true,
             resizable: true,
-            filterable: {
-                mode: "row"
-            },
+            filterable: true,
             columnMenu: true,
             selectable: "row",
             pageable: false,
@@ -281,13 +386,20 @@ function Start()
             columns: JSON.parse(config.ColumnSetting)
         });     
         
-        //var gridData = histgrid.data("kendoGrid");
-        $('.btnDownloadExcel').on( 'click', function() {
-            var grid = alvgrid.data("kendoGrid");
-            grid.saveAsExcel();
-        });
+        ALVGridSaveCurrentOption();
+        InitLayoutDropList();
+    }
 
-        ALVGridReload();
+    function ALVGridSaveCurrentOption()
+    {
+        var option = alvgrid.data("kendoGrid").getOptions();
+        localStorage.setItem('SOH_ReportLayoutCurrent', kendo.stringify(option));
+    }
+
+    function ALVGridLoadCurrentOption()
+    {
+        var option = localStorage.getItem('SOH_ReportLayoutCurrent');
+        alvgrid.data("kendoGrid").setOptions(JSON.parse(option)); 
     }
 
     function ALVGridReload() 
@@ -379,6 +491,59 @@ function Start()
         });
     }
 
+    function UpdateLayout(id, name, content) 
+    {
+        $.ajax({
+            type: "POST",
+            async: true,
+            url: "../Reports/SapReport.ashx",
+            data: {
+                Action: "updrptlayout",
+                Token: AccessToken,
+                FuncID: FuncID,
+                Report: selectedReport,
+                LayoutID: id,
+                LayoutName: name,
+                LayoutContent: content     
+            },
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            error: function (request, error) {
+                console.log(request.statusText);
+                alert(request.statusText);
+            },
+            success: function (data) {
+                alert("success!");
+                listLayoutDS.read();
+            }
+        });
+    }
+
+    function MakeLayoutDefault(id) 
+    {
+        $.ajax({
+            type: "POST",
+            async: true,
+            url: "../Reports/SapReport.ashx",
+            data: {
+                Action: "updrptlayoutdefault",
+                Token: AccessToken,
+                FuncID: FuncID,
+                Report: selectedReport,
+                LayoutID: id 
+            },
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            error: function (request, error) {
+                console.log(request.statusText);
+                alert(request.statusText);
+            },
+            success: function (data) {
+                alert("success!");
+            }
+        });
+    }
+
     function LoadThemeSetting()
     {
         var t = localStorage.getItem('SOH_MainTheme');
@@ -418,3 +583,27 @@ function DataToDownloadFile(data, fileName) {
         window.URL.revokeObjectURL(dUrl);
     }
 }
+
+function AddNewLayout(widgetId, value) {
+    var widget = $("#" + widgetId).getKendoDropDownList();
+    var dataSource = widget.dataSource;
+
+    if (confirm("Are you sure to add this layout?")) {
+
+        var gridoption = $("#gridResult").data("kendoGrid").getOptions();
+
+        dataSource.add({
+            Id: "",
+            LayoutName: value,
+            LayoutContent: kendo.stringify(gridoption)
+        });
+
+        dataSource.one("sync", function() {
+            widget.select(dataSource.view().length - 1);
+        });
+
+        dataSource.sync();
+    }
+};
+
+  

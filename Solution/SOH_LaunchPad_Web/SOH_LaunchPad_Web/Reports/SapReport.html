@@ -12,7 +12,7 @@
     <script src="../scripts/jszip.js"></script>
     <script src="../scripts/kendo.all.min.js"></script>
     <script src="../scripts/iframeResizer.contentWindow.min.js"></script>
-    <script src="sapreport.js?252"></script>
+    <script src="sapreport.js?262"></script>
 </head>
 <body>
     <div id="dvMainContent">
@@ -78,6 +78,12 @@
                     <button class="btnDownloadExcel" title="Download to Excel"></button>
                     <!-- <button class="btnDownloadPdf" title="Download to PDF"></button>  -->
                 </div>
+                <div>
+                    <span>Custom Layout: </span>
+                    <input id="listLayout" style="width: 20%;" />
+                    <button class="k-button" id="btnLayoutSave">Save This</button>
+                    <button class="k-button" id="btnLayoutDefault">Make Default</button>
+                </div>                  
                 <div id="gridResult" style="width: 95%; margin-top: 6px">
                 </div>
             </div>
@@ -100,6 +106,12 @@
             <p><progress></progress></p>
         </div>
     </div>   
-
+    <script id="noLayoutListDataTemplate" type="text/x-kendo-tmpl">
+        <div>
+            No layout found. Do you want to add new layout - '#: instance.filterInput.val() #' ?
+        </div>
+        <br />
+        <button class="k-button" onclick="AddNewLayout('#: instance.element[0].id #', '#: instance.filterInput.val() #')">Add new item</button>
+    </script> 
 </body>
 </html>

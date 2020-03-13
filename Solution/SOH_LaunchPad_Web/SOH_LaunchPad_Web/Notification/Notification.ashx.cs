@@ -30,11 +30,12 @@ namespace SOH_LaunchPad_Web
                     input = reader.ReadToEnd();
                 }
 
-                var action = HttpUtility.ParseQueryString(input).Get("Action");
-                var token = HttpUtility.ParseQueryString(input).Get("Token");
-                var sysfuncid = HttpUtility.ParseQueryString(input).Get("FuncID");
-                var username = HttpUtility.ParseQueryString(input).Get("User");
-                var nid = HttpUtility.ParseQueryString(input).Get("NID");
+                var inputset = HttpUtility.ParseQueryString(input);
+                var action = inputset.Get("Action");
+                var token = inputset.Get("Token");
+                var sysfuncid = inputset.Get("FuncID");
+                var username = inputset.Get("User");
+                var nid = inputset.Get("NID");
 
                 try
                 {

@@ -19,6 +19,10 @@ function Start()
 
     function Begin()
     {
+        if(isIE){
+            return;
+        }
+        
         LoadThemeSetting();
 
         AzureAuthen.Init(function () {
@@ -122,7 +126,13 @@ function Start()
             if (e.data.startsWith("[UpdateFavor]")) 
                 UpdateFavorSection(e.data);
             
-            console.log(e);
+            if (e.data.startsWith("[RequestToken]"))
+            {
+                var wn = document.getElementById('theframe').contentWindow;
+                wn.postMessage("[SOH_Token]" + AzureAccessToken, "*");
+            } 
+            
+            //console.log(e);
         });
 
         window.addEventListener("resize", function(event) {
@@ -379,7 +389,7 @@ function Start()
                 var funcID = e.item.attr("data-id");
                 if(typeof uri !== 'undefined' && uri.length > 0) {
                     e.sender.element.find("#drawer-content").find("#dvFrame").removeClass("hidden");
-                    uri = uri + "&fid=" + funcID + "&rptdname=" + encodeURIComponent(e.item.find(".k-item-text").text());
+                    uri = uri + "&fid=" + funcID + "&fname=" + encodeURIComponent(e.item.find(".k-item-text").text());
                     if($('#theframe').attr('funcid')!=funcID) {
                         $('#theframe').attr('src', uri);
                         $('#theframe').attr('funcid', funcID);
@@ -452,7 +462,7 @@ function Start()
             if(typeof uri !== 'undefined' && uri.length > 0) {
                 $("#drawer").find("#drawer-content > div").addClass("hidden");
                 $("#drawer").find("#drawer-content").find("#dvFrame").removeClass("hidden");
-                uri = uri + "&fid=" + funcID + "&rptdname=" + encodeURIComponent(rptdname);
+                uri = uri + "&fid=" + funcID + "&fname=" + encodeURIComponent(rptdname);
                 if($('#theframe').attr('funcid')!=funcID) {
                     $('#theframe').attr('src', uri);
                     $('#theframe').attr('funcid', funcID);

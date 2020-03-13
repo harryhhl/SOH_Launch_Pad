@@ -722,3 +722,16 @@ span.k-icon.k-i-gear:before {
   color: #000;
   background-color: #7ACFDD;
 }
+
+.IEError {
+  color: red;
+  display: none;
+  *display: block;
+  display: block\9;
+}
+
+@media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
+  .IEError {
+    display: block;
+  }
+}

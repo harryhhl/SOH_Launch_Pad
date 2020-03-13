@@ -111,10 +111,18 @@
     font-size: 12px;
   }
 
+  .k-grid-header th.k-header {
+    vertical-align: top;
+  }
+
   .k-grid tbody tr {
     height: 20px;
     font-size: 12px;
   }
+
+  .k-grid td {
+    line-height: 1em;
+}
 
   .k-grid-pager {
     height: 48px;

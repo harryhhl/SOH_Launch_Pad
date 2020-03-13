@@ -4,12 +4,12 @@ Start();
 
 function Start() 
 {
-    const MaxWaitQueue = 30000;
+    const MaxWaitQueue = 60000;
     const RetryInterval = 1000;
 
     const urlParams = new URLSearchParams(window.location.search);
     var ReportName = urlParams.get('rn');
-    var ReportDisplayName = decodeURIComponent(urlParams.get('rptdname'));
+    var ReportDisplayName = decodeURIComponent(urlParams.get('fname'));
     var FuncID = urlParams.get('fid');
     var AccessToken = localStorage.getItem('SOH_Token');
     var UserName = localStorage.getItem('SOH_Username');
@@ -25,6 +25,11 @@ function Start()
     var dvResultFile = null;
 
     var selectAddtoQueue = 0;
+
+    var masterDataSource = new Map();
+
+    var listLayout = null;
+    var listLayoutDS = null;
 
     $(document).ready(Begin);
 
@@ -59,6 +64,11 @@ function Start()
             }
         });
 
+        $('.btnDownloadExcel').on( 'click', function() {
+            var grid = alvgrid.data("kendoGrid");
+            grid.saveAsExcel();
+        });
+
         $('#btnBack').on( 'click', function() {           
             ShowResult(false);
         });
@@ -83,6 +93,21 @@ function Start()
             {
                 $('.FavorStarBtn').children(":last").removeClass('k-i-star-outline');
                 $('.FavorStarBtn').children(":last").addClass('k-i-star');
+            }
+        });
+
+        $('#btnLayoutSave').on( 'click', function(){
+            if (confirm("Are you sure to update this layout?")) {
+                var dataItem = listLayout.data("kendoDropDownList").dataItem();
+                var gridoption = alvgrid.data("kendoGrid").getOptions();
+                UpdateLayout(dataItem.Id, dataItem.LayoutName, JSON.stringify(gridoption));
+            }
+        });
+
+        $('#btnLayoutDefault').on( 'click', function(){
+            if (confirm("Are you sure to make this layout default?")) {
+                var dataItem = listLayout.data("kendoDropDownList").dataItem();
+                MakeLayoutDefault(dataItem.Id);
             }
         });
     }
@@ -380,30 +405,7 @@ function Start()
                 template:   '<span style="display: table-row;">' + 
                             '<span style="display: table-cell; width: 115px">#=data.Code#</span>' + 
                             '<span style="display: table-cell; min-width: 140px">#=data.Description#</span></span>',
-                dataSource: {
-                    transport: {
-                        read: {
-                            url: "SapReport.ashx",
-                            dataType: "json",
-                            type: "POST",
-                            contentType: "application/json; charset=utf-8",
-                            xhrFields: {
-                                withCredentials: true
-                            },
-                            data: {
-                                Action: "getmasterdata",
-                                Token: AccessToken,
-                                FuncID: FuncID,
-                                Report: ReportName,
-                                MstName: $(this).attr('mstsrc')         
-                            },
-                            error: function (xhr, error) {
-                                console.debug(xhr); console.debug(error);
-                            }
-                        },
-                        cache: "inmemory"
-                    }
-                },
+                dataSource: GetMasterDataSource($(this).attr('mstsrc')),
                 filtering: function(ev) {
                     var filterValue = ev.filter != undefined ? ev.filter.value : "";
                     ev.preventDefault();
@@ -442,30 +444,7 @@ function Start()
                 template:   '<span style="display: table-row;">' + 
                             '<span style="display: table-cell; width: 115px">#=data.Code#</span>' + 
                             '<span style="display: table-cell; min-width: 140px">#=data.Description#</span></span>',
-                dataSource: {
-                    transport: {
-                        read: {
-                            url: "SapReport.ashx",
-                            dataType: "json",
-                            type: "POST",
-                            contentType: "application/json; charset=utf-8",
-                            xhrFields: {
-                                withCredentials: true
-                            },
-                            data: {
-                                Action: "getmasterdata",
-                                Token: AccessToken,
-                                FuncID: FuncID,
-                                Report: ReportName,
-                                MstName: $(this).attr('mstsrc')         
-                            },
-                            error: function (xhr, error) {
-                                console.debug(xhr); console.debug(error);
-                            }
-                        },
-                        cache: "inmemory"
-                    }
-                },
+                dataSource: GetMasterDataSource($(this).attr('mstsrc')),
                 change: function(e) {
                     var dependant = $(this.element[0]).attr('dependant');
                     if(dependant.length > 0) {
@@ -665,11 +644,125 @@ function Start()
         }
     }
 
+    function InitLayoutDropList()
+    {
+        listLayoutDS = new kendo.data.DataSource({
+            transport: {
+                read:  {
+                    url: "../Reports/SapReport.ashx",
+                    dataType: "json",
+                    type: "POST",
+                    contentType: "application/json; charset=utf-8",
+                    xhrFields: {
+                        withCredentials: true
+                    },
+                    data: LayoutListDataSourceFilter("getrptlayout")
+                },
+                create: {
+                    url: "../Reports/SapReport.ashx",
+                    dataType: "json",
+                    type: "POST",
+                    contentType: "application/json; charset=utf-8",
+                    xhrFields: {
+                        withCredentials: true
+                    },
+                    data: LayoutListDataSourceFilter("newrptlayout")
+                }
+            },
+            schema: {
+                model: {
+                    id: "Id",
+                    fields: {
+                        Id:  { type: "string" },
+                        LayoutName: { type: "string" },
+                        LayoutContent: { type: "string" },
+                        IsDefault: { type: "boolean" }
+                    }
+                }
+            }
+        });
+
+        listLayout = $("#listLayout").kendoDropDownList({
+            filter: "startswith",
+            dataTextField: "LayoutName",
+            dataValueField: "LayoutContent",
+            dataSource: listLayoutDS,
+            noDataTemplate: $("#noLayoutListDataTemplate").html(),
+            select: function(e) {
+                var dataItem = e.dataItem;
+                if(dataItem.LayoutContent.length > 1) {
+                    alvgrid.data("kendoGrid").setOptions(JSON.parse(dataItem.LayoutContent));
+                }
+                else {
+                    ALVGridLoadCurrentOption();
+                }
+            },
+            dataBound: function(e) {
+                listLayout.data("kendoDropDownList").select(function(dataItem) {
+
+                    if(dataItem.IsDefault == true)
+                    {
+                        alvgrid.data("kendoGrid").setOptions(JSON.parse(dataItem.LayoutContent));
+                        return true;
+                    }
+
+                    return false;
+                });
+            }
+
+        });
+    }
+
+    function LayoutListDataSourceFilter(action)
+    {
+        var results = {};
+
+        results.Action = action;
+        results.Token = AccessToken;
+        results.FuncID = FuncID;
+        results.Report = ReportName;
+        results.User = UserName;
+
+        return results;
+    }
+
+    function GetMasterDataSource(mstName)
+    {
+        if(masterDataSource.has(mstName))
+            return masterDataSource.get(mstName);
+
+        var source = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: "SapReport.ashx",
+                    dataType: "json",
+                    type: "POST",
+                    contentType: "application/json; charset=utf-8",
+                    xhrFields: {
+                        withCredentials: true
+                    },
+                    data: {
+                        Action: "getmasterdata",
+                        Token: AccessToken,
+                        FuncID: FuncID,
+                        Report: ReportName,
+                        MstName: mstName    
+                    },
+                    error: function (xhr, error) {
+                        console.debug(xhr); console.debug(error);
+                    }
+                },
+                cache: "inmemory"
+            }
+        });
+
+        masterDataSource.set(mstName, source);
+        return source;
+    }
 
     function InitALVGrid(config)
     {
         alvgridDataSource = new kendo.data.DataSource({
-            type: "json",
             transport: {
                 read: {
                     url: "SapReport.ashx",
@@ -701,7 +794,7 @@ function Start()
         });
 
         alvgrid = $("#gridResult").kendoGrid({
-            autoBind: false,
+            autoBind: true,
             dataSource: alvgridDataSource,
             height: window.parent.innerHeight - 300,
             theme: "default",
@@ -709,9 +802,7 @@ function Start()
             reorderable: true,
             groupable: true,
             resizable: true,
-            filterable: {
-                mode: "row"
-            },
+            filterable: true,
             columnMenu: true,
             selectable: "row",
             pageable: false,
@@ -721,13 +812,21 @@ function Start()
             columns: JSON.parse(config.ColumnSetting)
         });     
         
-        //var gridData = histgrid.data("kendoGrid");
-        $('.btnDownloadExcel').on( 'click', function() {
-            var grid = alvgrid.data("kendoGrid");
-            grid.saveAsExcel();
-        });
+        //ALVGridReload();
+        ALVGridSaveCurrentOption();
+        InitLayoutDropList();
+    }
 
-        ALVGridReload();
+    function ALVGridSaveCurrentOption()
+    {
+        var option = alvgrid.data("kendoGrid").getOptions();
+        localStorage.setItem('SOH_ReportLayoutCurrent', kendo.stringify(option));
+    }
+
+    function ALVGridLoadCurrentOption()
+    {
+        var option = localStorage.getItem('SOH_ReportLayoutCurrent');
+        alvgrid.data("kendoGrid").setOptions(JSON.parse(option)); 
     }
 
     function ALVGridReload() 
@@ -1279,6 +1378,60 @@ function Start()
             }
         }); 
     }
+
+    function UpdateLayout(id, name, content) 
+    {
+        $.ajax({
+            type: "POST",
+            async: true,
+            url: "../Reports/SapReport.ashx",
+            data: {
+                Action: "updrptlayout",
+                Token: AccessToken,
+                FuncID: FuncID,
+                Report: selectedReport,
+                LayoutID: id,
+                LayoutName: name,
+                LayoutContent: content     
+            },
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            error: function (request, error) {
+                console.log(request.statusText);
+                alert(request.statusText);
+            },
+            success: function (data) {
+                alert("success!");
+                listLayoutDS.read();
+            }
+        });
+    }
+
+    function MakeLayoutDefault(id) 
+    {
+        $.ajax({
+            type: "POST",
+            async: true,
+            url: "../Reports/SapReport.ashx",
+            data: {
+                Action: "updrptlayoutdefault",
+                Token: AccessToken,
+                FuncID: FuncID,
+                Report: selectedReport,
+                LayoutID: id 
+            },
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            error: function (request, error) {
+                console.log(request.statusText);
+                alert(request.statusText);
+            },
+            success: function (data) {
+                alert("success!");
+            }
+        });
+    }
+
 }
 
 function DataToDownloadFile(data, fileName) {
@@ -1294,3 +1447,25 @@ function DataToDownloadFile(data, fileName) {
         window.URL.revokeObjectURL(dUrl);
     }
 }
+
+function AddNewLayout(widgetId, value) {
+    var widget = $("#" + widgetId).getKendoDropDownList();
+    var dataSource = widget.dataSource;
+
+    if (confirm("Are you sure to add this layout?")) {
+
+        var gridoption = $("#gridResult").data("kendoGrid").getOptions();
+
+        dataSource.add({
+            Id: "",
+            LayoutName: value,
+            LayoutContent: kendo.stringify(gridoption)
+        });
+
+        dataSource.one("sync", function() {
+            widget.select(dataSource.view().length - 1);
+        });
+
+        dataSource.sync();
+    }
+};

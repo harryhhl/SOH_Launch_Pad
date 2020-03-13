@@ -4,16 +4,16 @@
     <title></title>
     <meta charset="utf-8" />
     
-    <link rel="stylesheet" href="https://kendo.cdn.telerik.com/2020.1.219/styles/kendo.default-v2.min.css" />
     <link rel="stylesheet" href="https://kendo.cdn.telerik.com/2020.1.219/styles/kendo.common.min.css" />
-    <link rel="stylesheet" href="reportqueue.css?11"/>
+    <link rel="stylesheet" href="https://kendo.cdn.telerik.com/2020.1.219/styles/kendo.default-v2.min.css" />
+    <link rel="stylesheet" href="reportqueue.css?13"/>
     <link rel="stylesheet" href="reportqueue_T1.css" tag="themecss"/>
 
     <script src="../scripts/jquery.min.js"></script>
     <script src="../scripts/jszip.js"></script>
     <script src="../scripts/kendo.all.min.js"></script>
     <script src="../scripts/iframeResizer.contentWindow.min.js"></script>
-    <script src="reportqueue.js?30"></script>
+    <script src="reportqueue.js?93"></script>
 </head>
 <body>
     <div id="dvMainContent">
@@ -39,6 +39,12 @@
                     <button class="btnDownloadExcel" title="Download to Excel"></button>
                     <!-- <button class="btnDownloadPdf" title="Download to PDF"></button>  -->
                 </div>
+                <div>
+                    <span style="font-size: 0.8em;">Custom Layout: </span>
+                    <input id="listLayout" style="width: 20%;" />
+                    <button class="k-button" id="btnLayoutSave">Save This</button>
+                    <button class="k-button" id="btnLayoutDefault">Make Default</button>
+                </div>                
                 <div id="gridResult" style="width: 95%; margin-top: 6px">
                 </div>
             </div>
@@ -66,5 +72,12 @@
             <p><progress></progress></p>
         </div>
     </div> 
+    <script id="noLayoutListDataTemplate" type="text/x-kendo-tmpl">
+        <div>
+            No layout found. Do you want to add new layout - '#: instance.filterInput.val() #' ?
+        </div>
+        <br />
+        <button class="k-button" onclick="AddNewLayout('#: instance.element[0].id #', '#: instance.filterInput.val() #')">Add new item</button>
+    </script>    
 </body>
 </html>
