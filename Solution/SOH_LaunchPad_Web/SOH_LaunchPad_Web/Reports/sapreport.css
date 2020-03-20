@@ -91,7 +91,7 @@
   }
 
   .k-grid  .k-grid-header  .k-header  .k-link {
-    height: 24px;
+    /* height: 24px; */
     white-space: normal;
     font-size: 12px;
   }
@@ -110,7 +110,7 @@
     font-size: 10px;
   }
 
-  .k-datepicker {
+  .k-datepicker, .k-timepicker {
     width: 10.3em;
     font-size: 12px;
   }
@@ -139,7 +139,7 @@
     display: inline-flex;
   }
 
-  .k-datepicker .k-picker-wrap, .k-numerictextbox .k-numeric-wrap, .k-combobox .k-dropdown-wrap, .k-multiselect-wrap, .k-multiselect .k-multiselect-wrap {
+  .k-datepicker .k-picker-wrap, .k-timepicker .k-picker-wrap, .k-numerictextbox .k-numeric-wrap, .k-combobox .k-dropdown-wrap, .k-multiselect-wrap, .k-multiselect .k-multiselect-wrap {
     border-color: rgba(0,0,0,0.5);
   }
   
@@ -244,10 +244,15 @@
 
   .sspcontrol-desc {
     display: inline-block;
-    width: 200px !important;;
+    width: 200px !important;
   }
 
   .sspcontrol-radiolist {
     margin: 0 0 -1em;
     padding: 0;
+  }
+
+  .sspcontrol-req {
+    color: red;
+    font-size: large;
   }

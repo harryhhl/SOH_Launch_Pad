@@ -13,12 +13,12 @@ namespace SOH_LaunchPad_Web
     /// <summary>
     /// Summary description for POApproval
     /// </summary>
-    public class POApproval : IHttpHandler
+    public class POApproval : HttpTaskAsyncHandler
     {
         private static readonly string AuthWSEndpointUrl = ConfigurationManager.AppSettings["SOH.AuthWS.EndpointUrl"];
         private static readonly string ApprovalWSEndpointUrl = ConfigurationManager.AppSettings["SOH.Approval.EndpointUrl"];
 
-        public async void ProcessRequest(HttpContext context)
+        public override async Task ProcessRequestAsync(HttpContext context)
         {
             if (HttpContext.Current.Request.HttpMethod == "POST")
             {
@@ -157,7 +157,7 @@ namespace SOH_LaunchPad_Web
             return userid;
         }
 
-        public bool IsReusable
+        public override bool IsReusable
         {
             get
             {

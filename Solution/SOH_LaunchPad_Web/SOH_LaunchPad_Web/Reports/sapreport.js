@@ -9,6 +9,8 @@ function Start()
 
     const urlParams = new URLSearchParams(window.location.search);
     var ReportName = urlParams.get('rn');
+    var Report2ndName = "";
+    var ReportStep = 1;
     var ReportDisplayName = decodeURIComponent(urlParams.get('fname'));
     var FuncID = urlParams.get('fid');
     var AccessToken = localStorage.getItem('SOH_Token');
@@ -35,7 +37,13 @@ function Start()
 
     function Begin()
     {
-        GetReportConfig();
+        if(ReportName.includes(',')) {
+            var chunk = ReportName.split(',');
+            ReportName = chunk[0];
+            Report2ndName = chunk[1];
+        }
+
+        GetReportConfig(ReportName);
         InitOthers();
         CheckInitReady();
     }
@@ -43,12 +51,24 @@ function Start()
     function CheckInitReady()
     {
         if(reportconfigready==true) {
-            kendo.fx($("#dvLoadingOverlay")).fade("out").play();
+            ShowLoading(false);
         }
         else {
             setTimeout(CheckInitReady, 500);
         }
     }
+
+    function Reporthas2Part() {
+        return Report2ndName.length > 1;
+    }
+
+    function ShowLoading(show) {
+        if(show)
+            kendo.fx($("#dvLoadingOverlay")).fade("in").play();
+        else
+            kendo.fx($("#dvLoadingOverlay")).fade("out").play();
+    }
+
 
     function InitOthers()
     {
@@ -69,8 +89,35 @@ function Start()
             grid.saveAsExcel();
         });
 
-        $('#btnBack').on( 'click', function() {           
+        $('#btnBack').on( 'click', function() {   
+            
+            if(Reporthas2Part() && ReportStep == 2) {
+                ReportStep = 1;
+                reportconfigready = false;
+                ShowLoading(true);
+                GetReportConfig(ReportName);
+                CheckInitReady();
+            }
+
             ShowResult(false);
+        });
+
+        $('#btnSubmit').on( 'click', function() {           
+            selectAddtoQueue = 0;
+            $("#btnSubmitHidden").click();
+            UpdateFuncAccess(FuncID);
+        });
+        
+        $('#btnAddQueue').on( 'click', function() {
+            selectAddtoQueue = 1;
+            $("#btnSubmitHidden").click();
+            UpdateFuncAccess(FuncID);
+        });
+
+        $('#btnAddEmail').on( 'click', function() {
+            selectAddtoQueue = 2;
+            $("#btnSubmitHidden").click();
+            UpdateFuncAccess(FuncID);
         });
 
         ShowResult(false);
@@ -130,7 +177,13 @@ function Start()
 
             htmlContent += "<li>";
 
-            if(item.ControlType == "CheckBox") {
+            if(Reporthas2Part() && ReportStep == 2 && item.MstSource.startsWith(ReportName)) {
+                var sourcebind = item.MstSource.replace(ReportName + ".", "");
+                htmlContent += '<div class="sspcontrol" type="Text" style="display:none">';
+                htmlContent += '    <input id="'+item.SelName+'" name="'+item.SelName+'" value="'+item.DefaultValue+'" type="BindResult" bind="'+sourcebind+'">';
+                htmlContent += '</div>'; 
+            }
+            else if(item.ControlType == "CheckBox") {
                 htmlContent += '<div class="sspcontrol" type="CheckBox">';
                 htmlContent += '  <div>';
                 htmlContent += '    <input type="checkbox" class="k-checkbox" id="'+item.SelName+'" '+(item.DefaultValue=="X"?'checked':'')+'>';
@@ -140,8 +193,8 @@ function Start()
             }
             else if(item.ControlType == "Range" && item.DataType == "C") {
                 htmlContent += '<div class="sspcontrol" type="Range" style="display:flex; align-items:center; flex-wrap: wrap" '+(item.IsRestrict=="1"?'CheckRestrict':'')+'>';
-                htmlContent += '  <div class="sspcontrol-Range"><label for="'+item.SelName+'-low" class="sspcontrol-desc">'+item.SelDesc+'</label></div>';
-                htmlContent += '  <div class="sspcontrol-Range"><input id="'+item.SelName+'-low" name="'+item.SelName+'-From" class="k-textbox" maxlength="'+item.Length+'" '+(item.IsMandatory==1?' required ':'')+'></div>';
+                htmlContent += '  <div class="sspcontrol-Range"><label for="'+item.SelName+'-low" class="sspcontrol-desc">'+item.SelDesc+''+(item.IsMandatory==1?'<label class="sspcontrol-req">*</label>':'')+'</label></div>';
+                htmlContent += '  <div class="sspcontrol-Range"><input id="'+item.SelName+'-low" name="'+item.SelName+'-From" class="k-textbox" '+(item.IsMandatory==1?' required ':'')+'></div>';
                 htmlContent += '  <div class="sspcontrol-Range"><label for="'+item.SelName+'-high">to </label></div>';
                 htmlContent += '  <div class="sspcontrol-Range"><input id="'+item.SelName+'-high" name="'+item.SelName+'-To" class="k-textbox" maxlength="'+item.Length+'" data-comparevalid-field1="'+item.SelName+'-compare" data-comparevalid-field2="'+item.SelName+'-From"></div>';
                 htmlContent += '  <div class="sspcontrol-Range">';
@@ -163,7 +216,7 @@ function Start()
             }
             else if(item.ControlType == "Range" && item.DataType == "D") {
                 htmlContent += '<div class="sspcontrol" type="RangeDate" style="display:flex; align-items:center; flex-wrap: wrap;" date-format="yyyyMMdd">';
-                htmlContent += '  <div class="sspcontrol-Range"><label for="'+item.SelName+'-low" class="sspcontrol-desc">'+item.SelDesc+'</label></div>';
+                htmlContent += '  <div class="sspcontrol-Range"><label for="'+item.SelName+'-low" class="sspcontrol-desc">'+item.SelDesc+''+(item.IsMandatory==1?'<label class="sspcontrol-req">*</label>':'')+'</label></div>';
                 htmlContent += '  <div class="sspcontrol-Range"><input id="'+item.SelName+'-low" name="'+item.SelName+'-From" date-format="yyyy-MM-dd" type="date" '+(item.IsMandatory==1?' required ':'')+'></div>';
                 htmlContent += '  <div class="sspcontrol-Range"><label for="'+item.SelName+'-high" style="margin-left:0.1em">to </label></div>';
                 htmlContent += '  <div class="sspcontrol-Range"><input id="'+item.SelName+'-high" name="'+item.SelName+'-To" date-format="yyyy-MM-dd" type="date" data-comparevalid-field1="'+item.SelName+'-compare" data-comparevalid-field2="'+item.SelName+'-From"></div>';
@@ -186,7 +239,7 @@ function Start()
             }    
             else if(item.ControlType == "Range" && item.DataType == "N" & item.Length == 8) {
                 htmlContent += '<div class="sspcontrol" type="RangeDate" style="display:flex; align-items:center; flex-wrap: wrap;" date-format="yyyy0MM">';
-                htmlContent += '  <div class="sspcontrol-Range"><label for="'+item.SelName+'-low" class="sspcontrol-desc">'+item.SelDesc+'</label></div>';
+                htmlContent += '  <div class="sspcontrol-Range"><label for="'+item.SelName+'-low" class="sspcontrol-desc">'+item.SelDesc+''+(item.IsMandatory==1?'<label class="sspcontrol-req">*</label>':'')+'</label></div>';
                 htmlContent += '  <div class="sspcontrol-Range"><input id="'+item.SelName+'-low" name="'+item.SelName+'-From" date-format="yyyy0MM" type="date2" '+(item.IsMandatory==1?' required ':'')+'></div>';
                 htmlContent += '  <div class="sspcontrol-Range"><label for="'+item.SelName+'-high" style="margin-left:0.1em">to </label></div>';
                 htmlContent += '  <div class="sspcontrol-Range"><input id="'+item.SelName+'-high" name="'+item.SelName+'-To" date-format="yyyy0MM" type="date2" data-comparevalid-field1="'+item.SelName+'-compare" data-comparevalid-field2="'+item.SelName+'-From"></div>';
@@ -206,33 +259,10 @@ function Start()
 
                 invalidateContent += '<div><span data-for="'+item.SelName+'-From" class="k-invalid-msg"></span></div>';
                 invalidateContent += '<div><span data-for="'+item.SelName+'-To" class="k-invalid-msg"</span></div>';
-            }         
-            // else if(item.ControlType == "Range" && item.DataType == "N") {
-            //     htmlContent += '<div class="sspcontrol" type="RangeNum" style="display:flex; align-items:center; flex-wrap: wrap">';
-            //     htmlContent += '  <div class="sspcontrol-Range"><label for="'+item.SelName+'-low" class="sspcontrol-desc">'+item.SelDesc+'</label></div>';
-            //     htmlContent += '  <div class="sspcontrol-Range"><input id="'+item.SelName+'-low" name="'+item.SelName+'-From" type="numeric" data-format="n" data-length="'+item.Length+'" data-decimal="'+item.Decimal+'" '+(item.IsMandatory==1?' required ':'')+'></div>';
-            //     htmlContent += '  <div class="sspcontrol-Range"><label for="'+item.SelName+'-high" style="margin-left:2em">to </label></div>';
-            //     htmlContent += '  <div class="sspcontrol-Range"><input id="'+item.SelName+'-high" name="'+item.SelName+'-To" type="numeric" data-format="n" data-length="'+item.Length+'" data-decimal="'+item.Decimal+'" data-comparevalid-field1="'+item.SelName+'-compare" data-comparevalid-field2="'+item.SelName+'-From"></div>';
-            //     htmlContent += '  <div class="sspcontrol-Range" style="margin-left:2em">';
-            //     htmlContent += '    <select name="'+item.SelName+'-compare">';
-            //     htmlContent += '      <option value="BT">Between</option>';
-            //     htmlContent += '      <option value="EQ">Equal</option>';
-            //     htmlContent += '      <option value="GE">Greater or Equal</option>';
-            //     htmlContent += '      <option value="LE">Less or Equal</option>';
-            //     htmlContent += '      <option value="GT">Greater</option>';
-            //     htmlContent += '      <option value="LT">Less</option>';
-            //     htmlContent += '      <option value="NE">Not Equal</option>';
-            //     htmlContent += '      <option value="NB">Not Between</option>';
-            //     htmlContent += '   </select>';
-            //     htmlContent += '  </div>';
-            //     htmlContent += '</div>';
-
-            //     invalidateContent += '<div><span data-for="'+item.SelName+'-From" class="k-invalid-msg"></span></div>';
-            //     invalidateContent += '<div><span data-for="'+item.SelName+'-To" class="k-invalid-msg"</span></div>';
-            // }   
+            }           
             else if(item.ControlType == "Range" && item.DataType == "P") {
                 htmlContent += '<div class="sspcontrol" type="RangeNum" style="display:flex; align-items:center; flex-wrap: wrap">';
-                htmlContent += '  <div class="sspcontrol-Range"><label for="'+item.SelName+'-low" class="sspcontrol-desc">'+item.SelDesc+'</label></div>';
+                htmlContent += '  <div class="sspcontrol-Range"><label for="'+item.SelName+'-low" class="sspcontrol-desc">'+item.SelDesc+''+(item.IsMandatory==1?'<label class="sspcontrol-req">*</label>':'')+'</label></div>';
                 htmlContent += '  <div class="sspcontrol-Range"><input id="'+item.SelName+'-low" name="'+item.SelName+'-From" type="numeric" data-format="c" data-length="'+item.Length+'" data-decimal="'+item.Decimal+'" '+(item.IsMandatory==1?' required ':'')+'></div>';
                 htmlContent += '  <div class="sspcontrol-Range"><label for="'+item.SelName+'-high" style="margin-left:2em">to </label></div>';
                 htmlContent += '  <div class="sspcontrol-Range"><input id="'+item.SelName+'-high" name="'+item.SelName+'-To" type="numeric" data-format="c" data-length="'+item.Length+'" data-decimal="'+item.Decimal+'" data-comparevalid-field1="'+item.SelName+'-compare" data-comparevalid-field2="'+item.SelName+'-From"></div>';
@@ -262,7 +292,7 @@ function Start()
                 }
                 else {
                     htmlContent += '<div class="sspcontrol" type="Text" style="display:flex; align-items:center; flex-wrap: wrap" '+(item.IsRestrict=="1"?'CheckRestrict':'')+'>';
-                    htmlContent += '  <div class="sspcontrol-Text"><label for="'+item.SelName+'" class="sspcontrol-desc">'+item.SelDesc+'</label></div>';
+                    htmlContent += '  <div class="sspcontrol-Text"><label for="'+item.SelName+'" class="sspcontrol-desc">'+item.SelDesc+''+(item.IsMandatory==1?'<label class="sspcontrol-req">*</label>':'')+'</label></div>';
                     htmlContent += '  <div class="sspcontrol-Text"><input id="'+item.SelName+'" name="'+item.SelName+'" class="k-textbox" style="width:'+Math.min(item.Length+3, document.body.clientWidth * 0.7 / parseFloat($("body").css("font-size")))+'ch" value="'+item.DefaultValue+'" maxlength="'+item.Length+'"' +(item.IsMandatory==1?' required ':'')+'></div>';
                     htmlContent += '</div>'; 
 
@@ -271,15 +301,15 @@ function Start()
             }   
             else if(item.ControlType == "ComboBox" && item.DataType == "C") {
                 htmlContent += '<div class="sspcontrol" type="ComboBox" style="display:flex; align-items:center; flex-wrap: wrap" '+(item.IsRestrict=="1"?'CheckRestrict':'')+'>';
-                htmlContent += '  <div class="sspcontrol-Range"><label for="'+item.SelName+'-low" class="sspcontrol-desc">'+item.SelDesc+'</label></div>';
+                htmlContent += '  <div class="sspcontrol-Range"><label for="'+item.SelName+'-low" class="sspcontrol-desc">'+item.SelDesc+''+(item.IsMandatory==1?'<label class="sspcontrol-req">*</label>':'')+'</label></div>';
                 htmlContent += '  <div class="sspcontrol-Range"><input id="'+item.SelName+'-low" name="'+item.SelName+'-From" type="comboS" mstsrc="'+item.MstSource+'" maxlength="'+item.Length+'" '+(item.IsMandatory==1?' required ':'')+'></div>';
                 htmlContent += '</div>';
 
                 invalidateContent += '<div><span data-for="'+item.SelName+'-From" class="k-invalid-msg"></span></div>';
-            }               
+            }                              
             else if(item.ControlType == "ComboBoxRange" && item.DataType == "C") {
                 htmlContent += '<div class="sspcontrol" type="RangeCbx" style="display:flex; align-items:center; flex-wrap: wrap" '+(item.IsRestrict=="1"?'CheckRestrict':'')+'>';
-                htmlContent += '  <div class="sspcontrol-Range"><label for="'+item.SelName+'-low" class="sspcontrol-desc">'+item.SelDesc+'</label></div>';
+                htmlContent += '  <div class="sspcontrol-Range"><label for="'+item.SelName+'-low" class="sspcontrol-desc">'+item.SelDesc+''+(item.IsMandatory==1?'<label class="sspcontrol-req">*</label>':'')+'</label></div>';
                 htmlContent += '  <div class="sspcontrol-Range"><input id="'+item.SelName+'-low" name="'+item.SelName+'-From" type="comboS" mstsrc="'+item.MstSource+'" maxlength="'+item.Length+'" '+(item.IsMandatory==1?' required ':'')+'></div>';
                 htmlContent += '  <div class="sspcontrol-Range"><label for="'+item.SelName+'-high" style="margin-left:2em">to </label></div>';
                 htmlContent += '  <div class="sspcontrol-Range"><input id="'+item.SelName+'-high" name="'+item.SelName+'-To" type="comboS" mstsrc="'+item.MstSource+'" maxlength="'+item.Length+'" data-comparevalid-field1="'+item.SelName+'-compare" data-comparevalid-field2="'+item.SelName+'-From"></div>';
@@ -302,7 +332,7 @@ function Start()
             }        
             else if(item.ControlType == "MultiSelectRange" && item.DataType == "C") {
                 htmlContent += '<div class="sspcontrol" type="RangeMS" style="display:flex; align-items:center; flex-wrap: wrap" '+(item.IsRestrict=="1"?'CheckRestrict':'')+'>';
-                htmlContent += '  <div class="sspcontrol-Range"><label for="'+item.SelName+'-low" class="sspcontrol-desc">'+item.SelDesc+'</label></div>';
+                htmlContent += '  <div class="sspcontrol-Range"><label for="'+item.SelName+'-low" class="sspcontrol-desc">'+item.SelDesc+''+(item.IsMandatory==1?'<label class="sspcontrol-req">*</label>':'')+'</label></div>';
                 htmlContent += '  <div class="sspcontrol-Range"><input id="'+item.SelName+'-low" name="'+item.SelName+'-From" type="comboM" mstsrc="'+item.MstSource+'" dependant="'+item.Dependant+'" maxlength="'+item.Length+'" '+(item.IsMandatory==1?' msrequired ':'')+'></div>';
                 htmlContent += '  <div class="sspcontrol-Range"><label for="'+item.SelName+'-high" style="margin-left:0em">to </label></div>';
                 htmlContent += '  <div class="sspcontrol-Range"><input id="'+item.SelName+'-high" name="'+item.SelName+'-To" type="comboM" mstsrc="'+item.MstSource+'" dependant="'+item.Dependant+'" maxlength="'+item.Length+'" data-comparevalid-field1="'+item.SelName+'-compare" data-comparevalid-field2="'+item.SelName+'-From"></div>';
@@ -322,7 +352,23 @@ function Start()
 
                 invalidateContent += '<div><span data-for="'+item.SelName+'-From" class="k-invalid-msg"></span></div>';
                 invalidateContent += '<div><span data-for="'+item.SelName+'-To" class="k-invalid-msg"</span></div>';
-            }                   
+            } 
+            else if(item.ControlType == "" && item.DataType == "D") {
+                htmlContent += '<div class="sspcontrol" type="Date" style="display:flex; align-items:center; flex-wrap: wrap" date-format="yyyyMMdd">';
+                htmlContent += '  <div class="sspcontrol-Range"><label for="'+item.SelName+'-low" class="sspcontrol-desc">'+item.SelDesc+''+(item.IsMandatory==1?'<label class="sspcontrol-req">*</label>':'')+'</label></div>';
+                htmlContent += '  <div class="sspcontrol-Range"><input id="'+item.SelName+'-low" name="'+item.SelName+'-From" date-format="yyyy-MM-dd" type="date3" '+(item.IsMandatory==1?' required ':'')+'></div>';
+                htmlContent += '</div>';
+
+                invalidateContent += '<div><span data-for="'+item.SelName+'-From" class="k-invalid-msg"></span></div>';
+            }
+            else if(item.ControlType == "" && item.DataType == "T") {
+                htmlContent += '<div class="sspcontrol" type="Time" style="display:flex; align-items:center; flex-wrap: wrap" time-format="HHmmss">';
+                htmlContent += '  <div class="sspcontrol-Range"><label for="'+item.SelName+'-low" class="sspcontrol-desc">'+item.SelDesc+''+(item.IsMandatory==1?'<label class="sspcontrol-req">*</label>':'')+'</label></div>';
+                htmlContent += '  <div class="sspcontrol-Range"><input id="'+item.SelName+'-low" name="'+item.SelName+'-From" time-format="HH:mm" type="time" '+(item.IsMandatory==1?' required ':'')+'></div>';
+                htmlContent += '</div>';
+
+                invalidateContent += '<div><span data-for="'+item.SelName+'-From" class="k-invalid-msg"></span></div>';
+            }                    
             else if(item.ControlType == "Radio") {
                 var allgroupitems = data.Configs.filter(config=>config.RadioGroup == item.RadioGroup);
                 radiogroupinclude.push(item.RadioGroup);
@@ -351,11 +397,6 @@ function Start()
         htmlContent += '<li>';
         htmlContent += '    <div><button class="k-button k-primary hidden" id="btnSubmitHidden">S</button></div>';
         htmlContent += '</li>';
-        // htmlContent += '<li>';
-        // htmlContent += '   <div class="ss-loadingbar">';
-        // htmlContent += '       <progress></progress>';
-        // htmlContent += '   </div>';
-        // htmlContent += '</li>';
         htmlContent += "</ul></form>";
         
         dvContent.html(htmlContent);
@@ -381,7 +422,23 @@ function Start()
                 start: "month",
                 depth: "month",
                 format: $(this).attr('date-format'),
-                //dateInput: true
+            });
+        });
+
+        var selectDateControls = $('#dvNewCallContent input[type=date3]');
+        selectDateControls.each(function(){
+            $(this).kendoDatePicker({
+                start: "day",
+                depth: "day",
+                format: $(this).attr('date-format'),
+            });
+        });
+
+        var selectTimeControls = $('#dvNewCallContent input[type=time]');
+        selectTimeControls.each(function(){
+            $(this).kendoTimePicker({
+                interval: 15,
+                format: $(this).attr('time-format'),
             });
         });
 
@@ -402,9 +459,8 @@ function Start()
                 dataTextField: "Code",
                 dataValueField: "Code",
                 headerTemplate: '',
-                template:   '<span style="display: table-row;">' + 
-                            '<span style="display: table-cell; width: 115px">#=data.Code#</span>' + 
-                            '<span style="display: table-cell; min-width: 140px">#=data.Description#</span></span>',
+                template:   '<span style="display: inline-block; min-width: 115px">#=data.Code#</span>' + 
+                            '<span style="display: inline-block; min-width: 140px">#=data.Description#</span>',
                 dataSource: GetMasterDataSource($(this).attr('mstsrc')),
                 filtering: function(ev) {
                     var filterValue = ev.filter != undefined ? ev.filter.value : "";
@@ -436,15 +492,15 @@ function Start()
 
         var selectRangeMulSelectControls = $('#dvNewCallContent input[type=comboM]');
         selectRangeMulSelectControls.each(function(){
+            var mstSource = $(this).attr('mstsrc');
             $(this).kendoMultiSelect({
                 filter:"contains",
                 dataTextField: "Code",
                 dataValueField: "Code",
                 headerTemplate: '',
-                template:   '<span style="display: table-row;">' + 
-                            '<span style="display: table-cell; width: 115px">#=data.Code#</span>' + 
-                            '<span style="display: table-cell; min-width: 140px">#=data.Description#</span></span>',
-                dataSource: GetMasterDataSource($(this).attr('mstsrc')),
+                template:   '<span style="display: inline-block; min-width: 115px">#=data.Code#</span>' + 
+                            '<span style="display: inline-block; min-width: 140px">#=data.Description#</span>',
+                dataSource: GetMasterDataSource(mstSource),
                 change: function(e) {
                     var dependant = $(this.element[0]).attr('dependant');
                     if(dependant.length > 0) {
@@ -488,44 +544,50 @@ function Start()
                         this.dataSource.filter(customerFilter);
                     }
                 },
+                virtual: {
+                    itemHeight: 26,
+                    valueMapper: function(options) {
+                        $.ajax({
+                            url: "SapReport.ashx",
+                            type: "POST",
+                            dataType: "json",
+                            data: {
+                                Action: "getmasterdataValueMap",
+                                Token: AccessToken,
+                                FuncID: FuncID,
+                                Report: ReportName,
+                                MstName: mstSource,
+                                DataMap: function() {
+                                        var value = options.value;
+                                        value = $.isArray(value) ? value : [value];
+                                        var data = [];
+                                        for (var idx = 0; idx < value.length; idx++) {
+                                            data.push(value[idx]);
+                                        }
+        
+                                        return kendo.stringify(data);
+                                    },  
+                            },
+                            success: function (data) {
+                                options.success(data);
+                            }
+                        })
+                    }
+                },
+                dataBound: function (e) {
+                    var listContainer = e.sender.list.closest(".k-list-container");
+                    listContainer.width(500 + kendo.support.scrollbar());
+                  },
                 autoWidth: true,
                 height: 400,
                 animation: false
             });
         });
         
-        // $('#btnOpenNewCall').on( 'click', function(){
-        //     $('#btnSubmit').removeAttr('disabled');
-        //     $('#btnCancel').removeAttr('disabled');
-        //     $('.ss-loadingbar').hide();
-        //     kendo.fx($("#dvNewCall")).fade("in").play();
-        // });
-
-        // $('#btnCancel').on( 'click', function(){
-        //     kendo.fx($("#dvNewCall")).fade("out").play();
-        // });
 
         var $checkboxes = $('#dvNewCallContent input[type=checkbox]');
         $checkboxes.change(function(){
             typeof $(this).attr('checked') == "undefined" ? $(this).attr('checked', 'checked') : $(this).removeAttr('checked');
-        });
-
-        $('#btnSubmit').on( 'click', function() {           
-            selectAddtoQueue = 0;
-            $("#btnSubmitHidden").click();
-            UpdateFuncAccess(FuncID);
-        });
-        
-        $('#btnAddQueue').on( 'click', function() {
-            selectAddtoQueue = 1;
-            $("#btnSubmitHidden").click();
-            UpdateFuncAccess(FuncID);
-        });
-
-        $('#btnAddEmail').on( 'click', function() {
-            selectAddtoQueue = 2;
-            $("#btnSubmitHidden").click();
-            UpdateFuncAccess(FuncID);
         });
 
         $("#inputForm").kendoValidator({
@@ -578,7 +640,7 @@ function Start()
             if (validator.validate()) {
                 DisableSubmit(true);
                 var reportData = BuildReportSelection();
-                CreateNewReport(reportData);
+                CreateNewReport(reportData, ReportStep == 1 ? ReportName : Report2ndName);
             } else {
                 alert("Oops! There is invalid data in the form.");
             }
@@ -632,6 +694,12 @@ function Start()
             $('#btnAddEmail').hide();
             $('#btnBack').show();
             
+            if(Reporthas2Part()) {
+                if(ReportStep == 1) {
+                    $('#btnSubmit').show();
+                    $('#dvNewCallContent').show();
+                }
+            }
         }
         else {
             $('#dvNewCallContent').show();
@@ -641,6 +709,11 @@ function Start()
             $('#btnBack').hide();
             dvResultALV.hide();
             dvResultFile.hide();
+
+            if(Reporthas2Part()) {
+                $('#btnAddQueue').hide();
+                $('#btnAddEmail').hide();
+            }
         }
     }
 
@@ -728,8 +801,8 @@ function Start()
 
     function GetMasterDataSource(mstName)
     {
-        if(masterDataSource.has(mstName))
-            return masterDataSource.get(mstName);
+        //if(masterDataSource.has(mstName))
+        //    return masterDataSource.get(mstName);
 
         var source = new kendo.data.DataSource({
             transport: {
@@ -752,11 +825,31 @@ function Start()
                         console.debug(xhr); console.debug(error);
                     }
                 },
+                parameterMap: function(data, type) {
+                    if(data.filter)
+                        data.filter = kendo.stringify(data.filter);
+
+                    return data;
+                },
                 cache: "inmemory"
-            }
+            },
+            schema: {
+                model: {
+                    fields: {
+                        Code: { type: "string" },
+                        Description: { type: "string" },
+                        RefCode: { type: "string" }
+                    }
+                },
+                data: "ListData",
+                total: "TotalCount"
+            },
+            pageSize: 100,
+            serverPaging: true,
+            serverFiltering: true
         });
 
-        masterDataSource.set(mstName, source);
+        //masterDataSource.set(mstName, source);
         return source;
     }
 
@@ -793,6 +886,12 @@ function Start()
             serverSorting: false
         });
 
+        var columnSetting = JSON.parse(config.ColumnSetting);
+        if(ReportStep == 2) {
+            var selectcol = { selectable: true, width: "44px" };
+            columnSetting.unshift(selectcol);
+        }
+
         alvgrid = $("#gridResult").kendoGrid({
             autoBind: true,
             dataSource: alvgridDataSource,
@@ -804,17 +903,53 @@ function Start()
             resizable: true,
             filterable: true,
             columnMenu: true,
-            selectable: "row",
+            //selectable: "row",
+            change: ALVGridonSelect,
+            persistSelection: true,
             pageable: false,
             excel: {
                 allPages: true
             },
-            columns: JSON.parse(config.ColumnSetting)
+            // dataBound: function() {
+            //     for (var i = 0; i < this.columns.length; i++) {
+            //       this.autoFitColumn(i);
+            //     }
+            // },
+            columns: columnSetting
         });     
         
         //ALVGridReload();
         ALVGridSaveCurrentOption();
         InitLayoutDropList();
+    }
+
+    function ALVGridonSelect(e) 
+    {
+        var dataItemSet = [];
+        var rows = e.sender.select();
+        rows.each(function() {
+            var dataItem = alvgrid.data("kendoGrid").dataItem(this);
+            dataItemSet.push(dataItem);
+            //console.log(dataItem);
+        })
+
+        ALVGridSetResultSelectBind(dataItemSet);
+    }
+
+    function ALVGridSetResultSelectBind(dataItemSet)
+    {
+        var selectBindControls = $('#dvNewCallContent input[type=BindResult]');
+        selectBindControls.each(function(){
+            var key = $(this).attr('bind');
+            var value = [];
+            for(var i=0; i<dataItemSet.length; i++) {
+                var dataItem = dataItemSet[i];
+                if (key in dataItem) {
+                    value.push(dataItem[key]);
+                }
+            }
+            $(this).val(value.join(','));
+        });
     }
 
     function ALVGridSaveCurrentOption()
@@ -864,7 +999,7 @@ function Start()
         var controls = $('#dvNewCallContent').find('.sspcontrol');
 
         var reportData = new Object();
-        reportData.ReportName = ReportName;
+        reportData.ReportName = ReportStep == 1? ReportName : Report2ndName;
         reportData.Selection = [];
         
         controls.each(function(){
@@ -879,19 +1014,40 @@ function Start()
                 sel.Low = $($(this).find('input')[0]).val();
                 sel.High = $($(this).find('input')[1]).val();
 
-                if(sel.Low.includes("*") || sel.High.includes("*"))
-                    sel.SelOption = "CP";
-                else if(sel.High.length <= 0 && (sel.SelOption == "BT" || sel.SelOption == "NT"))
-                    sel.SelOption = "EQ";
-
-                if(sel.Low.length > 0 || sel.High.length > 0)
-                    reportData.Selection.push(sel);
+                if(sel.Low.includes(",")) {
+                    var selarr = sel.Low.split(',');
+                    for(var i=0; i<selarr.length; i++){
+                        var item = new Object();
+                        item.SelName = sel.SelName;
+                        item.Kind = sel.Kind;
+                        item.Sign = sel.Sign;
+                        
+                        item.Low = selarr[i];
+                        item.High = "";
+    
+                        if(item.Low.includes("*"))
+                            item.SelOption = "CP";
+                        else
+                            item.SelOption = "EQ";
+                            
+                        reportData.Selection.push(item);
+                    }
+                }
                 else {
-                    if (typeof checkRestrict !== typeof undefined && checkRestrict !== false) {
-                        sel.SelOption = "";
-                        sel.Low = "";
-                        sel.High = "";
+                    if(sel.Low.includes("*") || sel.High.includes("*"))
+                        sel.SelOption = "CP";
+                    else if(sel.High.length <= 0 && (sel.SelOption == "BT" || sel.SelOption == "NT"))
+                        sel.SelOption = "EQ";
+
+                    if(sel.Low.length > 0 || sel.High.length > 0)
                         reportData.Selection.push(sel);
+                    else {
+                        if (typeof checkRestrict !== typeof undefined && checkRestrict !== false) {
+                            sel.SelOption = "";
+                            sel.Low = "";
+                            sel.High = "";
+                            reportData.Selection.push(sel);
+                        }
                     }
                 }
             }
@@ -1028,7 +1184,37 @@ function Start()
                     }
                 }
             } 
-            else if( type == 'Text' ){
+            else if(type == 'Date') {
+                var sel = new Object();
+                sel.SelName = $($(this).find('input')[0]).attr('id').split('-')[0];
+                sel.Kind = 'P';
+                sel.Sign = 'I';
+                sel.SelOption = "EQ";
+
+                var dateformat = $(this).attr('date-format');
+                var datefrom = $($(this).find('input')[0]).data("kendoDatePicker").value();
+                sel.Low = kendo.toString(datefrom, dateformat);
+                sel.High = '';
+
+                if(sel.Low != null || sel.High != null)
+                    reportData.Selection.push(sel);
+            } 
+            else if(type == 'Time') {
+                var sel = new Object();
+                sel.SelName = $($(this).find('input')[0]).attr('id').split('-')[0];
+                sel.Kind = 'P';
+                sel.Sign = 'I';
+                sel.SelOption = "EQ";
+
+                var dateformat = $(this).attr('time-format');
+                var datefrom = $($(this).find('input')[0]).data("kendoTimePicker").value();
+                sel.Low = kendo.toString(datefrom, dateformat);
+                sel.High = '';
+
+                if(sel.Low != null || sel.High != null)
+                    reportData.Selection.push(sel);
+            }              
+            else if( type == 'Text' ) {
                 var sel = new Object();
                 sel.SelName = $($(this).find('input')).attr('id');
                 sel.Kind = 'P';
@@ -1038,7 +1224,27 @@ function Start()
                 sel.High = '';
 
                 if(sel.Low.length > 0) {
-                    reportData.Selection.push(sel);
+                    if(sel.Low.includes(",")) {
+                        var selarr = sel.Low.split(',');
+                        for(var i=0; i<selarr.length; i++) {
+                            var item = new Object();
+                            item.SelName = sel.SelName;
+                            item.Kind = sel.Kind;
+                            item.Sign = sel.Sign;
+                            
+                            item.Low = selarr[i];
+                            item.High = "";
+        
+                            if(item.Low.includes("*"))
+                                item.SelOption = "CP";
+                            else
+                                item.SelOption = "EQ";
+                                
+                            reportData.Selection.push(item);
+                        }
+                    }
+                    else
+                        reportData.Selection.push(sel);
                 }
                 else {
                     if (typeof checkRestrict !== typeof undefined && checkRestrict !== false) {
@@ -1104,13 +1310,21 @@ function Start()
                 alert("Error, unknown Output Type ["+q.OutputType+"]");
             }
 
-            kendo.fx($("#dvLoadingOverlay")).fade("out").play();
             ShowResult(true);
+
+            if(Reporthas2Part() && ReportStep == 1) {
+                ReportStep = 2;
+                GetReportConfig(Report2ndName);
+                CheckInitReady();
+            }
+            else {
+                ShowLoading(false);
+            }
         }
         else if(q.Status == 0) {
             if(QueueWaitReturn >= MaxWaitQueue) {
                 alert("Waiting too long, please check back later at History Queue.");
-                kendo.fx($("#dvLoadingOverlay")).fade("out").play();
+                ShowLoading(false);
             }
             else {
                 QueueWaitReturn += RetryInterval;
@@ -1119,7 +1333,7 @@ function Start()
         }
         else {
             alert(q.LogMessage);
-            kendo.fx($("#dvLoadingOverlay")).fade("out").play();
+            ShowLoading(false);
         }
     }
 
@@ -1149,7 +1363,7 @@ function Start()
         });
     }
 
-    function CreateNewReport(data) 
+    function CreateNewReport(data, reportName) 
     {
         $.ajax({
             type: "POST",
@@ -1159,7 +1373,8 @@ function Start()
                 Action: "new",
                 Token: AccessToken,
                 FuncID: FuncID,
-                Report: ReportName,
+                Report: reportName,
+                Hidden: Reporthas2Part() && (ReportStep == 1),
                 Data: data         
             },
             contentType: "application/json; charset=utf-8",
@@ -1179,7 +1394,7 @@ function Start()
                     alert("Send to Email Success!");
                 }
                 else {
-                    kendo.fx($("#dvLoadingOverlay")).fade("in").play();
+                    ShowLoading(true);
                     lastQueueID = data.Data;
                     QueueWaitReturn = 0;
                     GetLastQueue();
@@ -1192,7 +1407,7 @@ function Start()
         });
     }
 
-    function GetReportConfig() 
+    function GetReportConfig(rptName) 
     {
         $.ajax({
             type: "POST",
@@ -1202,7 +1417,7 @@ function Start()
                 Action: "getconfig",
                 Token: AccessToken,
                 FuncID: FuncID,
-                Report: ReportName,
+                Report: rptName,
                 Data: ''         
             },
             contentType: "application/json; charset=utf-8",
@@ -1262,15 +1477,8 @@ function Start()
                 console.log(request.statusText);
                 alert(request.statusText);
             },
-            success: function (result) {
-                var base64 = atob(result.FileDataBase64);
-                var buffer = new ArrayBuffer(base64.length);
-                var u8ary = new Uint8Array(buffer);
-                for (var i = 0; i < base64.length; i++) {
-                    u8ary[i] = base64.charCodeAt(i) & 0xFF;
-                }
-
-                DataToDownloadFile(buffer, result.FileName);
+            success: function (resultset) {
+                DataToDownloadFile(resultset);
             }
         });
     }
@@ -1434,17 +1642,22 @@ function Start()
 
 }
 
-function DataToDownloadFile(data, fileName) {
-    var file = new Blob([data]);
-    if ("msSaveBlob" in window.navigator) {
-        window.navigator.msSaveBlob(file, fileName);
-    } else {
-        var dUrl = window.URL.createObjectURL(file);
-        var link = document.createElement("a");
-        link.href = dUrl;
-        link.download = fileName;
-        link.click();
-        window.URL.revokeObjectURL(dUrl);
+function DataToDownloadFile(fileset) {
+    for(var f=0; f<fileset.length; f++)
+    {
+        var result = fileset[f];
+        var base64 = atob(result.FileDataBase64);
+        var buffer = new ArrayBuffer(base64.length);
+        var u8ary = new Uint8Array(buffer);
+        for (var i = 0; i < base64.length; i++) {
+            u8ary[i] = base64.charCodeAt(i) & 0xFF;
+        }
+
+        var blob = new Blob([buffer]);
+        kendo.saveAs({
+            dataURI: blob,
+            fileName: result.FileName
+        });
     }
 }
 

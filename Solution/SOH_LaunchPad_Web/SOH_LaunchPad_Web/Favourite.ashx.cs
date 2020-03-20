@@ -19,7 +19,6 @@ namespace SOH_LaunchPad_Web
     /// </summary>
     public class Favourite : IHttpHandler
     {
-
         public void ProcessRequest(HttpContext context)
         {
             if (HttpContext.Current.Request.HttpMethod == "POST")

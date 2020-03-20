@@ -2,6 +2,7 @@
 using System.Configuration;
 using System.IO;
 using System.Net.Http;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Hosting;
 
@@ -10,12 +11,12 @@ namespace SOH_LaunchPad_Web.Queue
     /// <summary>
     /// Summary description for ReportQueue
     /// </summary>
-    public class ReportQueue : IHttpHandler
+    public class ReportQueue : HttpTaskAsyncHandler
     {
         private static readonly string AuthWSEndpointUrl = ConfigurationManager.AppSettings["SOH.AuthWS.EndpointUrl"];
         private static readonly string SapReportWSEndpointUrl = ConfigurationManager.AppSettings["SOH.SapReportWS.EndpointUrl"];
 
-        public async void ProcessRequest(HttpContext context)
+        public override async Task ProcessRequestAsync(HttpContext context)
         {
             if (HttpContext.Current.Request.HttpMethod == "POST")
             {
@@ -58,7 +59,7 @@ namespace SOH_LaunchPad_Web.Queue
             }
         }
 
-        public bool IsReusable
+        public override bool IsReusable
         {
             get
             {

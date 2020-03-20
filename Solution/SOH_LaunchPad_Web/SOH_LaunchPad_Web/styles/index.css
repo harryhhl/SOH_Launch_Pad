@@ -172,7 +172,7 @@ iframe {
   width: 30px;
   height: 30px;
   color: rgb(32, 32, 32);
-  background-color: #00000000;
+  background-color: transparent;
   cursor: pointer;
   display: inline-block;
   align-items: center;

@@ -13,11 +13,11 @@ namespace SOH_LaunchPad_Web
     /// <summary>
     /// Summary description for Auth
     /// </summary>
-    public class Auth : IHttpHandler
+    public class Auth : HttpTaskAsyncHandler
     {
         private static readonly string AuthWSEndpointUrl = ConfigurationManager.AppSettings["SOH.AuthWS.EndpointUrl"];
 
-        public async void ProcessRequest(HttpContext context)
+        public override async Task ProcessRequestAsync(HttpContext context)
         {
             if (HttpContext.Current.Request.HttpMethod == "POST")
             {
@@ -100,7 +100,7 @@ namespace SOH_LaunchPad_Web
         }
 
 
-        public bool IsReusable
+        public override bool IsReusable
         {
             get
             {

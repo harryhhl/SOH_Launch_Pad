@@ -211,6 +211,7 @@ function Start()
                         CreateDate: { type: "date" },
                         UpdateDate: { type: "date" },
                         Status: { type: "string" },
+                        StatusText: { type: "string" },
                         LogMessage: { type: "string" },
                         OutputType: { type: "string" }
                     }
@@ -250,18 +251,19 @@ function Start()
                     { field: "ReportDisplayName", title: "Report", width: "180px" },
                     { field: "CreateDate", title: "Create At", width: "90px", template: '#= kendo.toString(CreateDate, "yyyy-MM-dd HH:mm:ss" ) #' },
                     { field: "UpdateDate", title: "Last Update", width: "90px", template: '#= kendo.toString(UpdateDate, "yyyy-MM-dd HH:mm:ss" ) #' },
-                    { field: "Status", title: "Status", width: "70px", 
-                        template: function(dataItem) {
-                                     if(dataItem.Status == 1)
-                                        return "<strong>Success</strong>";
-                                     else if(dataItem.Status == 0)
-                                        return "<strong>Pending</strong>";
-                                     else if(dataItem.Status == 2)
-                                        return "<strong>Information</strong>";                                        
-                                     else
-                                        return "<strong>Failed</strong>";                                       
-                                } 
-                    },
+                    // { field: "Status", title: "Status", width: "70px", 
+                    //     template: function(dataItem) {
+                    //                  if(dataItem.Status == 1)
+                    //                     return "<strong>Success</strong>";
+                    //                  else if(dataItem.Status == 0)
+                    //                     return "<strong>Pending</strong>";
+                    //                  else if(dataItem.Status == 2)
+                    //                     return "<strong>Information</strong>";                                        
+                    //                  else
+                    //                     return "<strong>Failed</strong>";                                       
+                    //             }
+                    // },
+                    { field: "StatusText", title: "Status", width: "70px" },
                     { field: "LogMessage", title: "Message", width: "200px" },
                     { field: "OutputType", title: "Output", width: "70px" }
             ]
@@ -281,11 +283,11 @@ function Start()
 
     function HistGridonSelect(arg) 
     {
-        selectedQueueID = this.selectedKeyNames().join(", ");
         var grid = histgrid.data("kendoGrid");
         var selectedItem = grid.dataItem(grid.select());
 
         selectedReport = selectedItem.ReportName;
+        selectedQueueID = selectedItem.Id;
 
         if(selectedItem.OutputType == "ALV") {
 
@@ -336,6 +338,11 @@ function Start()
 
     function InitALVGrid(config)
     {
+        if(alvgrid != null) {
+            alvgrid.data("kendoGrid").destroy();
+            alvgrid.empty();
+        }
+
         alvgridDataSource = new kendo.data.DataSource({
             transport: {
                 read: {
@@ -383,6 +390,11 @@ function Start()
             excel: {
                 allPages: true
             },
+            // dataBound: function() {
+            //     for (var i = 0; i < this.columns.length; i++) {
+            //       this.autoFitColumn(i);
+            //     }
+            // },
             columns: JSON.parse(config.ColumnSetting)
         });     
         
@@ -478,15 +490,8 @@ function Start()
                 console.log(request.statusText);
                 alert(request.statusText);
             },
-            success: function (result) {
-                var base64 = atob(result.FileDataBase64);
-                var buffer = new ArrayBuffer(base64.length);
-                var u8ary = new Uint8Array(buffer);
-                for (var i = 0; i < base64.length; i++) {
-                    u8ary[i] = base64.charCodeAt(i) & 0xFF;
-                }
-
-                DataToDownloadFile(buffer, result.FileName);
+            success: function (resultset) {
+                DataToDownloadFile(resultset);
             }
         });
     }
@@ -570,17 +575,22 @@ function Start()
     }
 }
 
-function DataToDownloadFile(data, fileName) {
-    var file = new Blob([data]);
-    if ("msSaveBlob" in window.navigator) {
-        window.navigator.msSaveBlob(file, fileName);
-    } else {
-        var dUrl = window.URL.createObjectURL(file);
-        var link = document.createElement("a");
-        link.href = dUrl;
-        link.download = fileName;
-        link.click();
-        window.URL.revokeObjectURL(dUrl);
+function DataToDownloadFile(fileset) {
+    for(var f=0; f<fileset.length; f++)
+    {
+        var result = fileset[f];
+        var base64 = atob(result.FileDataBase64);
+        var buffer = new ArrayBuffer(base64.length);
+        var u8ary = new Uint8Array(buffer);
+        for (var i = 0; i < base64.length; i++) {
+            u8ary[i] = base64.charCodeAt(i) & 0xFF;
+        }
+
+        var blob = new Blob([buffer]);
+        kendo.saveAs({
+            dataURI: blob,
+            fileName: result.FileName
+        });
     }
 }
 
