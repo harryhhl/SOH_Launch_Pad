@@ -676,6 +676,13 @@ span.k-icon.k-i-grid {
   height: 26px;
 }
 
+span.k-icon.k-i-queue {
+  background-image: url("img/queue.png");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 18px 16px;
+}
+
 span.k-i-grid:before {
   content: "";
   width: 26px;

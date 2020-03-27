@@ -89,6 +89,13 @@ function Start()
             }
         });
 
+        $('#btnLayoutDelete').on( 'click', function(){
+            if (confirm("Are you sure to delete this layout?")) {
+                var dataItem = listLayout.data("kendoDropDownList").dataItem();
+                DeleteLayout(dataItem.Id);
+            }
+        });
+
         var eventMethod = window.addEventListener? "addEventListener" : "attachEvent";
         var eventer = window[eventMethod];
         var messageEvent = eventMethod === "attachEvent"? "onmessage" : "message";
@@ -545,6 +552,31 @@ function Start()
             },
             success: function (data) {
                 alert("success!");
+            }
+        });
+    }
+
+    function DeleteLayout(id) 
+    {
+        $.ajax({
+            type: "POST",
+            async: true,
+            url: "../Reports/SapReport.ashx",
+            data: {
+                Action: "delrptlayout",
+                Token: AccessToken,
+                FuncID: FuncID,
+                Report: selectedReport,
+                LayoutID: id 
+            },
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            error: function (request, error) {
+                console.log(request.statusText);
+                alert(request.statusText);
+            },
+            success: function (data) {
+                listLayoutDS.read();
             }
         });
     }

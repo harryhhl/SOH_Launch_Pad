@@ -263,11 +263,29 @@ namespace SOH_LaunchPad_Web
                         context.Response.StatusDescription = $@"Error: {ex.Message}";
                     }
                 }
+                else if (action == "delrptlayout")
+                {
+                    try
+                    {
+                        var layoutID = inputset.Get("LayoutID");
+
+                        DeleteReportLayout(layoutID);
+
+                        context.Response.ContentType = "application/json";
+                        context.Response.Write("{}");
+                    }
+                    catch (Exception ex)
+                    {
+                        context.Response.StatusCode = 400;
+                        context.Response.StatusDescription = $@"Error: {ex.Message}";
+                    }
+                }
                 else
                 {
                     context.Response.StatusCode = 400;
                     context.Response.StatusDescription = "No Action is defined";
                 }
+
             }
             else
             {
@@ -348,6 +366,13 @@ namespace SOH_LaunchPad_Web
             List<SqlParameter> paras = new List<SqlParameter>();
             paras.Add(new SqlParameter("@layoutID", id));
             SqlHelper.ExecuteNonQuery(SqlHelper.GetConnection("SOHDB"), CommandType.StoredProcedure, "p_UpdateSAPReportLayoutDefault", paras.ToArray());
+        }
+
+        private void DeleteReportLayout(string id)
+        {
+            List<SqlParameter> paras = new List<SqlParameter>();
+            paras.Add(new SqlParameter("@layoutID", id));
+            SqlHelper.ExecuteNonQuery(SqlHelper.GetConnection("SOHDB"), CommandType.StoredProcedure, "p_DeleteSAPReportLayout", paras.ToArray());
         }
 
         public class ReportFileData

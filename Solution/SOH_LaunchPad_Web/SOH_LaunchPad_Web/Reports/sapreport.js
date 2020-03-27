@@ -157,6 +157,13 @@ function Start()
                 MakeLayoutDefault(dataItem.Id);
             }
         });
+
+        $('#btnLayoutDelete').on( 'click', function(){
+            if (confirm("Are you sure to delete this layout?")) {
+                var dataItem = listLayout.data("kendoDropDownList").dataItem();
+                DeleteLayout(dataItem.Id);
+            }
+        });
     }
 
     function InitReportConfig(data)
@@ -454,6 +461,7 @@ function Start()
 
         var selectRangeComboControls = $('#dvNewCallContent input[type=comboS]');
         selectRangeComboControls.each(function(){
+            var mstSource = $(this).attr('mstsrc');
             $(this).kendoComboBox({
                 filter:"contains",
                 dataTextField: "Code",
@@ -484,6 +492,40 @@ function Start()
 
                     this.dataSource.filter(customerFilter);
                 },
+                virtual: {
+                    itemHeight: 26,
+                    valueMapper: function(options) {
+                        $.ajax({
+                            url: "../Reports/SapReport.ashx",
+                            type: "POST",
+                            dataType: "json",
+                            data: {
+                                Action: "getmasterdataValueMap",
+                                Token: AccessToken,
+                                FuncID: FuncID,
+                                Report: ReportName,
+                                MstName: mstSource,
+                                DataMap: function() {
+                                        var value = options.value;
+                                        value = $.isArray(value) ? value : [value];
+                                        var data = [];
+                                        for (var idx = 0; idx < value.length; idx++) {
+                                            data.push(value[idx]);
+                                        }
+        
+                                        return kendo.stringify(data);
+                                    },  
+                            },
+                            success: function (data) {
+                                options.success(data);
+                            }
+                        })
+                    }
+                },            
+                dataBound: function (e) {
+                    var listContainer = e.sender.list.closest(".k-list-container");
+                    listContainer.width(400 + kendo.support.scrollbar());
+                },                    
                 autoWidth: true,
                 height: 400,
                 animation: false
@@ -548,7 +590,7 @@ function Start()
                     itemHeight: 26,
                     valueMapper: function(options) {
                         $.ajax({
-                            url: "SapReport.ashx",
+                            url: "../Reports/SapReport.ashx",
                             type: "POST",
                             dataType: "json",
                             data: {
@@ -577,7 +619,7 @@ function Start()
                 dataBound: function (e) {
                     var listContainer = e.sender.list.closest(".k-list-container");
                     listContainer.width(500 + kendo.support.scrollbar());
-                  },
+                },
                 autoWidth: true,
                 height: 400,
                 animation: false
@@ -807,7 +849,7 @@ function Start()
         var source = new kendo.data.DataSource({
             transport: {
                 read: {
-                    url: "SapReport.ashx",
+                    url: "../Reports/SapReport.ashx",
                     dataType: "json",
                     type: "POST",
                     contentType: "application/json; charset=utf-8",
@@ -855,10 +897,15 @@ function Start()
 
     function InitALVGrid(config)
     {
+        if(alvgrid != null) {
+            alvgrid.data("kendoGrid").destroy();
+            alvgrid.empty();
+        }
+        
         alvgridDataSource = new kendo.data.DataSource({
             transport: {
                 read: {
-                    url: "SapReport.ashx",
+                    url: "../Reports/SapReport.ashx",
                     dataType: "json",
                     type: "POST",
                     contentType: "application/json; charset=utf-8",
@@ -1343,7 +1390,7 @@ function Start()
         $.ajax({
             type: "POST",
             async: true,
-            url: "SapReport.ashx",
+            url: "../Reports/SapReport.ashx",
             data: {
                 Action: "getqueue",
                 Token: AccessToken,
@@ -1368,7 +1415,7 @@ function Start()
         $.ajax({
             type: "POST",
             async: true,
-            url: "SapReport.ashx",
+            url: "../Reports/SapReport.ashx",
             data: {
                 Action: "new",
                 Token: AccessToken,
@@ -1412,7 +1459,7 @@ function Start()
         $.ajax({
             type: "POST",
             async: true,
-            url: "SapReport.ashx",
+            url: "../Reports/SapReport.ashx",
             data: {
                 Action: "getconfig",
                 Token: AccessToken,
@@ -1437,7 +1484,7 @@ function Start()
         $.ajax({
             type: "POST",
             async: true,
-            url: "SapReport.ashx",
+            url: "../Reports/SapReport.ashx",
             data: {
                 Action: "getalvschema",
                 Token: AccessToken,
@@ -1462,7 +1509,7 @@ function Start()
         $.ajax({
             type: "POST",
             async: true,
-            url: "SapReport.ashx",
+            url: "../Reports/SapReport.ashx",
             data: {
                 Action: "getfiledata",
                 Token: AccessToken,
@@ -1597,7 +1644,7 @@ function Start()
                 Action: "updrptlayout",
                 Token: AccessToken,
                 FuncID: FuncID,
-                Report: selectedReport,
+                Report: ReportName,
                 LayoutID: id,
                 LayoutName: name,
                 LayoutContent: content     
@@ -1625,7 +1672,7 @@ function Start()
                 Action: "updrptlayoutdefault",
                 Token: AccessToken,
                 FuncID: FuncID,
-                Report: selectedReport,
+                Report: ReportName,
                 LayoutID: id 
             },
             contentType: "application/json; charset=utf-8",
@@ -1636,6 +1683,31 @@ function Start()
             },
             success: function (data) {
                 alert("success!");
+            }
+        });
+    }
+
+    function DeleteLayout(id) 
+    {
+        $.ajax({
+            type: "POST",
+            async: true,
+            url: "../Reports/SapReport.ashx",
+            data: {
+                Action: "delrptlayout",
+                Token: AccessToken,
+                FuncID: FuncID,
+                Report: ReportName,
+                LayoutID: id 
+            },
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            error: function (request, error) {
+                console.log(request.statusText);
+                alert(request.statusText);
+            },
+            success: function (data) {
+                listLayoutDS.read();
             }
         });
     }
