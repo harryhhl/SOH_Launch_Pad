@@ -1,0 +1,215 @@
+* {
+  box-sizing: border-box; 
+  font-family: Helvetica, sans-serif;
+}
+
+body {
+  margin: 0em;
+  background-color: rgb(248, 248, 248);
+  font-size: 12px;
+}
+
+#frameFooter {
+  display: block;
+  min-height: 200px;
+}
+
+.hidden {
+  display: none;
+}
+
+hr { 
+  display: block;
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+  margin-left: auto;
+  margin-right: auto;
+  border-style: solid;
+  border-width: 1px;
+  border-color: #666666;
+} 
+
+.overlay-loading {
+  height: 100%;
+  width: 100%;
+  position: fixed; 
+  z-index: 99999; 
+  left: 0;
+  top: 0;
+  background-color: rgba(184, 183, 183, 0.5); 
+  overflow-x: hidden; 
+}
+
+.overlay-loading-content {
+  position: relative;
+  top: 25%; 
+  width: 100%; 
+  text-align: center;
+  margin-top: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.HeaderTitle {
+  width: 96%;
+  padding: 4px;
+  display: flex;
+  text-align: left;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+#dvNewCallContent {
+  width: 100%; 
+  margin-top: 10px;
+  display: flex;
+  text-align: left;
+}
+
+#dvNewCallContent ul {
+  list-style-type: none;
+  margin-left: 0;
+  margin-right: 0;   
+  margin-top: 4px;
+  margin-bottom: 4px; 
+}
+
+#dvNewCallContent li {
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+  margin-left: 0;
+  margin-right: 0;    
+}  
+
+.k-grid  .k-grid-header  .k-header  .k-link {
+  /* height: 24px; */
+  white-space: normal;
+  font-size: 12px;
+}
+
+.k-grid tbody tr {
+  height: 20px;
+  font-size: 12px;
+}
+
+.k-grid-pager {
+  height: 48px;
+  min-height: 48px;
+}
+
+.k-pager-wrap {
+  font-size: 10px;
+}
+
+.k-datepicker, .k-timepicker {
+  width: 10.3em;
+  font-size: 12px;
+}
+
+.k-combobox { 
+  width: 10.3em;
+  font-size: 12px;
+}
+
+.k-numerictextbox { 
+  width: 10.3em;
+  font-size: 12px;
+}
+
+.k-textbox.singletb {
+  width: 24em;
+}
+
+.k-animation-container>form {
+  width: 260px;
+}
+
+.k-multiselect {
+  min-width: 9em;
+  width: 14em;
+  display: inline-flex;
+}
+
+.k-datepicker .k-picker-wrap, .k-timepicker .k-picker-wrap, .k-numerictextbox .k-numeric-wrap, .k-combobox .k-dropdown-wrap, .k-multiselect-wrap, .k-multiselect .k-multiselect-wrap {
+  border-color: rgba(0,0,0,0.5);
+}
+
+.k-multiselect-wrap.k-invalid, .k-multiselect-wrap.k-invalid:hover, .k-picker-wrap.k-invalid, .k-picker-wrap.k-invalid:hover, .k-picker-wrap.k-state-invalid, .k-picker-wrap.ng-invalid.ng-dirty, .k-picker-wrap.ng-invalid.ng-touched, .k-numeric-wrap.k-invalid, .k-numeric-wrap.k-invalid:hover, .k-numeric-wrap.k-state-invalid, .k-numeric-wrap.ng-invalid.ng-dirty, .k-numeric-wrap.ng-invalid.ng-touched {
+  border-color: rgba(243,23,0,.5);
+}
+
+.k-button {
+  border-color: rgba(0,0,0,.08);
+  color: rgb(92, 72, 42);
+  background-color: #FBB040;
+  background-image: linear-gradient(#FBB040,#FBB040); 
+}
+
+.k-button:hover {
+  border-color: rgba(0,0,0,.08);
+  color: rgb(92, 72, 42);
+  background-color: #FBCC40;
+  background-image: linear-gradient(#FBCC40,#FBCC40); 
+}  
+
+.k-textbox {
+  border-color: rgba(0,0,0,0.5);
+  color: #656565;
+  background-color: #fff;
+}
+
+.k-checkbox-label::before, .k-checkbox {
+  background-color: #fff;
+  border-color: rgba(0,0,0,0.5);
+}
+
+.k-radio-label::before, .k-radio {
+  border-color: rgba(0,0,0,0.7);
+  background-color: #fff;
+}
+
+.k-i-star, .k-i-star-outline {
+  color: #FBB040;
+  font-size: 22px;
+}
+
+.k-combobox .k-dropdown-wrap .k-clear-value {
+  top: 50%
+}
+
+.k-combobox .k-dropdown-wrap .k-input {
+  padding-left: 1px;
+}
+
+.k-multiselect .k-multiselect-wrap .k-button {
+  padding: .1em 1.6em .1em .4em;  
+}
+
+.k-multiselect-wrap ul {
+  margin-top: 0em !important; 
+  margin-bottom: 0em !important; 
+}
+
+.k-multiselect-wrap li {
+  margin-top: 0em !important; 
+  margin-bottom: 0em !important; 
+}
+
+.FavorStarBtn {
+  background: none;
+  border: none;
+  outline: none;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  width: 24px;
+  height: 24px;
+}
+
+#dvApproverActing {
+  display: inline-block;
+  margin-left: 4em;  
+}
+
+

@@ -725,11 +725,17 @@ function Start()
         }); 
     }
 
-    function GetPendingApproval(functionID, poType){
+    function GetPendingApproval(functionID, para){
+        
+        var paras = para.split(';');
+
+        var urlType = paras[0];
+        var poType = paras.length > 1 ? paras[1] : "";
+
         $.ajax({
             type: "POST",
             async: true,
-            url: "Approval/POApproval.ashx",
+            url: "Approval/"+urlType,
             data: {
                 Action: "pendingcount",
                 Token: AzureAccessToken,

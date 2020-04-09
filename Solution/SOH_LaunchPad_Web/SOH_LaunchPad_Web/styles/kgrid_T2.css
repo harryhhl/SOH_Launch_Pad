@@ -1,0 +1,9 @@
+
+  .k-header {
+    background-color: #F36945;
+  }
+
+  .k-grid td.k-state-selected, .k-grid tr.k-state-selected>td {
+    color: #656565;
+    background-color: #FDBB4A;
+  }

@@ -45,7 +45,7 @@ namespace SOH_LaunchPad_Web
 
                     if (requestforQID.Status == RequestResult.ResultStatus.Failure)
                     {
-                        context.Response.StatusCode = 500;
+                        context.Response.StatusCode = 400;
                         context.Response.StatusDescription = requestforQID.Errmsg;
                         return;
                     }

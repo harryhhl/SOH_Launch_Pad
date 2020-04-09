@@ -14,8 +14,9 @@ namespace SOH_LaunchPad_Web
 
         public string GetErrmsgTrim()
         {
-            return Errmsg.Substring(0, Math.Min(511, Errmsg.Length));
+            return Errmsg.Substring(0, Math.Min(511, Errmsg.Length)).RemoveSpecialCharacters();
         }
+
 
         public RequestResult()
         {

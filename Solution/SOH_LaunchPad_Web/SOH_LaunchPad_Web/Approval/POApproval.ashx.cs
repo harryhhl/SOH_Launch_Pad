@@ -43,7 +43,7 @@ namespace SOH_LaunchPad_Web
 
                     if (action == "list")
                     {
-                        var result = await GenericRequest.Post(ApprovalWSEndpointUrl + "list.aspx", new StringContent(input));
+                        var result = await GenericRequest.Post(ApprovalWSEndpointUrl + "poapproval/list.aspx", new StringContent(input));
                         if (result.Status == RequestResult.ResultStatus.Failure)
                         {
                             context.Response.StatusCode = 400;
@@ -60,7 +60,7 @@ namespace SOH_LaunchPad_Web
                     }
                     else if (action == "release")
                     {
-                        var result = await GenericRequest.Post(ApprovalWSEndpointUrl + "release.aspx", new StringContent(input));
+                        var result = await GenericRequest.Post(ApprovalWSEndpointUrl + "poapproval/release.aspx", new StringContent(input));
                         if (result.Status == RequestResult.ResultStatus.Failure)
                         {
                             context.Response.StatusCode = 400;
@@ -74,7 +74,7 @@ namespace SOH_LaunchPad_Web
                     }
                     else if (action == "unrelease")
                     {
-                        var result = await GenericRequest.Post(ApprovalWSEndpointUrl + "unrelease.aspx", new StringContent(input));
+                        var result = await GenericRequest.Post(ApprovalWSEndpointUrl + "poapproval/unrelease.aspx", new StringContent(input));
                         if (result.Status == RequestResult.ResultStatus.Failure)
                         {
                             context.Response.StatusCode = 400;
@@ -94,7 +94,7 @@ namespace SOH_LaunchPad_Web
                             input = input + $"&{tmp.Key}={tmp.Value.ToString()}";
                         }
 
-                        var result = await GenericRequest.Post(ApprovalWSEndpointUrl + "list-count.aspx", new StringContent(input));
+                        var result = await GenericRequest.Post(ApprovalWSEndpointUrl + "poapproval/list-count.aspx", new StringContent(input));
                         if (result.Status == RequestResult.ResultStatus.Failure)
                         {
                             context.Response.StatusCode = 400;
@@ -108,7 +108,7 @@ namespace SOH_LaunchPad_Web
                     }
                     else if (action == "master")
                     {
-                        var result = await GenericRequest.Post(ApprovalWSEndpointUrl + "master-data.aspx", new StringContent(input));
+                        var result = await GenericRequest.Post(ApprovalWSEndpointUrl + "poapproval/master-data.aspx", new StringContent(input));
                         if (result.Status == RequestResult.ResultStatus.Failure)
                         {
                             context.Response.StatusCode = 400;

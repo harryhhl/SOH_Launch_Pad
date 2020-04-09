@@ -98,8 +98,10 @@ function Start()
                 GetReportConfig(ReportName);
                 CheckInitReady();
             }
-
-            ShowResult(false);
+            else {
+                ShowResult(false);
+                InitKendoValidator();
+            }
         });
 
         $('#btnSubmit').on( 'click', function() {           
@@ -303,7 +305,7 @@ function Start()
                     htmlContent += '  <div class="sspcontrol-Text"><input id="'+item.SelName+'" name="'+item.SelName+'" class="k-textbox" style="width:'+Math.min(item.Length+3, document.body.clientWidth * 0.7 / parseFloat($("body").css("font-size")))+'ch" value="'+item.DefaultValue+'" maxlength="'+item.Length+'"' +(item.IsMandatory==1?' required ':'')+'></div>';
                     htmlContent += '</div>'; 
 
-                    invalidateContent += '<div><span data-for="'+item.SelName+'-From" class="k-invalid-msg"></span></div>';
+                    //invalidateContent += '<div><span data-for="'+item.SelName+'" class="k-invalid-msg"></span></div>';
                 }
             }   
             else if(item.ControlType == "ComboBox" && item.DataType == "C") {
@@ -312,7 +314,7 @@ function Start()
                 htmlContent += '  <div class="sspcontrol-Range"><input id="'+item.SelName+'-low" name="'+item.SelName+'-From" type="comboS" mstsrc="'+item.MstSource+'" maxlength="'+item.Length+'" '+(item.IsMandatory==1?' required ':'')+'></div>';
                 htmlContent += '</div>';
 
-                invalidateContent += '<div><span data-for="'+item.SelName+'-From" class="k-invalid-msg"></span></div>';
+                //invalidateContent += '<div><span data-for="'+item.SelName+'-from" class="k-invalid-msg"></span></div>';
             }                              
             else if(item.ControlType == "ComboBoxRange" && item.DataType == "C") {
                 htmlContent += '<div class="sspcontrol" type="RangeCbx" style="display:flex; align-items:center; flex-wrap: wrap" '+(item.IsRestrict=="1"?'CheckRestrict':'')+'>';
@@ -632,6 +634,26 @@ function Start()
             typeof $(this).attr('checked') == "undefined" ? $(this).attr('checked', 'checked') : $(this).removeAttr('checked');
         });
 
+
+        InitKendoValidator();
+
+        $("#inputForm").submit(function(event) {
+            event.preventDefault();
+            var validator = $("#inputForm").kendoValidator().data("kendoValidator");
+            if (validator.validate()) {
+                DisableSubmit(true);
+                var reportData = BuildReportSelection();
+                CreateNewReport(reportData, ReportStep == 1 ? ReportName : Report2ndName);
+            } else {
+                alert("Oops! There is invalid data in the form.");
+            }
+        });
+
+        reportconfigready = true;
+    }
+
+    function InitKendoValidator()
+    {
         $("#inputForm").kendoValidator({
             rules: {
                 dateValidation: function (input) {
@@ -675,20 +697,6 @@ function Start()
                 comparevalid: "[To] value cannot be empty when choose [Between] or [Not Between] "
             }
         });
-
-        $("#inputForm").submit(function(event) {
-            event.preventDefault();
-            var validator = $("#inputForm").kendoValidator().data("kendoValidator");
-            if (validator.validate()) {
-                DisableSubmit(true);
-                var reportData = BuildReportSelection();
-                CreateNewReport(reportData, ReportStep == 1 ? ReportName : Report2ndName);
-            } else {
-                alert("Oops! There is invalid data in the form.");
-            }
-        });
-
-        reportconfigready = true;
     }
 
     function GetMSFilterbyDependant(dependant) 
