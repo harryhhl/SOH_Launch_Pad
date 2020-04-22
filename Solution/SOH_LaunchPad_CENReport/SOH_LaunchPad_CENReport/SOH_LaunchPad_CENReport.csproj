@@ -21,6 +21,10 @@
     <IISExpressUseClassicPipelineMode />
     <UseGlobalApplicationHostFile />
     <TargetFrameworkProfile />
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -45,6 +49,9 @@
   <ItemGroup>
     <Reference Include="Commons">
       <HintPath>..\Lib\Commons.dll</HintPath>
+    </Reference>
+    <Reference Include="crystal_sap_cryto">
+      <HintPath>..\Lib\crystal_sap_cryto.dll</HintPath>
     </Reference>
     <Reference Include="ICSharpCode.SharpZipLib, Version=1.0.0.999, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
       <HintPath>..\packages\SharpZipLib.1.0.0\lib\net45\ICSharpCode.SharpZipLib.dll</HintPath>
@@ -74,10 +81,12 @@
     <Reference Include="sapnco, Version=3.0.0.42, Culture=neutral, PublicKeyToken=50436dca5c7f7d23, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Lib\sapnco.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="sapnco_utils, Version=3.0.0.42, Culture=neutral, PublicKeyToken=50436dca5c7f7d23, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Lib\sapnco_utils.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Net.Http, Version=4.1.1.3, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
@@ -148,6 +157,9 @@
       <DependentUpon>GetReportQueue.ashx</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ReportLayout.ashx.cs">
+      <DependentUpon>ReportLayout.ashx</DependentUpon>
+    </Compile>
     <Compile Include="RequestResult.cs" />
     <Compile Include="RequstModel.cs" />
     <Compile Include="SAPProc.cs" />
@@ -164,6 +176,7 @@
     <Content Include="GetFileReportData.ashx" />
     <Content Include="GetReportMaster.ashx" />
     <None Include="Properties\PublishProfiles\publish1.pubxml" />
+    <Content Include="ReportLayout.ashx" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

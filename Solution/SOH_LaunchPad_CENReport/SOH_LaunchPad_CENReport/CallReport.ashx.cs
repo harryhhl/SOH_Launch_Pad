@@ -4,6 +4,7 @@ using System.Web;
 using Newtonsoft.Json;
 using System.IO;
 using System.Data;
+using System.Linq;
 using Helper;
 using System.Data.SqlClient;
 using System.Net.Http;
@@ -92,7 +93,7 @@ namespace SOH_LaunchPad_CENReport
                             throw new Exception(err);
                         }
 
-                        System.Threading.Thread.Sleep(1000);
+                        System.Threading.Thread.Sleep(500);
 
                         ReportMessage rm = GetReportMessageResult(qid);
                         if(rm.Type == "S")
@@ -105,11 +106,11 @@ namespace SOH_LaunchPad_CENReport
                 }
                 catch(Exception ex)
                 {
-                    UpdateReportQueueStatus(qid, -1, ex.Message);
+                    UpdateReportQueueStatus(qid, -1, ex.Message +" " + (ex.InnerException==null?"":ex.InnerException.Message));
                 }
 
                 context.Response.StatusCode = 200;
-                context.Response.StatusDescription = "OK";
+                context.Response.Write(JsonConvert.SerializeObject(new RequestResult(RequestResult.ResultStatus.Success)));
             }
             else
             {
@@ -139,7 +140,21 @@ namespace SOH_LaunchPad_CENReport
                     var config = GetALVReportSchema.GetConfigFromReportDB(rptName);
                     var columnSettings = JsonConvert.DeserializeObject<List<GetALVReportSchema.KendoGridColumnSetting>>(config.ColumnSetting);
                     var reportData = GetALVReportData.GetReportData(rptName, qid);
+                    var reportLayout = ReportLayout.GetReportObjDefault(rptName, userName);
                     
+                    if(reportLayout != null)
+                    {
+                        List<GetALVReportSchema.KendoGridColumnSetting> newColumnSettings = new List<GetALVReportSchema.KendoGridColumnSetting>();
+                        foreach (var layoutcol in reportLayout.columns)
+                        {
+                            if (layoutcol.hidden != null && layoutcol.hidden == true) continue;
+                            var cs = columnSettings.FirstOrDefault(c => c.field == layoutcol.field);
+                            if (cs == null) continue;
+                            newColumnSettings.Add(cs);
+                        }
+                        columnSettings = newColumnSettings;
+                    }
+
                     IWorkbook wb = new XSSFWorkbook();
                     ISheet sheet = wb.CreateSheet();
 
@@ -224,21 +239,7 @@ namespace SOH_LaunchPad_CENReport
 
         private string GetEmailProfile()
         {
-            List<SqlParameter> paras = new List<SqlParameter>();
-            DataSet rcd = SqlHelper.ExecuteDataset(SqlHelper.GetConnection("SOHDB"), CommandType.StoredProcedure, "p_GetSOHSettings", paras.ToArray());
-            for (int r = 0; r < rcd.Tables[0].Rows.Count; r++)
-            {
-                var row = rcd.Tables[0].Rows[r];
-
-                string name = row["Name"].ToString();
-                string value = row["Value"].ToString();
-
-                if (name == "EMLDB_Profile")
-                    return value;
-
-            }
-
-            return "";
+            return Common.GetSysSettings("EMLDB_Profile");
         }
 
         private void UpdateReportQueueStatus(string qid, int statuscode, string message, string outputtype="")

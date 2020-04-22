@@ -3,18 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using SAP.Middleware.Connector;
+using crystal_sap_cryto;
 
 namespace SOH_LaunchPad_CENReport
 {
     public class SAPProc
     {
-        private string sap_name = System.Configuration.ConfigurationManager.AppSettings["SAP_Name"].ToString();
-        private string user_id = System.Configuration.ConfigurationManager.AppSettings["SAP_User"].ToString();
-        private string password = System.Configuration.ConfigurationManager.AppSettings["SAP_Password"].ToString();
-        private string client = System.Configuration.ConfigurationManager.AppSettings["SAP_Client"].ToString();
-        private string host = System.Configuration.ConfigurationManager.AppSettings["SAP_Host"].ToString();
-        private string sysNum = System.Configuration.ConfigurationManager.AppSettings["SAP_SysNum"].ToString();
-
         public SAPProc()
         {
         }
@@ -45,14 +39,15 @@ namespace SOH_LaunchPad_CENReport
 
         protected RfcConfigParameters getParameters()
         {
+            var settings = Common.GetSysSettings();
             RfcConfigParameters parameters = new RfcConfigParameters();
-            parameters.Add(RfcConfigParameters.Name, sap_name);
-            parameters.Add(RfcConfigParameters.User, user_id);
-            parameters.Add(RfcConfigParameters.Password, password);
-            parameters.Add(RfcConfigParameters.Client, client);
+            parameters.Add(RfcConfigParameters.Name, settings["SAP_Name"]);
+            parameters.Add(RfcConfigParameters.User, Cryto.decrypt(settings["SAP_User"]));
+            parameters.Add(RfcConfigParameters.Password, Cryto.decrypt(settings["SAP_Password"]));
+            parameters.Add(RfcConfigParameters.Client, settings["SAP_Client"]);
             parameters.Add(RfcConfigParameters.Language, "EN");
-            parameters.Add(RfcConfigParameters.AppServerHost, host);
-            parameters.Add(RfcConfigParameters.SystemNumber, sysNum);
+            parameters.Add(RfcConfigParameters.AppServerHost, settings["SAP_Host"]);
+            parameters.Add(RfcConfigParameters.SystemNumber, settings["SAP_SysNum"]);
             parameters.Add(RfcConfigParameters.IdleTimeout, "3600");
             parameters.Add(RfcConfigParameters.PoolSize, "5");
             return parameters;

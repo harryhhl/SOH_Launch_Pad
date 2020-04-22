@@ -8,6 +8,8 @@ using Newtonsoft.Json;
 using System.Data;
 using Helper;
 using System.Text.RegularExpressions;
+using crystal_sap_cryto;
+using System.Data.SqlClient;
 
 namespace SOH_LaunchPad_CENReport
 {
@@ -34,10 +36,11 @@ namespace SOH_LaunchPad_CENReport
             List<string> list = new List<string>();
 
             DataSet rcd = SqlHelper.ExecuteDataset(SqlHelper.GetConnection("SOHDB"), CommandType.Text,
-                          $@"Select [Name] from CENRestrictConfig where {checkcol}='{name}'");
+                          $@"Select [Name],[MstTable] from CENRestrictConfig where {checkcol}='{name}'");
             if (rcd.Tables.Count > 0 && rcd.Tables[0].Rows.Count > 0)
             {
                 string checkname = rcd.Tables[0].Rows[0]["Name"].ToString().Trim();
+                string mstTable = rcd.Tables[0].Rows[0]["MstTable"].ToString().Trim();
 
                 DataSet rcd_2 = SqlHelper.ExecuteDataset(SqlHelper.GetConnection("SOHDB"), CommandType.Text,
                                 $@"Select [{checkname}] as [CheckData] from UserAccessCEN where UserID='{userid}'");
@@ -48,7 +51,30 @@ namespace SOH_LaunchPad_CENReport
 
                     string[] includes = dat.Split(new char[] { ',' });
 
-                    list.AddRange(includes);
+                    foreach(string inc in includes)
+                    {
+                        if(inc.Contains("*"))
+                        {
+                            string ckinc = inc.Replace("*", "%");
+                            DataSet rcd_3 = SqlHelper.ExecuteDataset(SqlHelper.GetConnection("ReportDB"), CommandType.Text,
+                                    $@"Select [Code] from {mstTable} where [Code] like '{ckinc}'");
+
+                            if (rcd_3.Tables.Count > 0 && rcd_3.Tables[0].Rows.Count > 0)
+                            {
+                                for (int r = 0; r < rcd_3.Tables[0].Rows.Count; r++)
+                                {
+                                    var row = rcd_3.Tables[0].Rows[r];
+                                    string code = row["Code"].ToString().Trim();
+                                    list.Add(code);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            list.Add(inc);
+                        }
+                    }
+
                     list.Sort();
                 }
             }
@@ -89,6 +115,34 @@ namespace SOH_LaunchPad_CENReport
             }
 
             return list;
+        }
+
+        public static Dictionary<string, string> GetSysSettings()
+        {
+            Dictionary<string, string> settings = new Dictionary<string, string>();
+
+            List<SqlParameter> paras = new List<SqlParameter>();
+            DataSet rcd = SqlHelper.ExecuteDataset(SqlHelper.GetConnection("SOHDB"), CommandType.StoredProcedure, "p_GetSOHSettings", paras.ToArray());
+            for (int r = 0; r < rcd.Tables[0].Rows.Count; r++)
+            {
+                var row = rcd.Tables[0].Rows[r];
+
+                string name = row["Name"].ToString();
+                string value = row["Value"].ToString();
+
+                settings.Add(name, value);
+            }
+
+            return settings;
+        }
+
+        public static string GetSysSettings(string key)
+        {
+            var settings = Common.GetSysSettings();
+            if (settings.Keys.Contains(key))
+                return settings[key];
+            else
+                return "";
         }
 
         public  static string WildCardToRegular(string value)
