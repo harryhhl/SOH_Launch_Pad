@@ -10,13 +10,6 @@ namespace SOH_LaunchPad_Approval.common
 {
     public class SAPHelper
     {
-        //private static string sap_name = System.Configuration.ConfigurationManager.AppSettings["SAP_Name"].ToString();
-        //private static string user_id = System.Configuration.ConfigurationManager.AppSettings["SAP_User"].ToString();
-        //private static string password = System.Configuration.ConfigurationManager.AppSettings["SAP_Password"].ToString();
-        //private static string client = System.Configuration.ConfigurationManager.AppSettings["SAP_Client"].ToString();
-        //private static string host = System.Configuration.ConfigurationManager.AppSettings["SAP_Host"].ToString();
-        //private static string sysNum = System.Configuration.ConfigurationManager.AppSettings["SAP_SysNum"].ToString();
-
         public static string debug_soapprover = System.Configuration.ConfigurationManager.AppSettings["Debug_SOApprover"].ToString();
 
         public static RfcDestination GetDest()
