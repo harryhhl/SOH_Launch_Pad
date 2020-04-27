@@ -98,6 +98,9 @@
     <Compile Include="Helper\SqlHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Systems.cs" />
+    <Compile Include="UserManage.ashx.cs">
+      <DependentUpon>UserManage.ashx</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Content Include="GetAuth.ashx" />
@@ -108,6 +111,8 @@
     <Content Include="Notification.ashx" />
     <Content Include="Common.ashx" />
     <None Include="Properties\PublishProfiles\publish1.pubxml" />
+    <None Include="Properties\PublishProfiles\publish2.pubxml" />
+    <Content Include="UserManage.ashx" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
