@@ -52,7 +52,7 @@ namespace SOH_LaunchPad_Web
                         else
                         {
                             var releaseCodeStr = HttpUtility.ParseQueryString(input).Get("releaseCode");
-                            Common.SetFuncPreference(username, sysfuncid, "releaseCode", releaseCodeStr);
+                            await Common.SetFuncPreference(token, username, sysfuncid, "releaseCode", releaseCodeStr);
 
                             context.Response.ContentType = "application/json";
                             context.Response.Write(result.Data);
@@ -88,7 +88,7 @@ namespace SOH_LaunchPad_Web
                     }
                     else if (action == "pendingcount")
                     {
-                        var userPref = Common.GetFuncPreference(username, sysfuncid);
+                        var userPref = await Common.GetFuncPreference(token, username, sysfuncid);
                         foreach(KeyValuePair<string, object> tmp in userPref)
                         {
                             input = input + $"&{tmp.Key}={tmp.Value.ToString()}";
@@ -122,7 +122,7 @@ namespace SOH_LaunchPad_Web
                     }
                     else if (action == "getPref")
                     {
-                        var result = Common.GetFuncPreference(username, sysfuncid);
+                        var result = await Common.GetFuncPreference(token, username, sysfuncid);
                         context.Response.ContentType = "application/json";
                         context.Response.Write(JsonConvert.SerializeObject(result));
                     }

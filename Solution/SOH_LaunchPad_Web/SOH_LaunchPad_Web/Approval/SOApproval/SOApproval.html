@@ -4,8 +4,8 @@
     <title></title>
     <meta charset="utf-8" />
     
-    <link rel="stylesheet" href="https://kendo.cdn.telerik.com/2019.2.619/styles/kendo.common-office365.min.css" />
-    <link rel="stylesheet" href="https://kendo.cdn.telerik.com/2019.2.619/styles/kendo.office365.min.css" />
+    <link rel="stylesheet" href="../../styles/kendo.common-office365.min.css" />
+    <link rel="stylesheet" href="../../styles/kendo.office365.min.css" />
     <link rel="stylesheet" href="soapproval.css?3"/>
     <link rel="stylesheet" href="../../styles/kgrid_T1.css" tag="themecss"/>
 
@@ -13,22 +13,16 @@
     <script src="../../scripts/jszip.js"></script>
     <script src="../../scripts/kendo.all.min.js"></script>
     <script src="../../scripts/iframeResizer.contentWindow.min.js"></script>
-    <script src="soapproval.js?41"></script>   
+    <script src="soapproval.js?46"></script>   
 </head>
 <body>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.2.2/pdf.js"></script>
-
-    <script>
-        window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.2.2/pdf.worker.js';
-    </script>
-
     <div id="dvMainContent">
         <div style="margin:10px">
             <div class="HeaderTitle">
                 <div style="display: inline-block; margin: 12px;"><img src='../img/report04.png'/></div>
                 <div>
                     <span id="lbTitleName"><h3>Approval 01</h3></span>
-                    <button class="k-button" id="btnDisplay">Display</button>
+                    <button class="k-button" id="btnDisplay">Refresh</button>
                     <button class="k-button" id="btnApprove" disabled>Approve</button>
                     <button class="FavorStarBtn" title="Toggle Favorite">
                         <span class="k-icon k-i-star-outline"></span>

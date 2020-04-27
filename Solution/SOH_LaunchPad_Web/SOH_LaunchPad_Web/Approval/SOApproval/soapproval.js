@@ -26,6 +26,8 @@ function Start()
 
     function Begin()
     {
+        LoadThemeSetting();
+        
         GetActingApprover(function() {
             GetPendingList();
         });
@@ -308,13 +310,21 @@ function Start()
 
     function PDFViewerWindowOnRefresh()
     {
-        var pdfViewer = $("#pdfViewer").kendoPDFViewer({
-            pdfjsProcessing: {
-                file: "getsodetail.ashx?sid="+selectedDetailSID },
-            width: "100%",
-            height: 700
-        }).data("kendoPDFViewer");
+        //var pdfViewer = $("#pdfViewer").kendoPDFViewer({
+        //    pdfjsProcessing: {
+        //        file: {
+        //            url: "getsodetail.ashx?sid="+selectedDetailSID,
+        //            cMapUrl: '../../styles/pdfjs/cmaps/',
+        //            cMapPacked: true
+        //        }
+        //    },              
+        //    width: "100%",
+        //    height: 700
+        //}).data("kendoPDFViewer");
 
+        $('#pdfViewer').empty();
+        var content = '<embed src="' + "getsodetail.ashx?sid=" + selectedDetailSID + '" type="application/pdf" width="1300px" height="740px"/>';
+        $('#pdfViewer').append(content);
     }
 
     function GetFavorList(callback)
@@ -415,8 +425,7 @@ function Start()
     {
         var reportData = new Object();
         reportData.ReportName = "ZRSD058";
-        reportData.Selection = [{"SelName":"ZVBELN","Kind":"S","Sign":"I","SelOption":"EQ","Low":sono,"High":""},
-                                {"SelName":"S_BUKRS","Kind":"S","Sign":"I","SelOption":"CP","Low":sono.substring(0,1) + "*","High":""}];
+        reportData.Selection = [{"SelName":"ZVBELN","Kind":"S","Sign":"I","SelOption":"EQ","Low":sono,"High":""}];
 
         $.ajax({
             type: "POST",

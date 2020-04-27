@@ -32,6 +32,7 @@ iframe {
 #navBar {
   z-index: 99;
   height: 48px;
+  min-height: 48px;
   color: rgb(24, 24, 24);
   background-color: #66BCD5;
   display: flex;

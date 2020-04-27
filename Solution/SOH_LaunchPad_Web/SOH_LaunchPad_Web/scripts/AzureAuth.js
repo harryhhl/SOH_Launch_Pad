@@ -1,6 +1,15 @@
 ﻿var AzureAccessToken = "";
 var AzureAccount = null;
 
+
+// Browser check variables
+var ua = window.navigator.userAgent;
+var msie = ua.indexOf('MSIE ');
+var msie11 = ua.indexOf('Trident/');
+var msedge = ua.indexOf('Edge/');
+var isIE = msie > 0 || msie11 > 0;
+var isEdge = msedge > 0;
+
 var AzureAuthen = (function() 
 {
     'use strict';
@@ -191,13 +200,3 @@ var AzureAuthen = (function()
       GetUserInitial: getInitial
     };
 }());
-
-
-
-// Browser check variables
-var ua = window.navigator.userAgent;
-var msie = ua.indexOf('MSIE ');
-var msie11 = ua.indexOf('Trident/');
-var msedge = ua.indexOf('Edge/');
-var isIE = msie > 0 || msie11 > 0;
-var isEdge = msedge > 0;

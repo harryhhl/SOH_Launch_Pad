@@ -26,7 +26,7 @@ namespace SOH_LaunchPad_Web.Approval.SOApproval
                     {
                         ReportFileData d = list[0];
                         context.Response.ContentType = "application/pdf";
-                        context.Response.AppendHeader("Content-Disposition", $"attachment; filename=\"{d.FileName}\"");
+                        context.Response.AppendHeader("Content-Disposition", $"inline; filename=\"{d.FileName}\"");
                         context.Response.Cache.SetExpires(DateTime.Now.AddHours(1));
                         context.Response.Cache.SetCacheability(HttpCacheability.Public);
 

@@ -1,25 +1,17 @@
-﻿using Helper;
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
-using System.Data.SqlClient;
+﻿using System;
 using System.IO;
-using System.Linq;
 using System.Net.Http;
-using System.Net.Http.Headers;
+using System.Threading.Tasks;
 using System.Web;
-using System.Web.Hosting;
 
 namespace SOH_LaunchPad_Web
 {
     /// <summary>
     /// Summary description for Favourite
     /// </summary>
-    public class Favourite : IHttpHandler
+    public class Favourite : HttpTaskAsyncHandler
     {
-        public void ProcessRequest(HttpContext context)
+        public override async Task ProcessRequestAsync(HttpContext context)
         {
             if (HttpContext.Current.Request.HttpMethod == "POST")
             {
@@ -29,61 +21,18 @@ namespace SOH_LaunchPad_Web
                     input = reader.ReadToEnd();
                 }
 
-                var action = HttpUtility.ParseQueryString(input).Get("Action");
-                var token = HttpUtility.ParseQueryString(input).Get("Token");
-                var sysfuncid = HttpUtility.ParseQueryString(input).Get("FuncID");
-                var username = HttpUtility.ParseQueryString(input).Get("User");
-
                 try
                 {
-                    if (action == "toggle")
+                    var result = await GenericRequest.Post(Common.AuthWSEndpointUrl + "Favourite.ashx", new StringContent(input));
+                    if (result.Status == RequestResult.ResultStatus.Failure)
                     {
-                        List<SqlParameter> paras = new List<SqlParameter>();
-                        paras.Add(new SqlParameter("@Username", username));
-                        paras.Add(new SqlParameter("@SystemFuncID", sysfuncid));
-                        SqlHelper.ExecuteNonQuery(SqlHelper.GetConnection("SOHDB"), CommandType.StoredProcedure, "p_ToggleFavor", paras.ToArray());
-
-                        context.Response.ContentType = "application/json";
-                        context.Response.Write("{}");
-                    }
-                    else if(action == "updacess")
-                    {
-                        List<SqlParameter> paras = new List<SqlParameter>();
-                        paras.Add(new SqlParameter("@Username", username));
-                        paras.Add(new SqlParameter("@SystemFuncID", sysfuncid));
-                        SqlHelper.ExecuteNonQuery(SqlHelper.GetConnection("SOHDB"), CommandType.StoredProcedure, "p_UpdateFuncAccess", paras.ToArray());
-
-                        context.Response.ContentType = "application/json";
-                        context.Response.Write("{}");
-                    }
-                    else if(action == "getall")
-                    {
-                        FavourandFrequentList list = new FavourandFrequentList();
-                        List<SqlParameter> paras = new List<SqlParameter>();
-                        paras.Add(new SqlParameter("@Username", username));
-                        DataSet rcd = SqlHelper.ExecuteDataset(SqlHelper.GetConnection("SOHDB"), CommandType.StoredProcedure, "p_GetFavourites", paras.ToArray());
-
-                        for (int r = 0; r < rcd.Tables[0].Rows.Count; r++)
-                        {
-                            var row = rcd.Tables[0].Rows[r];
-                            string funcId = row["FunctionID"].ToString();
-                            list.FavorList.Add(funcId);
-                        }
-
-                        for (int r = 0; r < rcd.Tables[1].Rows.Count; r++)
-                        {
-                            var row = rcd.Tables[1].Rows[r];
-                            string funcId = row["FunctionID"].ToString();
-                            list.FrequentList.Add(funcId);
-                        }
-
-                        context.Response.ContentType = "application/json";
-                        context.Response.Write(JsonConvert.SerializeObject(list));
+                        context.Response.StatusCode = 400;
+                        context.Response.StatusDescription = result.GetErrmsgTrim();
                     }
                     else
                     {
-                        context.Response.StatusCode = 400;
-                        context.Response.StatusDescription = "No Action is defined";
+                        context.Response.ContentType = "application/json";
+                        context.Response.Write(result.Data);
                     }
                 }
                 catch(Exception ex)
@@ -99,19 +48,7 @@ namespace SOH_LaunchPad_Web
             }
         }
 
-        public class FavourandFrequentList
-        {
-            public List<string> FavorList;
-            public List<string> FrequentList;
-
-            public FavourandFrequentList()
-            {
-                FavorList = new List<string>();
-                FrequentList = new List<string>();
-            }
-        }
-
-        public bool IsReusable
+        public override bool IsReusable
         {
             get
             {

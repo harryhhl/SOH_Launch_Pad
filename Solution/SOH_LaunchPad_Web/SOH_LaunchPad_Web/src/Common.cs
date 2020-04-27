@@ -1,4 +1,5 @@
 ﻿using Helper;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -14,7 +15,9 @@ namespace SOH_LaunchPad_Web
 {
     public class Common
     {
-        private static readonly string AuthWSEndpointUrl = ConfigurationManager.AppSettings["SOH.AuthWS.EndpointUrl"];
+        public static readonly string AuthWSEndpointUrl = ConfigurationManager.AppSettings["SOH.AuthWS.EndpointUrl"];
+        public static readonly string SapReportWSEndpointUrl = ConfigurationManager.AppSettings["SOH.SapReportWS.EndpointUrl"];
+        public static readonly string ApprovalWSEndpointUrl = ConfigurationManager.AppSettings["SOH.Approval.EndpointUrl"];
 
         public static async Task<RequestResult> RequestUser(string token, string sysfuncid)
         {
@@ -30,32 +33,39 @@ namespace SOH_LaunchPad_Web
             }
         }
 
-        public static void SetFuncPreference(string username, string sysfuncid, string key, string value)
+        public static async Task<RequestResult> SetFuncPreference(string token, string username, string sysfuncid, string key, string value)
         {
-            List<SqlParameter> paras = new List<SqlParameter>();
-            paras.Add(new SqlParameter("@Username", username));
-            paras.Add(new SqlParameter("@SystemFuncID", sysfuncid));
-            paras.Add(new SqlParameter("@PreKey", key));
-            paras.Add(new SqlParameter("@PreVal", value));
-            SqlHelper.ExecuteNonQuery(SqlHelper.GetConnection("SOHDB"), CommandType.StoredProcedure, "p_SetPreference", paras.ToArray());
+            string uri = "Common.ashx";
+
+            Dictionary<string, string> jsonValues = new Dictionary<string, string>();
+            jsonValues.Add("Action", "setfuncpref");
+            jsonValues.Add("User", username);
+            jsonValues.Add("Token", token);
+            jsonValues.Add("FuncID", sysfuncid);
+            jsonValues.Add("Key", key);
+            jsonValues.Add("Val", value);
+            using (var content = new FormUrlEncodedContent(jsonValues))
+            {
+                var response = await GenericRequest.Post(AuthWSEndpointUrl + uri, content);
+                return response;
+            }
         }
 
-        public static Dictionary<string, object> GetFuncPreference(string username, string sysfuncid)
+        public static async Task<Dictionary<string, object>> GetFuncPreference(string token, string username, string sysfuncid)
         {
-            Dictionary<string, object> result = new Dictionary<string, object>();
+            string uri = "Common.ashx";
 
-            List<SqlParameter> paras = new List<SqlParameter>();
-            paras.Add(new SqlParameter("@Username", username));
-            paras.Add(new SqlParameter("@SystemFuncID", sysfuncid));
-            DataSet rcd = SqlHelper.ExecuteDataset(SqlHelper.GetConnection("SOHDB"), CommandType.StoredProcedure, "p_GetPreference", paras.ToArray());
-
-            for (int r = 0; r < rcd.Tables[0].Rows.Count; r++)
+            Dictionary<string, string> jsonValues = new Dictionary<string, string>();
+            jsonValues.Add("Action", "getfuncpref");
+            jsonValues.Add("User", username);
+            jsonValues.Add("Token", token);
+            jsonValues.Add("FuncID", sysfuncid);
+            using (var content = new FormUrlEncodedContent(jsonValues))
             {
-                var row = rcd.Tables[0].Rows[r];
-                result.Add(row["PreKey"].ToString(), row["PreVal"]);
+                var response = await GenericRequest.Post(AuthWSEndpointUrl + uri, content);
+                var data = JsonConvert.DeserializeObject<Dictionary<string, object>>(response.Data);
+                return data;
             }
-
-            return result;
         }
 
         public static string WildCardToRegular(string value)

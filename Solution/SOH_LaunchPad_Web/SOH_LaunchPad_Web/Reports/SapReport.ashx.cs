@@ -20,9 +20,6 @@ namespace SOH_LaunchPad_Web
     /// </summary>
     public class SapReport : HttpTaskAsyncHandler, IRequiresSessionState
     {
-        private static readonly string AuthWSEndpointUrl = ConfigurationManager.AppSettings["SOH.AuthWS.EndpointUrl"];
-        private static readonly string SapReportWSEndpointUrl = ConfigurationManager.AppSettings["SOH.SapReportWS.EndpointUrl"];
-
         public override async Task ProcessRequestAsync(HttpContext context)
         {
             if (HttpContext.Current.Request.HttpMethod == "POST")
@@ -41,7 +38,7 @@ namespace SOH_LaunchPad_Web
 
                 if (action == "new")
                 {
-                    var requestforQID = await GenericRequest.Post(SapReportWSEndpointUrl + "AddReportQueue.ashx", new StringContent(input));
+                    var requestforQID = await GenericRequest.Post(Common.SapReportWSEndpointUrl + "AddReportQueue.ashx", new StringContent(input));
 
                     if (requestforQID.Status == RequestResult.ResultStatus.Failure)
                     {
@@ -58,7 +55,7 @@ namespace SOH_LaunchPad_Web
                 }
                 else if (action == "getqueue")
                 {
-                    var result = await GenericRequest.Post(SapReportWSEndpointUrl + "GetReportQueue.ashx", new StringContent(input));
+                    var result = await GenericRequest.Post(Common.SapReportWSEndpointUrl + "GetReportQueue.ashx", new StringContent(input));
                     if (result.Status == RequestResult.ResultStatus.Failure)
                     {
                         context.Response.StatusCode = 400;
@@ -72,7 +69,7 @@ namespace SOH_LaunchPad_Web
                 }
                 else if (action == "getconfig")
                 {
-                    var result = await GenericRequest.Post(SapReportWSEndpointUrl + "GetReportConfig.ashx", new StringContent(input));
+                    var result = await GenericRequest.Post(Common.SapReportWSEndpointUrl + "GetReportConfig.ashx", new StringContent(input));
                     if (result.Status == RequestResult.ResultStatus.Failure)
                     {
                         context.Response.StatusCode = 400;
@@ -86,7 +83,7 @@ namespace SOH_LaunchPad_Web
                 }
                 else if (action == "getalvschema")
                 {
-                    var result = await GenericRequest.Post(SapReportWSEndpointUrl + "GetALVReportSchema.ashx", new StringContent(input));
+                    var result = await GenericRequest.Post(Common.SapReportWSEndpointUrl + "GetALVReportSchema.ashx", new StringContent(input));
                     if (result.Status == RequestResult.ResultStatus.Failure)
                     {
                         context.Response.StatusCode = 400;
@@ -100,7 +97,7 @@ namespace SOH_LaunchPad_Web
                 }
                 else if (action == "getalvdata")
                 {
-                    var result = await GenericRequest.Post(SapReportWSEndpointUrl + "GetALVReportData.ashx", new StringContent(input));
+                    var result = await GenericRequest.Post(Common.SapReportWSEndpointUrl + "GetALVReportData.ashx", new StringContent(input));
                     if (result.Status == RequestResult.ResultStatus.Failure)
                     {
                         context.Response.StatusCode = 400;
@@ -114,7 +111,7 @@ namespace SOH_LaunchPad_Web
                 }
                 else if (action == "getfiledata")
                 {
-                    var result = await GenericRequest.Post(SapReportWSEndpointUrl + "GetFileReportData.ashx", new StringContent(input));
+                    var result = await GenericRequest.Post(Common.SapReportWSEndpointUrl + "GetFileReportData.ashx", new StringContent(input));
                     if (result.Status == RequestResult.ResultStatus.Failure)
                     {
                         context.Response.StatusCode = 400;
@@ -132,7 +129,7 @@ namespace SOH_LaunchPad_Web
                     string masterdata = HttpContext.Current.Session["Mst_" + mastername] as string;
                     if (string.IsNullOrEmpty(masterdata))
                     {
-                        var result = await GenericRequest.Post(SapReportWSEndpointUrl + "GetReportMaster.ashx", new StringContent(input));
+                        var result = await GenericRequest.Post(Common.SapReportWSEndpointUrl + "GetReportMaster.ashx", new StringContent(input));
                         if (result.Status == RequestResult.ResultStatus.Failure)
                         {
                             context.Response.StatusCode = 400;
@@ -167,7 +164,7 @@ namespace SOH_LaunchPad_Web
                 }
                 else if (action == "getmasterdataValueMap")
                 {
-                    var result = await GenericRequest.Post(SapReportWSEndpointUrl + "GetReportMaster.ashx", new StringContent(input));
+                    var result = await GenericRequest.Post(Common.SapReportWSEndpointUrl + "GetReportMaster.ashx", new StringContent(input));
                     if (result.Status == RequestResult.ResultStatus.Failure)
                     {
                         context.Response.StatusCode = 400;
@@ -188,97 +185,21 @@ namespace SOH_LaunchPad_Web
                     }
 
                 }
-                else if (action == "getrptlayout")
+                else if (action == "getrptlayout" || action == "newrptlayout" || action == "updrptlayout" 
+                          || action == "updrptlayoutdefault" || action == "delrptlayout")
                 {
-                    try
-                    {
-                        var username = inputset.Get("User");
-                        var layoutlist = GetReportLayoutByUser(reportname, username);
-
-                        context.Response.ContentType = "application/json";
-                        context.Response.Write(JsonConvert.SerializeObject(layoutlist));
-                    }
-                    catch (Exception ex)
+                    var result = await GenericRequest.Post(Common.SapReportWSEndpointUrl + "ReportLayout.ashx", new StringContent(input));
+                    if (result.Status == RequestResult.ResultStatus.Failure)
                     {
                         context.Response.StatusCode = 400;
-                        context.Response.StatusDescription = $@"Error: {ex.Message}";
+                        context.Response.StatusDescription = result.GetErrmsgTrim();
                     }
-
-                }
-                else if (action == "newrptlayout")
-                {
-                    try
+                    else
                     {
-                        var username = inputset.Get("User");
-                        var layoutname = inputset.Get("LayoutName");
-                        var layoutcontent = inputset.Get("LayoutContent");
-
-                        var layoutId = CreateNewReportLayout(reportname, username, layoutname, layoutcontent);
-
-                        List<ReportLayoutData> list = new List<ReportLayoutData>();
-                        list.Add(new ReportLayoutData() { Id = layoutId, LayoutName = layoutname, LayoutContent = layoutcontent });
-
                         context.Response.ContentType = "application/json";
-                        context.Response.Write(JsonConvert.SerializeObject(list));
+                        context.Response.Write(result.Data);
                     }
-                    catch (Exception ex)
-                    {
-                        context.Response.StatusCode = 400;
-                        context.Response.StatusDescription = $@"Error: {ex.Message}";
-                    }
-                }
-                else if (action == "updrptlayout")
-                {
-                    try
-                    {
-                        var layoutID = inputset.Get("LayoutID");
-                        var layoutname = inputset.Get("LayoutName");
-                        var layoutcontent = inputset.Get("LayoutContent");
 
-                        UpdateReportLayout(layoutID, layoutname, layoutcontent);
-
-                        context.Response.ContentType = "application/json";
-                        context.Response.Write("{}");
-                    }
-                    catch (Exception ex)
-                    {
-                        context.Response.StatusCode = 400;
-                        context.Response.StatusDescription = $@"Error: {ex.Message}";
-                    }
-                }
-                else if (action == "updrptlayoutdefault")
-                {
-                    try
-                    {
-                        var layoutID = inputset.Get("LayoutID");
-
-                        UpdateReportLayoutDefault(layoutID);
-
-                        context.Response.ContentType = "application/json";
-                        context.Response.Write("{}");
-                    }
-                    catch (Exception ex)
-                    {
-                        context.Response.StatusCode = 400;
-                        context.Response.StatusDescription = $@"Error: {ex.Message}";
-                    }
-                }
-                else if (action == "delrptlayout")
-                {
-                    try
-                    {
-                        var layoutID = inputset.Get("LayoutID");
-
-                        DeleteReportLayout(layoutID);
-
-                        context.Response.ContentType = "application/json";
-                        context.Response.Write("{}");
-                    }
-                    catch (Exception ex)
-                    {
-                        context.Response.StatusCode = 400;
-                        context.Response.StatusDescription = $@"Error: {ex.Message}";
-                    }
                 }
                 else
                 {
@@ -306,87 +227,9 @@ namespace SOH_LaunchPad_Web
                 jsonValues.Add("FuncID", sysfuncid);
                 using (var content = new FormUrlEncodedContent(jsonValues))
                 {
-                    var ret = await GenericRequest.Post(SapReportWSEndpointUrl + uri, content);
+                    var ret = await GenericRequest.Post(Common.SapReportWSEndpointUrl + uri, content);
                 }
             });            
-        }
-
-        private List<ReportLayoutData> GetReportLayoutByUser(string rptname, string username)
-        {
-            DataSet rcd = SqlHelper.ExecuteDataset(SqlHelper.GetConnection("SOHDB"), CommandType.Text,
-                            $@"SELECT [Id],[LayoutName],[LayoutContent],isnull([IsDefault],0) as [IsDefault] FROM [dbo].[SAPReportLayout]
-                                WHERE ReportName='{rptname}' and Username='{username}';");
-
-            List<ReportLayoutData> list = new List<ReportLayoutData>();
-            list.Add(new ReportLayoutData() { Id = Guid.NewGuid().ToString(), LayoutName = "Default", LayoutContent = "" });
-
-            for (int r = 0; r < rcd.Tables[0].Rows.Count; r++)
-            {
-                var row = rcd.Tables[0].Rows[r];
-
-                ReportLayoutData item = new ReportLayoutData();
-                item.Id = row["Id"].ToString().Trim();
-                item.LayoutName = row["LayoutName"].ToString().Trim();
-                item.LayoutContent = row["LayoutContent"].ToString().Trim();
-                item.IsDefault = bool.Parse(row["IsDefault"].ToString());
-
-                list.Add(item);
-            }
-
-            return list;
-        }
-
-        private string CreateNewReportLayout(string rptname, string username, string layoutname, string layoutcontent)
-        {
-            List<SqlParameter> paras = new List<SqlParameter>();
-            paras.Add(new SqlParameter("@reportName", rptname));
-            paras.Add(new SqlParameter("@userName", username));
-            paras.Add(new SqlParameter("@layoutName", layoutname));
-            paras.Add(new SqlParameter("@layoutContent", layoutcontent));
-            DataSet rcd = SqlHelper.ExecuteDataset(SqlHelper.GetConnection("SOHDB"), CommandType.StoredProcedure, "p_InsSAPReportLayout", paras.ToArray());
-
-            var row = rcd.Tables[0].Rows[0];
-
-            string id = row["LayoutID"].ToString();
-
-            return id;
-        }
-
-        private void UpdateReportLayout(string id, string layoutname, string layoutcontent)
-        {
-            List<SqlParameter> paras = new List<SqlParameter>();
-            paras.Add(new SqlParameter("@layoutID", id));
-            paras.Add(new SqlParameter("@layoutName", layoutname));
-            paras.Add(new SqlParameter("@layoutContent", layoutcontent));
-            SqlHelper.ExecuteNonQuery(SqlHelper.GetConnection("SOHDB"), CommandType.StoredProcedure, "p_UpdateSAPReportLayout", paras.ToArray());
-        }
-
-        private void UpdateReportLayoutDefault(string id)
-        {
-            List<SqlParameter> paras = new List<SqlParameter>();
-            paras.Add(new SqlParameter("@layoutID", id));
-            SqlHelper.ExecuteNonQuery(SqlHelper.GetConnection("SOHDB"), CommandType.StoredProcedure, "p_UpdateSAPReportLayoutDefault", paras.ToArray());
-        }
-
-        private void DeleteReportLayout(string id)
-        {
-            List<SqlParameter> paras = new List<SqlParameter>();
-            paras.Add(new SqlParameter("@layoutID", id));
-            SqlHelper.ExecuteNonQuery(SqlHelper.GetConnection("SOHDB"), CommandType.StoredProcedure, "p_DeleteSAPReportLayout", paras.ToArray());
-        }
-
-        public class ReportFileData
-        {
-            public string FileName;
-            public string FileDataBase64;
-        }
-
-        public class ReportLayoutData
-        {
-            public string Id;
-            public string LayoutName;
-            public string LayoutContent;
-            public bool IsDefault;
         }
 
         class MasterData

@@ -246,6 +246,29 @@ function Start()
                 invalidateContent += '<div><span data-for="'+item.SelName+'-From" class="k-invalid-msg"></span></div>';
                 invalidateContent += '<div><span data-for="'+item.SelName+'-To" class="k-invalid-msg"</span></div>';
             }    
+            else if(item.ControlType == "Range" && item.DataType == "T") {
+                htmlContent += '<div class="sspcontrol" type="RangeTime" style="display:flex; align-items:center; flex-wrap: wrap;" time-format="HHmmss">';
+                htmlContent += '  <div class="sspcontrol-Range"><label for="'+item.SelName+'-low" class="sspcontrol-desc">'+item.SelDesc+''+(item.IsMandatory==1?'<label class="sspcontrol-req">*</label>':'')+'</label></div>';
+                htmlContent += '  <div class="sspcontrol-Range"><input id="'+item.SelName+'-low" name="'+item.SelName+'-From" time-format="HH:mm" type="time" '+(item.IsMandatory==1?' required ':'')+'></div>';
+                htmlContent += '  <div class="sspcontrol-Range"><label for="'+item.SelName+'-high" style="margin-left:0.1em">to </label></div>';
+                htmlContent += '  <div class="sspcontrol-Range"><input id="'+item.SelName+'-high" name="'+item.SelName+'-To" time-format="HH:mm" type="time" data-comparevalid-field1="'+item.SelName+'-compare" data-comparevalid-field2="'+item.SelName+'-From"></div>';
+                htmlContent += '  <div class="sspcontrol-Range" style="margin-left:0.1em">';
+                htmlContent += '    <select name="'+item.SelName+'-compare">';
+                htmlContent += '      <option value="BT">Between</option>';
+                htmlContent += '      <option value="EQ">Equal</option>';
+                htmlContent += '      <option value="GE">Greater or Equal</option>';
+                htmlContent += '      <option value="LE">Less or Equal</option>';
+                htmlContent += '      <option value="GT">Greater</option>';
+                htmlContent += '      <option value="LT">Less</option>';
+                htmlContent += '      <option value="NE">Not Equal</option>';
+                htmlContent += '      <option value="NB">Not Between</option>';
+                htmlContent += '   </select>';
+                htmlContent += '  </div>';
+                htmlContent += '</div>';
+
+                invalidateContent += '<div><span data-for="'+item.SelName+'-From" class="k-invalid-msg"></span></div>';
+                invalidateContent += '<div><span data-for="'+item.SelName+'-To" class="k-invalid-msg"</span></div>';
+            }   
             else if(item.ControlType == "Range" && item.DataType == "N" & item.Length == 8) {
                 htmlContent += '<div class="sspcontrol" type="RangeDate" style="display:flex; align-items:center; flex-wrap: wrap;" date-format="yyyy0MM">';
                 htmlContent += '  <div class="sspcontrol-Range"><label for="'+item.SelName+'-low" class="sspcontrol-desc">'+item.SelDesc+''+(item.IsMandatory==1?'<label class="sspcontrol-req">*</label>':'')+'</label></div>';
@@ -368,7 +391,7 @@ function Start()
                 htmlContent += '  <div class="sspcontrol-Range"><input id="'+item.SelName+'-low" name="'+item.SelName+'-From" date-format="yyyy-MM-dd" type="date3" '+(item.IsMandatory==1?' required ':'')+'></div>';
                 htmlContent += '</div>';
 
-                invalidateContent += '<div><span data-for="'+item.SelName+'-From" class="k-invalid-msg"></span></div>';
+                //invalidateContent += '<div><span data-for="'+item.SelName+'-From" class="k-invalid-msg"></span></div>';
             }
             else if(item.ControlType == "" && item.DataType == "T") {
                 htmlContent += '<div class="sspcontrol" type="Time" style="display:flex; align-items:center; flex-wrap: wrap" time-format="HHmmss">';
@@ -376,7 +399,7 @@ function Start()
                 htmlContent += '  <div class="sspcontrol-Range"><input id="'+item.SelName+'-low" name="'+item.SelName+'-From" time-format="HH:mm" type="time" '+(item.IsMandatory==1?' required ':'')+'></div>';
                 htmlContent += '</div>';
 
-                invalidateContent += '<div><span data-for="'+item.SelName+'-From" class="k-invalid-msg"></span></div>';
+                //invalidateContent += '<div><span data-for="'+item.SelName+'-From" class="k-invalid-msg"></span></div>';
             }                    
             else if(item.ControlType == "Radio") {
                 var allgroupitems = data.Configs.filter(config=>config.RadioGroup == item.RadioGroup);
@@ -1131,6 +1154,25 @@ function Start()
                 var dateformat = $(this).attr('date-format');
                 var datefrom = $($(this).find('input')[0]).data("kendoDatePicker").value();
                 var dateto = $($(this).find('input')[1]).data("kendoDatePicker").value();
+                sel.Low = kendo.toString(datefrom, dateformat);
+                sel.High = kendo.toString(dateto, dateformat);
+
+                if(sel.High == null && (sel.SelOption == "BT" || sel.SelOption == "NT"))
+                    sel.SelOption = "EQ";
+
+                if(sel.Low != null || sel.High != null)
+                    reportData.Selection.push(sel);
+            }  
+            else if(type == 'RangeTime') {
+                var sel = new Object();
+                sel.SelName = $($(this).find('input')[0]).attr('id').split('-')[0];
+                sel.Kind = 'S';
+                sel.Sign = 'I';
+                sel.SelOption = $($(this).find('select')[0]).val();
+
+                var dateformat = $(this).attr('time-format');
+                var datefrom = $($(this).find('input')[0]).data("kendoTimePicker").value();
+                var dateto = $($(this).find('input')[1]).data("kendoTimePicker").value();
                 sel.Low = kendo.toString(datefrom, dateformat);
                 sel.High = kendo.toString(dateto, dateformat);
 

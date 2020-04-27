@@ -1,0 +1,93 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <meta charset="utf-8" />
+
+    <link rel="stylesheet" href="../styles/kendo.default-v2.min.css" />
+    <link rel="stylesheet" href="UserManage.css?8"/>
+
+    <script src="../scripts/jquery.min.js"></script>
+    <script src="../scripts/jszip.js"></script>
+    <script src="../scripts/kendo.all.min.js"></script>
+    <script src="../scripts/iframeResizer.contentWindow.min.js"></script>
+    <script src="UserManage.js?40"></script>
+</head>
+<body>
+    <div id="dvMainContent">
+        <div>
+            <div style="margin:10px">
+            </div>
+            <div id="dvHeader" style="margin:10px">
+                <div class="HeaderTitle">
+                    <div style="margin-left: 10px;">
+                        <h3>User Manage</h3>
+                    </div>
+                </div>
+                <hr>
+            </div>
+            <div id="dvContent">
+                <div id="tabstrip">
+                    <ul>
+                        <li class="k-state-active">
+                            Role Function Access
+                        </li>
+                        <li>
+                            Role CEN Access
+                        </li>
+                        <li>
+                            Role Users
+                        </li>
+                    </ul>
+                    <div id="dvRoleFuncAccess">
+                        <h4><label for="roleList">Role List</label></h4>
+                        <input name="roleList" value="1" style="width: 100%;" />
+
+                        <br />
+                        <br />
+
+                        <div id="dvLBRole" style="width: 90%;">
+                        </div>
+
+                        <button class="k-button k-primary" name="btnSaveChanges" style="margin-top: 2em; display: block;">Save Changes</button>
+                    </div>
+                    <div id="dvRoleCENAccess">
+                        <h4><label for="roleList">Role List</label></h4>
+                        <input name="roleList" value="1" style="width: 100%;" />
+
+                        <br />
+                        <br />
+
+                        <div id="dvCAList" style="width: 90%;">
+                        </div>
+
+                        <button class="k-button k-primary" name="btnSaveChanges" style="margin-top: 2em; display: block;">Save Changes</button>
+                    </div>
+                    <div id="dvRoleUsers">
+                        <h4><label for="roleList">Role List</label></h4>
+                        <input name="roleList" value="1" style="width: 100%;" />
+
+                        <br />
+                        <br />
+
+                        <div style="width: 90%;">
+                            <textarea id="txtUserList" class="k-textbox" style="width: 100%;"></textarea>
+                        </div>
+
+                        <button class="k-button k-primary" name="btnSaveChanges" style="margin-top: 2em; display: block;">Save Changes</button>
+                    </div>
+                </div>
+            </div>     
+
+            <div id="frameFooter">
+
+            </div>                      
+        </div>
+    </div>
+    <div id="dvLoadingOverlay" class="overlay-loading">
+        <div class="overlay-loading-content">        
+            <p><progress></progress></p>
+        </div>
+    </div> 
+</body>
+</html>

@@ -137,12 +137,7 @@ function Start()
 
         window.addEventListener("resize", function(event) {
             //console.log(document.body.clientWidth + ' wide by ' + document.body.clientHeight+' high');
-            if(document.body.clientWidth < 800)
-                openDrawer(false);
-            else
-                openDrawer(true);
-
-            $('.k-drawer-container').height(window.innerHeight - 50);
+            ResetDrawerSize();
         })
 
         $('.btnChangeTheme').on('click', function(){
@@ -154,6 +149,7 @@ function Start()
             wn.postMessage("[UpdateTheme]Ready", "*");
         });
     }
+    
 
     function LoadThemeSetting()
     {
@@ -198,6 +194,16 @@ function Start()
     function ShowLoginButton()
     {
         $('.btnLoginMain').show();
+    }
+
+    function ResetDrawerSize()
+    {
+        if(document.body.clientWidth < 800)
+            openDrawer(false);
+        else
+            openDrawer(true);
+
+        $('.k-drawer-container').height(window.innerHeight - 50);
     }
 
     function InitNotification(list) 
@@ -383,13 +389,17 @@ function Start()
             mini: true,
             itemClick: function (e) {
 
-                e.sender.element.find("#drawer-content > div").addClass("hidden");
-
                 var uri = e.item.attr("data-uri");
                 var funcID = e.item.attr("data-id");
+                var itemText = e.item.find(".k-item-text").text();
+
+                if(typeof funcID == 'undefined' && (typeof itemText == 'undefined' || itemText.length < 1)) return;
+
+                e.sender.element.find("#drawer-content > div").addClass("hidden");
+
                 if(typeof uri !== 'undefined' && uri.length > 0) {
                     e.sender.element.find("#drawer-content").find("#dvFrame").removeClass("hidden");
-                    uri = uri + "&fid=" + funcID + "&fname=" + encodeURIComponent(e.item.find(".k-item-text").text());
+                    uri = uri + "&fid=" + funcID + "&fname=" + encodeURIComponent(itemText)  + '&timestamp=' + Date.now();
                     if($('#theframe').attr('funcid')!=funcID) {
                         $('#theframe').attr('src', uri);
                         $('#theframe').attr('funcid', funcID);
@@ -397,14 +407,14 @@ function Start()
                     }
                 }
                 else {
-                    var content = e.sender.element.find("#drawer-content").find("#" + e.item.find(".k-item-text").text());
+                    var content = e.sender.element.find("#drawer-content").find("#" + itemText);
                     content.removeClass("hidden");
                     UpdateFavouriteStar(content);
                 }
 
                 SetFrameDimension();
 
-                setSelectMenuItemTitle(e.item.find(".k-item-text").text());
+                setSelectMenuItemTitle(itemText);
             },
             hide: function(e) {
                 if(drawerOpen)
@@ -451,7 +461,7 @@ function Start()
             });
         });
 
-        toggleDrawer();
+        ResetDrawerSize();
 
         $('.widgetCardHeader').click(function(){
             var parentDv = $(this).parent();
@@ -571,6 +581,9 @@ function Start()
         var drawerInstance = $("#drawer").data().kendoDrawer;
         //var drawerContainer = drawerInstance.drawerContainer;
         
+        if(typeof drawerInstance === 'undefined' || drawerInstance == null)
+            return;
+
         if(drawerOpen == true)
             drawerInstance.show();
         else {
