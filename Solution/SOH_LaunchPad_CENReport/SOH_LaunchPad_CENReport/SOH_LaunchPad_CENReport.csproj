@@ -177,6 +177,7 @@
     <Content Include="GetReportMaster.ashx" />
     <None Include="Properties\PublishProfiles\publish1.pubxml" />
     <Content Include="ReportLayout.ashx" />
+    <None Include="Properties\PublishProfiles\publish2.pubxml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

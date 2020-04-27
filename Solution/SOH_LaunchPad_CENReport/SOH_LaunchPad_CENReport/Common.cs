@@ -43,13 +43,17 @@ namespace SOH_LaunchPad_CENReport
                 string mstTable = rcd.Tables[0].Rows[0]["MstTable"].ToString().Trim();
 
                 DataSet rcd_2 = SqlHelper.ExecuteDataset(SqlHelper.GetConnection("SOHDB"), CommandType.Text,
-                                $@"Select [{checkname}] as [CheckData] from UserAccessCEN where UserID='{userid}'");
+                                $@"select FieldValue from RoleCENAccess 
+                                    where FieldName='{checkname}' and RoleId in (select distinct RoleID from RoleUsers where UserName='{userid}')");
 
-                if (rcd_2.Tables.Count > 0 && rcd_2.Tables[0].Rows.Count > 0)
+                if (rcd_2.Tables.Count > 0)
                 {
-                    string dat = rcd_2.Tables[0].Rows[0]["CheckData"].ToString().Trim();
-
-                    string[] includes = dat.Split(new char[] { ',' });
+                    List<string> includes = new List<string>();
+                    for (int r = 0; r < rcd_2.Tables[0].Rows.Count; r++)
+                    {
+                        string dat = rcd_2.Tables[0].Rows[r]["FieldValue"].ToString().Trim();
+                        includes.AddRange(dat.Split(new char[] { ',' }));
+                    }
 
                     foreach(string inc in includes)
                     {

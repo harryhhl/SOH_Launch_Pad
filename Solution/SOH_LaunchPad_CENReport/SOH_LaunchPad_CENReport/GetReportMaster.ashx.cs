@@ -53,7 +53,7 @@ namespace SOH_LaunchPad_CENReport
 
                     DataSet rcd = SqlHelper.ExecuteDataset(SqlHelper.GetConnection("ReportDB"), CommandType.Text,
                         $@"SELECT {col_code} as [Code], {col_descp} as [Description], {col_ref} as [RefCode]
-                          FROM [dbo].[{mastername}] order by {col_code} asc;");
+                          FROM [dbo].[{mastername}] where len({col_code})>1 order by {col_code} asc;");
 
                     MasterDataSet mds = new MasterDataSet();
                     for (int r = 0; r < rcd.Tables[0].Rows.Count; r++)
