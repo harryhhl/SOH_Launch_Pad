@@ -1,5 +1,4 @@
 
-
   .k-header {
     background-color: #657E92;
   }
@@ -7,4 +6,12 @@
   .k-grid td.k-state-selected, .k-grid tr.k-state-selected>td {
     color: #656565;
     background-color: #D1AF82;
+  }
+
+  .k-grid a, .k-link, .k-link:hover {
+    color: #f0f0f0;
+  }
+
+  col.k-sorted, th.k-sorted {
+    background-color: rgba(97, 92, 92, 0.33);
   }

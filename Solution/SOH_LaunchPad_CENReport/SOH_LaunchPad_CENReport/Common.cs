@@ -60,8 +60,17 @@ namespace SOH_LaunchPad_CENReport
                         if(inc.Contains("*"))
                         {
                             string ckinc = inc.Replace("*", "%");
+
+                            DataSet rcd_schema = SqlHelper.ExecuteDataset(SqlHelper.GetConnection("ReportDB"), CommandType.Text,
+                                    $@"select top 3 COLUMN_NAME, DATA_TYPE, isnull(CHARACTER_MAXIMUM_LENGTH, 0) as DATA_LENGTH
+                                from INFORMATION_SCHEMA.COLUMNS
+                                where TABLE_NAME='{mstTable}' and COLUMN_NAME<>'EDIOn'
+                                order by ORDINAL_POSITION asc");
+                            string col_code = rcd_schema.Tables[0].Rows[0]["COLUMN_NAME"].ToString();
+                            string col_descp = rcd_schema.Tables[0].Rows[1]["COLUMN_NAME"].ToString();
+
                             DataSet rcd_3 = SqlHelper.ExecuteDataset(SqlHelper.GetConnection("ReportDB"), CommandType.Text,
-                                    $@"Select [Code] from {mstTable} where [Code] like '{ckinc}'");
+                                    $@"Select {col_code} as [Code] from {mstTable} where {col_code} like '{ckinc}'");
 
                             if (rcd_3.Tables.Count > 0 && rcd_3.Tables[0].Rows.Count > 0)
                             {
@@ -149,7 +158,7 @@ namespace SOH_LaunchPad_CENReport
                 return "";
         }
 
-        public  static string WildCardToRegular(string value)
+        public static string WildCardToRegular(string value)
         {
             return "^" + Regex.Escape(value).Replace("\\?", ".").Replace("\\*", ".*") + "$";
         }

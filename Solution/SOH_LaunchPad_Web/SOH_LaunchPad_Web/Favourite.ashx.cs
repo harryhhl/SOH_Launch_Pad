@@ -19,6 +19,7 @@ namespace SOH_LaunchPad_Web
                 using (StreamReader reader = new StreamReader(context.Request.InputStream))
                 {
                     input = reader.ReadToEnd();
+                    await Common.APILogging(input, context);
                 }
 
                 try

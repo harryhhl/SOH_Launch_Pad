@@ -16,10 +16,6 @@ namespace SOH_LaunchPad_Web.Approval.SOApproval
     /// </summary>
     public class SOApproval : HttpTaskAsyncHandler, IRequiresSessionState
     {
-        private static readonly string AuthWSEndpointUrl = ConfigurationManager.AppSettings["SOH.AuthWS.EndpointUrl"];
-        private static readonly string ApprovalWSEndpointUrl = ConfigurationManager.AppSettings["SOH.Approval.EndpointUrl"];
-        private static readonly string SapReportWSEndpointUrl = ConfigurationManager.AppSettings["SOH.SapReportWS.EndpointUrl"];
-
         public override async Task ProcessRequestAsync(HttpContext context)
         {
             if (HttpContext.Current.Request.HttpMethod == "POST")
@@ -30,6 +26,7 @@ namespace SOH_LaunchPad_Web.Approval.SOApproval
                     using (StreamReader reader = new StreamReader(context.Request.InputStream))
                     {
                         input = reader.ReadToEnd();
+                        await Common.APILogging(input, context);
                     }
 
                     var inputset = HttpUtility.ParseQueryString(input);
@@ -39,7 +36,7 @@ namespace SOH_LaunchPad_Web.Approval.SOApproval
 
                     if (action == "list")
                     {
-                        var result = await GenericRequest.Post(ApprovalWSEndpointUrl + "soapproval/list.ashx", new StringContent(input));
+                        var result = await GenericRequest.Post(Common.ApprovalWSEndpointUrl + "soapproval/list.ashx", new StringContent(input));
                         if (result.Status == RequestResult.ResultStatus.Failure)
                         {
                             context.Response.StatusCode = 400;
@@ -53,7 +50,7 @@ namespace SOH_LaunchPad_Web.Approval.SOApproval
                     }
                     else if (action == "approve")
                     {
-                        var result = await GenericRequest.Post(ApprovalWSEndpointUrl + "soapproval/approve.ashx", new StringContent(input));
+                        var result = await GenericRequest.Post(Common.ApprovalWSEndpointUrl + "soapproval/approve.ashx", new StringContent(input));
                         if (result.Status == RequestResult.ResultStatus.Failure)
                         {
                             context.Response.StatusCode = 400;
@@ -68,7 +65,7 @@ namespace SOH_LaunchPad_Web.Approval.SOApproval
                     else if (action == "pendingcount")
                     {
 
-                        var result = await GenericRequest.Post(ApprovalWSEndpointUrl + "soapproval/listcount.ashx", new StringContent(input));
+                        var result = await GenericRequest.Post(Common.ApprovalWSEndpointUrl + "soapproval/listcount.ashx", new StringContent(input));
                         if (result.Status == RequestResult.ResultStatus.Failure)
                         {
                             context.Response.StatusCode = 400;
@@ -83,7 +80,7 @@ namespace SOH_LaunchPad_Web.Approval.SOApproval
                     else if (action == "getaappr")
                     {
 
-                        var result = await GenericRequest.Post(ApprovalWSEndpointUrl + "/getaapr.ashx", new StringContent(input));
+                        var result = await GenericRequest.Post(Common.ApprovalWSEndpointUrl + "/getaapr.ashx", new StringContent(input));
                         if (result.Status == RequestResult.ResultStatus.Failure)
                         {
                             context.Response.StatusCode = 400;
@@ -103,7 +100,7 @@ namespace SOH_LaunchPad_Web.Approval.SOApproval
                         if (string.IsNullOrEmpty(sid))
                         {
                             input = input.Replace("viewdetail", "new");
-                            var requestforQID = await GenericRequest.Post(SapReportWSEndpointUrl + "AddReportQueue.ashx", new StringContent(input));
+                            var requestforQID = await GenericRequest.Post(Common.SapReportWSEndpointUrl + "AddReportQueue.ashx", new StringContent(input));
                             if (requestforQID.Status == RequestResult.ResultStatus.Failure)
                             {
                                 context.Response.StatusCode = 400;
@@ -116,7 +113,7 @@ namespace SOH_LaunchPad_Web.Approval.SOApproval
                             jsonValues.Add("Token", token);
                             jsonValues.Add("ReportQueueId", requestforQID.Data);
                             jsonValues.Add("FuncID", sysfuncid);
-                            var requestforReport = await GenericRequest.Post(SapReportWSEndpointUrl + "CallReport.ashx", new FormUrlEncodedContent(jsonValues));
+                            var requestforReport = await GenericRequest.Post(Common.SapReportWSEndpointUrl + "CallReport.ashx", new FormUrlEncodedContent(jsonValues));
                             if (requestforReport.Status == RequestResult.ResultStatus.Failure)
                             {
                                 context.Response.StatusCode = 400;
@@ -128,7 +125,7 @@ namespace SOH_LaunchPad_Web.Approval.SOApproval
                             Dictionary<string, string> jsonValues2 = new Dictionary<string, string>();
                             jsonValues2.Add("Token", token);
                             jsonValues2.Add("QID", requestforQID.Data);
-                            var requestforData = await GenericRequest.Post(SapReportWSEndpointUrl + "GetFileReportData.ashx", new FormUrlEncodedContent(jsonValues2));
+                            var requestforData = await GenericRequest.Post(Common.SapReportWSEndpointUrl + "GetFileReportData.ashx", new FormUrlEncodedContent(jsonValues2));
                             if (requestforData.Status == RequestResult.ResultStatus.Failure)
                             {
                                 context.Response.StatusCode = 400;

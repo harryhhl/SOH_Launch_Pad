@@ -45,13 +45,14 @@ namespace SOH_LaunchPad_CENReport
                                 where TABLE_NAME='{mastername}' and COLUMN_NAME<>'EDIOn'
                                 order by ORDINAL_POSITION asc");
 
+
                     string col_code = rcd_schema.Tables[0].Rows[0]["COLUMN_NAME"].ToString();
                     string col_descp = rcd_schema.Tables[0].Rows[1]["COLUMN_NAME"].ToString();
                     string col_ref = "null";
                     if (rcd_schema.Tables[0].Rows.Count > 2)
                         col_ref = rcd_schema.Tables[0].Rows[2]["COLUMN_NAME"].ToString();
 
-                    DataSet rcd = SqlHelper.ExecuteDataset(SqlHelper.GetConnection("ReportDB"), CommandType.Text,
+                   DataSet rcd = SqlHelper.ExecuteDataset(SqlHelper.GetConnection("ReportDB"), CommandType.Text,
                         $@"SELECT {col_code} as [Code], {col_descp} as [Description], {col_ref} as [RefCode]
                           FROM [dbo].[{mastername}] where len({col_code})>1 order by {col_code} asc;");
 

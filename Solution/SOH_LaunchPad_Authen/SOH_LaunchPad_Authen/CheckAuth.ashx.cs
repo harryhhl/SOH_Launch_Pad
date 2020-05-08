@@ -37,13 +37,13 @@ namespace SOH_LaunchPad_Authen
 
                 if (rcd.Tables.Count > 0)
                 {
-                    if(rcd.Tables[0].Rows.Count >= 1)
+                    Dictionary<string, string> dataset = new Dictionary<string, string>();
+
+                    if (rcd.Tables[0].Rows.Count >= 1)
                     {
                         var row = rcd.Tables[0].Rows[0];
-                        Dictionary<string, string> dataset = new Dictionary<string, string>();
                         dataset.Add("Username", row["Username"].ToString());
                         dataset.Add("LAN_ID", row["LAN_ID"].ToString());
-                        result.Data = JsonConvert.SerializeObject(dataset);
                     }
 
                     if (rcd.Tables.Count > 1 && rcd.Tables[1].Rows.Count >= 1)
@@ -55,12 +55,16 @@ namespace SOH_LaunchPad_Authen
                             result.Status = RequestResult.ResultStatus.Failure;
                             result.Errmsg = "Unknown!";
                         }
+
+                        dataset.Add("FuncPara", row["FunctionParaAccess"].ToString());
                     }
                     else
                     {
                         result.Status = RequestResult.ResultStatus.Failure;
                         result.Errmsg = "User No Access right!";
                     }
+
+                    result.Data = JsonConvert.SerializeObject(dataset);
                 }
                 else
                 {

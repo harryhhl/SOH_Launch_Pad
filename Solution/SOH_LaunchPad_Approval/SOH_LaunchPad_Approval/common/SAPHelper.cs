@@ -26,7 +26,7 @@ namespace SOH_LaunchPad_Approval.common
             for (int liElement = 0; liElement < rfcTable.ElementCount; liElement++)
             {
                 RfcElementMetadata rfcEMD = rfcTable.GetElementMetadata(liElement);
-                dtRet.Columns.Add(rfcEMD.Name);
+                dtRet.Columns.Add(rfcEMD.Name.Replace("&", "_"));
             }
 
             foreach (IRfcStructure row in rfcTable)
@@ -37,11 +37,34 @@ namespace SOH_LaunchPad_Approval.common
                 {
                     RfcElementMetadata rfcEMD = rfcTable.GetElementMetadata(liElement);
 
-                    dr[rfcEMD.Name] = row.GetString(rfcEMD.Name);
+                    dr[rfcEMD.Name.Replace("&", "_")] = row.GetString(rfcEMD.Name);
                 }
 
                 dtRet.Rows.Add(dr);
             }
+
+            return dtRet;
+        }
+
+        public static DataTable GetDataTableFromRfcStruct(IRfcStructure rfcStruct)
+        {
+            DataTable dtRet = new DataTable();
+
+            for (int liElement = 0; liElement < rfcStruct.ElementCount; liElement++)
+            {
+                RfcElementMetadata rfcEMD = rfcStruct.GetElementMetadata(liElement);
+                dtRet.Columns.Add(rfcEMD.Name.Replace("&", "_"));
+            }
+
+            DataRow dr = dtRet.NewRow();
+
+            for (int liElement = 0; liElement < rfcStruct.ElementCount; liElement++)
+            {
+                RfcElementMetadata rfcEMD = rfcStruct.GetElementMetadata(liElement);
+                dr[rfcEMD.Name.Replace("&", "_")] = rfcStruct.GetString(rfcEMD.Name);
+            }
+
+            dtRet.Rows.Add(dr);
 
             return dtRet;
         }

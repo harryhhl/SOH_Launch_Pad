@@ -11,7 +11,7 @@
     <script src="../scripts/jszip.js"></script>
     <script src="../scripts/kendo.all.min.js"></script>
     <script src="../scripts/iframeResizer.contentWindow.min.js"></script>
-    <script src="UserManage.js?40"></script>
+    <script src="UserManage.js?49"></script>
 </head>
 <body>
     <div id="dvMainContent">
@@ -22,6 +22,9 @@
                 <div class="HeaderTitle">
                     <div style="margin-left: 10px;">
                         <h3>User Manage</h3>
+                    </div>
+                    <div style="margin-left: auto; order: 2;">
+                        <button class="k-button k-primary" id="btnRefresh"><span class='k-icon k-i-reload'></span></button>
                     </div>
                 </div>
                 <hr>
@@ -38,6 +41,9 @@
                         <li>
                             Role Users
                         </li>
+                        <li>
+                            Users
+                        </li>                        
                     </ul>
                     <div id="dvRoleFuncAccess">
                         <h4><label for="roleList">Role List</label></h4>
@@ -76,6 +82,26 @@
 
                         <button class="k-button k-primary" name="btnSaveChanges" style="margin-top: 2em; display: block;">Save Changes</button>
                     </div>
+                    <div id="dvUsers">
+                        <h4><label for="userList">User List</label></h4>
+                        <input name="userList" value="1" style="width: 100%;" />
+
+                        <br />
+                        <br />
+
+                        <div style="width: 90%;">
+                            <h4><label for="txtRoleList">Roles</label></h4>
+                            <textarea id="txtRoleList" class="k-textbox" style="width: 100%;" readonly></textarea>
+                        </div>
+
+                        <br />
+                        <br />
+
+                        <div style="width: 90%;">
+                            <h4><label for="txtFuncList">Functions</label></h4>
+                            <textarea id="txtFuncList" class="k-textbox" style="width: 100%;" readonly></textarea>
+                        </div>
+                    </div>                    
                 </div>
             </div>     
 

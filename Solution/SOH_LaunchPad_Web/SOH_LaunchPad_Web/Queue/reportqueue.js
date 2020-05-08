@@ -599,7 +599,7 @@ function Start()
                 var newelement = document.createElement("link");
                 newelement.setAttribute("rel", "stylesheet");
                 newelement.setAttribute("type", "text/css");
-                newelement.setAttribute("href", "reportqueue_"+newTheme+".css");  
+                newelement.setAttribute("href", "../styles/kgrid_"+newTheme+".css");  
                 newelement.setAttribute(targetattr, targetattrval);           
                 allsuspects[i].parentNode.replaceChild(newelement, allsuspects[i]);
             }

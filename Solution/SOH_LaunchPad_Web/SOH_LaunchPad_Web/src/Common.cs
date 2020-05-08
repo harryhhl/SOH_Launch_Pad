@@ -33,6 +33,13 @@ namespace SOH_LaunchPad_Web
             }
         }
 
+        public static async Task APILogging(string input, HttpContext context)
+        {
+            string handler = context.CurrentHandler == null ? "" : context.CurrentHandler.ToString();
+            input += $@"&hdlr={handler}";
+            await GenericRequest.Post(AuthWSEndpointUrl + "Log.ashx", new StringContent(input));
+        }
+
         public static async Task<RequestResult> SetFuncPreference(string token, string username, string sysfuncid, string key, string value)
         {
             string uri = "Common.ashx";

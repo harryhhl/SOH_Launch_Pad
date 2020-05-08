@@ -131,6 +131,11 @@ function Start()
                 var wn = document.getElementById('theframe').contentWindow;
                 wn.postMessage("[SOH_Token]" + AzureAccessToken, "*");
             } 
+
+            if (e.data.startsWith("[RefreshME]"))
+            {
+                document.getElementById('theframe').contentWindow.location.reload();;
+            } 
             
             //console.log(e);
         });

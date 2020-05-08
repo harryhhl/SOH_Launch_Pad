@@ -24,6 +24,7 @@ namespace SOH_LaunchPad_Web.Queue
                 using (StreamReader reader = new StreamReader(context.Request.InputStream))
                 {
                     input = reader.ReadToEnd();
+                    await Common.APILogging(input, context);
                 }
 
                 var action = HttpUtility.ParseQueryString(input).Get("Action");

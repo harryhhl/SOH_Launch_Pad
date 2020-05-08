@@ -19,6 +19,7 @@ function Start()
 
     function Begin()
     {
+        GetUserList();
         GetCAList();
         GetFunctionListAll();
         GetRoleList();
@@ -60,6 +61,10 @@ function Start()
                 //cancel
             });
         });
+
+        $('#btnRefresh').on( 'click', function(){
+            window.parent.postMessage("[RefreshME]", "*");
+        });
     }
 
     function CheckInitReady()
@@ -83,6 +88,7 @@ function Start()
     function BuildRoleList()
     {
         $('#dvRoleFuncAccess input[name=roleList]').kendoDropDownList({
+            filter: "contains",
             dataTextField: "Name",
             dataValueField: "Id",
             dataSource: RoleList,
@@ -91,6 +97,7 @@ function Start()
         });
 
         $('#dvRoleCENAccess input[name=roleList]').kendoDropDownList({
+            filter: "contains",
             dataTextField: "Name",
             dataValueField: "Id",
             dataSource: RoleList,
@@ -99,6 +106,7 @@ function Start()
         });
 
         $('#dvRoleUsers input[name=roleList]').kendoDropDownList({
+            filter: "contains",
             dataTextField: "Name",
             dataValueField: "Id",
             dataSource: RoleList,
@@ -133,6 +141,18 @@ function Start()
         $('#dvCAList').append(content);
     }
 
+    function BuildUserList(data)
+    {
+        $('#dvUsers input[name=userList]').kendoDropDownList({
+            filter: "contains",
+            dataTextField: "Name",
+            dataValueField: "Id",
+            dataSource: data,
+            index: 0,
+            change: UserListOnChange
+        });
+    }
+
     function RoleListFuncAccessOnChange() {
         var CurrrentSelectRoleID = $('#dvRoleFuncAccess input[name=roleList]').val();
         RoleFunctions = null;
@@ -149,6 +169,12 @@ function Start()
         var CurrrentSelectRoleID = $('#dvRoleUsers input[name=roleList]').val();
         GetRoleUserList(CurrrentSelectRoleID);
     };
+
+    function UserListOnChange() {
+        var CurrrentSelectUserID = $('#dvUsers input[name=userList]').val();
+        GetUserDetail(CurrrentSelectUserID);
+    }
+
 
     function OnRoleFunctionSaveChanges() {
         var listBox = $("#opRoleSelected").data("kendoListBox");
@@ -247,6 +273,36 @@ function Start()
         o.style.height = "1px";
         o.style.height = (25+o.scrollHeight)+"px";
     }
+
+    function FillUserDetail(data)
+    {
+        var list_role = [];
+        var list_func = [];
+        for(var i=0; i<RoleList.length; i++) {
+            if(data.RoleList.includes(RoleList[i].Id)) {
+                list_role.push(RoleList[i].Name);
+            }
+        }
+
+        for(var i=0; i<FunctionList.length; i++) {
+            if(data.FuncList.includes(FunctionList[i].Id)) {
+                list_func.push(FunctionList[i].Name);
+            }
+        }
+
+        $('#txtRoleList').val(list_role.join("\n"));
+        $('#txtFuncList').val(list_func.join("\n"));
+
+        var o = document.getElementById('txtRoleList');
+        o.style.height = "1px";
+        o.style.height = (25+o.scrollHeight)+"px";
+
+        o = document.getElementById('txtFuncList');
+        o.style.height = "1px";
+        o.style.height = (25+o.scrollHeight)+"px";
+
+    }
+
 
     function GetFunctionListAll() 
     {
@@ -472,6 +528,55 @@ function Start()
             },
             success: function (data) {
                 alert("Update Success!");
+            }
+        });
+    }
+
+    function GetUserList() 
+    {
+        $.ajax({
+            type: "POST",
+            async: true,
+            url: "UserManage.ashx",
+            data: {
+                Action: "getuserlist",
+                Token: AccessToken,
+                FuncID: FuncID,
+                User: UserName
+            },
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            error: function (request, error) {
+                console.log(request.statusText);
+                alert(request.statusText);
+            },
+            success: function (data) {
+                BuildUserList(data);
+            }
+        });
+    }
+
+    function GetUserDetail(userID) 
+    {
+        $.ajax({
+            type: "POST",
+            async: true,
+            url: "UserManage.ashx",
+            data: {
+                Action: "getuseraccess",
+                Token: AccessToken,
+                FuncID: FuncID,
+                User: UserName,
+                LANID: userID
+            },
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            error: function (request, error) {
+                console.log(request.statusText);
+                alert(request.statusText);
+            },
+            success: function (data) {
+                FillUserDetail(data);
             }
         });
     }

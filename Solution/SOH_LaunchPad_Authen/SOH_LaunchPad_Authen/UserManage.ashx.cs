@@ -208,6 +208,64 @@ namespace SOH_LaunchPad_Authen
                         context.Response.ContentType = "application/json";
                         context.Response.Write(JsonConvert.SerializeObject(RequestResult.Ok()));
                     }
+                    else if (action == "getuserlist")
+                    {
+                        DataSet rcd = SqlHelper.ExecuteDataset(SqlHelper.GetConnection("SOHDB"), CommandType.Text,
+                           $@"SELECT distinct [UserName] FROM [dbo].[RoleUsers] order by UserName");
+
+                        List<SimpleItem> list = new List<SimpleItem>();
+                        if (rcd.Tables.Count > 0)
+                        {
+                            for (int r = 0; r < rcd.Tables[0].Rows.Count; r++)
+                            {
+                                var row = rcd.Tables[0].Rows[r];
+                                string tmp = row["UserName"].ToString().Trim();
+                                list.Add(new SimpleItem() { Id = tmp, Name = tmp });
+                            }
+                        }
+
+                        context.Response.ContentType = "application/json";
+                        context.Response.Write(JsonConvert.SerializeObject(RequestResult.Ok(list)));
+                    }
+                    else if (action == "getuseraccess")
+                    {
+                        var userID = inputset.Get("LANID");
+
+                        DataSet rcd = SqlHelper.ExecuteDataset(SqlHelper.GetConnection("SOHDB"), CommandType.Text,
+                           $@"SELECT distinct RoleID
+                                FROM [dbo].[RoleUsers]
+                                where UserName='{userID}';
+
+                             SELECT distinct FunctionID FROM RoleFuncAccess where RoleID in
+                               (SELECT RoleID
+                                FROM [dbo].[RoleUsers]
+                                where UserName='{userID}');");
+
+                        List<string> list_1 = new List<string>();
+                        List<string> list_2 = new List<string>();
+                        UserDetail ud = new UserDetail();
+                        if (rcd.Tables.Count > 0)
+                        {
+                            for (int r = 0; r < rcd.Tables[0].Rows.Count; r++)
+                            {
+                                var row = rcd.Tables[0].Rows[r];
+                                list_1.Add(row["RoleID"].ToString().Trim());
+                            }
+
+
+                            for (int r = 0; r < rcd.Tables[1].Rows.Count; r++)
+                            {
+                                var row = rcd.Tables[1].Rows[r];
+                                list_2.Add(row["FunctionID"].ToString().Trim());
+                            }
+
+                            ud.RoleList = list_1;
+                            ud.FuncList = list_2;
+                        }
+
+                        context.Response.ContentType = "application/json";
+                        context.Response.Write(JsonConvert.SerializeObject(RequestResult.Ok(ud)));
+                    }
                     else
                     {
                         context.Response.ContentType = "application/json";
@@ -249,6 +307,12 @@ namespace SOH_LaunchPad_Authen
             }
 
             return list;
+        }
+
+        private class UserDetail
+        {
+            public List<string> RoleList;
+            public List<string> FuncList;
         }
 
         private class SimpleItem

@@ -21,7 +21,7 @@ namespace SOH_LaunchPad_Approval.soapproval.src
                 RfcRepository sapRfcRepository = destination.Repository;
 
                 IRfcFunction rfcFunction = sapRfcRepository.CreateFunction("ZBAPI_SOH_SO_DISPLAY");
-                rfcFunction.SetValue("I_BNAME", userid);
+                rfcFunction.SetValue("I_BNAME", userid.ToUpper());
 
                 rfcFunction.Invoke(destination);
 
@@ -50,7 +50,7 @@ namespace SOH_LaunchPad_Approval.soapproval.src
                 RfcRepository sapRfcRepository = destination.Repository;
 
                 IRfcFunction rfcFunction = sapRfcRepository.CreateFunction("ZBAPI_SOH_SO_DISPLAY");
-                rfcFunction.SetValue("I_BNAME", userid);
+                rfcFunction.SetValue("I_BNAME", userid.ToUpper());
 
                 rfcFunction.Invoke(destination);
 
@@ -78,7 +78,7 @@ namespace SOH_LaunchPad_Approval.soapproval.src
                 RfcRepository sapRfcRepository = destination.Repository;
 
                 IRfcFunction rfcFunction = sapRfcRepository.CreateFunction("ZBAPI_SOH_SO_APPROVE");
-                rfcFunction.SetValue("I_BNAME", userid);
+                rfcFunction.SetValue("I_BNAME", userid.ToUpper());
 
                 IRfcTable rtable = rfcFunction.GetTable("TT_RSLT");
                 foreach (var r in rst)
