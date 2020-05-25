@@ -29,6 +29,7 @@ namespace SOH_LaunchPad_CENReport
                 var reportname = HttpUtility.ParseQueryString(input).Get("Report");
                 var qid = HttpUtility.ParseQueryString(input).Get("QID");
 
+
                 try
                 {
                     ReportData rpt = GetReportData(reportname, qid);

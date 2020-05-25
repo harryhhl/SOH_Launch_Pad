@@ -137,7 +137,7 @@ namespace SOH_LaunchPad_CENReport
                 }
                 else if (rptMsg.Message == "ALV")
                 {
-                    var config = GetALVReportSchema.GetConfigFromReportDB(rptName);
+                    var config = GetALVReportSchema.GetConfigFromReportDB(rptName, qid);
                     var columnSettings = JsonConvert.DeserializeObject<List<GetALVReportSchema.KendoGridColumnSetting>>(config.ColumnSetting);
                     var reportData = GetALVReportData.GetReportData(rptName, qid);
                     var reportLayout = ReportLayout.GetReportObjDefault(rptName, userName);

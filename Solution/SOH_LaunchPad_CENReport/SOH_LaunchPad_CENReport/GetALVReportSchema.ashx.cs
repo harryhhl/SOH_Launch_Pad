@@ -27,10 +27,11 @@ namespace SOH_LaunchPad_CENReport
                 }
                 var token = HttpUtility.ParseQueryString(input).Get("Token");
                 var reportname = HttpUtility.ParseQueryString(input).Get("Report");
+                var qid = HttpUtility.ParseQueryString(input).Get("QID");
 
                 try
                 {
-                    KendoGridConfig config = GetConfigFromReportDB(reportname);
+                    KendoGridConfig config = GetConfigFromReportDB(reportname, qid);
 
                     RequestResult ret = new RequestResult(RequestResult.ResultStatus.Success);
                     ret.Data = JsonConvert.SerializeObject(config);
@@ -52,7 +53,7 @@ namespace SOH_LaunchPad_CENReport
             }
         }
 
-        public static KendoGridConfig GetConfigFromReportDB(string reportname)
+        public static KendoGridConfig GetConfigFromReportDB(string reportname, string qid)
         {
             DataSet rcd = SqlHelper.ExecuteDataset(SqlHelper.GetConnection("ReportDB"), CommandType.Text,
                              $@"SELECT a.COLUMN_NAME, 
@@ -84,6 +85,8 @@ namespace SOH_LaunchPad_CENReport
             KendoGridSchemaSetting schema = new KendoGridSchemaSetting();
             List<KendoGridColumnSetting> settings = new List<KendoGridColumnSetting>();
 
+            var colLengthDS = GetColumnMaxDataLength(reportname, qid);
+
             for (int r = 0; r < rcd.Tables[0].Rows.Count; r++)
             {
                 var row = rcd.Tables[0].Rows[r];
@@ -91,9 +94,12 @@ namespace SOH_LaunchPad_CENReport
                 string columnname = row["COLUMN_NAME"].ToString();
                 string datatype = row["DATA_TYPE"].ToString();
                 int datalength = (int)row["DATA_LENGTH"];
-                string title = row["COLUMN_TITLE"].ToString();
+                string title = row["COLUMN_TITLE"].ToString().Trim();
 
                 schema.Add(columnname, datatype);
+
+                datalength = colLengthDS == null ? datalength : colLengthDS[columnname];
+
                 settings.Add(KendoGridColumnSetting.Create(columnname, title, datatype, datalength));
             }
 
@@ -104,6 +110,97 @@ namespace SOH_LaunchPad_CENReport
             return config;
         }
 
+        private static Dictionary<string, int> GetColumnMaxDataLength(string reportname, string qid)
+        {
+            Dictionary<string, int> list = new Dictionary<string, int>();
+
+            try
+            {
+                DataSet rcd = SqlHelper.ExecuteDataset(SqlHelper.GetConnection("ReportDB"), CommandType.Text,
+                     $@"
+                        declare @results table
+                        (
+                        ID varchar(36),
+                        ColumnName varchar(250),
+                        Longest varchar(250),
+                        SQLText varchar(250)
+                        )
+
+                        INSERT INTO @results(ID,ColumnName,Longest,SQLText)
+                        SELECT 
+                            NEWID(),
+                            COLUMN_NAME,
+                            'NA',
+                            'SELECT Max(Len(' + COLUMN_NAME + ')) FROM {reportname} where SelectionID=''{qid}'''
+                        FROM 
+                        (SELECT COLUMN_NAME, 
+                                    DATA_TYPE, 
+                                    Isnull(CHARACTER_MAXIMUM_LENGTH, 0) AS DATA_LENGTH, 
+                                    ORDINAL_POSITION 
+                            FROM   information_schema.columns 
+                            WHERE  TABLE_NAME = '{reportname}' 
+                                    AND COLUMN_NAME <> 'SelectionID' 
+                                    AND COLUMN_NAME <> 'CreatedOn' )a 
+
+                        ORDER  BY ORDINAL_POSITION ASC  
+
+
+
+                        DECLARE @id varchar(36)
+                        DECLARE @sql varchar(200)
+                        declare @receiver table(theCount int)
+
+                        DECLARE length_cursor CURSOR
+                            FOR SELECT ID, SQLText FROM @results 
+                        OPEN length_cursor
+                        FETCH NEXT FROM length_cursor
+                        INTO @id, @sql
+                        WHILE @@FETCH_STATUS = 0
+                        BEGIN
+                            INSERT INTO @receiver (theCount)
+                            exec(@sql)
+
+                            UPDATE @results
+                            SET Longest = (SELECT theCount FROM @receiver)
+                            WHERE ID = @id
+
+                            DELETE FROM @receiver
+
+                            FETCH NEXT FROM length_cursor
+                            INTO @id, @sql
+                        END
+                        CLOSE length_cursor
+                        DEALLOCATE length_cursor
+
+
+                        SELECT 
+                            ColumnName, 
+                            Longest 
+                        FROM 
+                            @results");
+
+
+                for (int r = 0; r < rcd.Tables[0].Rows.Count; r++)
+                {
+                    var row = rcd.Tables[0].Rows[r];
+
+                    string columnname = row["ColumnName"].ToString();
+                    string datalengstr = row["Longest"].ToString();
+
+                    int datalength = 0;
+                    int.TryParse(datalengstr, out datalength);
+
+                    list.Add(columnname, datalength);
+                }
+
+                return list;
+
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
 
         public class KendoGridConfig
         {
@@ -179,7 +276,7 @@ namespace SOH_LaunchPad_CENReport
                     if (datalength < 0)
                         len = 140;
                     else
-                        len = len + Math.Max(datalength * 8, 120);
+                        len = len + Math.Max(datalength * 8, 40);
 
                     int title_len = title.Trim().Length * 8 + 40;
                     len = Math.Max(len, title_len);
