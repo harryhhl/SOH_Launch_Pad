@@ -1,6 +1,9 @@
 ﻿using Helper;
 using Newtonsoft.Json;
+using NPOI.SS.UserModel;
+using NPOI.XSSF.UserModel;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
@@ -98,17 +101,43 @@ namespace SOH_LaunchPad_Web
                 }
                 else if (action == "getalvdata")
                 {
-                    var result = await GenericRequest.Post(Common.SapReportWSEndpointUrl + "GetALVReportData.ashx", new StringContent(input));
-                    if (result.Status == RequestResult.ResultStatus.Failure)
+                    var qid = inputset.Get("QID");
+                    string rptdatajson = HttpContext.Current.Session["RptALV_" + qid] as string;
+                    if (string.IsNullOrEmpty(rptdatajson))
                     {
-                        context.Response.StatusCode = 400;
-                        context.Response.StatusDescription = result.GetErrmsgTrim();
+                        var result = await GenericRequest.Post(Common.SapReportWSEndpointUrl + "GetALVReportData.ashx", new StringContent(input));
+                        if (result.Status == RequestResult.ResultStatus.Failure)
+                        {
+                            context.Response.StatusCode = 400;
+                            context.Response.StatusDescription = result.GetErrmsgTrim();
+                            return;
+                        }
+                        else
+                        {
+                            rptdatajson = result.Data;
+                            HttpContext.Current.Session["RptALV_" + qid] = rptdatajson;
+                        }
                     }
-                    else
+
+                    string skip = inputset.Get("skip");
+                    string take = inputset.Get("take");
+                    string filter = inputset.Get("filter");
+                    string sort = inputset.Get("sort");
+
+                    if ((skip != null && take != null) || !string.IsNullOrEmpty(filter))
                     {
-                        context.Response.ContentType = "application/json";
-                        context.Response.Write(result.Data);
+                        ReportDataSet rds = JsonConvert.DeserializeObject<ReportDataSet>(rptdatajson);
+
+                        var filterSet = KendoFilterLevel3.Parse(filter);
+                        rds.ApplyFilter(filterSet);
+                        rds.ApplySort(KendoSort.Parse(sort));
+                        rds.ApplyPaging(int.Parse(skip), int.Parse(take));
+
+                        rptdatajson = JsonConvert.SerializeObject(rds);
                     }
+
+                    context.Response.ContentType = "application/json";
+                    context.Response.Write(rptdatajson);
                 }
                 else if (action == "getfiledata")
                 {
@@ -202,6 +231,35 @@ namespace SOH_LaunchPad_Web
                     }
 
                 }
+                else if (action == "downloadalvdata")
+                {
+                    var qid = inputset.Get("QID");
+                    var layoutcontent = inputset.Get("LayoutContent");
+                    string rptdatajson = HttpContext.Current.Session["RptALV_" + qid] as string;
+                    if (string.IsNullOrEmpty(rptdatajson))
+                    {
+                        var result = await GenericRequest.Post(Common.SapReportWSEndpointUrl + "GetALVReportData.ashx", new StringContent(input));
+                        if (result.Status == RequestResult.ResultStatus.Failure)
+                        {
+                            context.Response.StatusCode = 400;
+                            context.Response.StatusDescription = result.GetErrmsgTrim();
+                            return;
+                        }
+                        else
+                        {
+                            rptdatajson = result.Data;
+                            HttpContext.Current.Session["RptALV_" + qid] = rptdatajson;
+                        }
+                    }
+
+                    ReportDataSet rds = JsonConvert.DeserializeObject<ReportDataSet>(rptdatajson);
+                    ReportLayoutObj layout = JsonConvert.DeserializeObject<ReportLayoutObj>(layoutcontent);
+
+                    var rfd = ExportALVFile(rds, layout, reportname);
+
+                    context.Response.ContentType = "application/json";
+                    context.Response.Write(JsonConvert.SerializeObject(rfd));
+                }
                 else
                 {
                     context.Response.StatusCode = 400;
@@ -214,6 +272,65 @@ namespace SOH_LaunchPad_Web
                 context.Response.StatusCode = 405;
                 context.Response.StatusDescription = "Sorry, only POST method allowed";
             }
+        }
+
+        private List<ReportFileData> ExportALVFile(ReportDataSet reportDataSet, ReportLayoutObj reportLayout, string reportname)
+        {
+            IWorkbook wb = new XSSFWorkbook();
+            ISheet sheet = wb.CreateSheet();
+
+            IRow header = sheet.CreateRow(0);
+
+            XSSFCellStyle cellStyleHeader = (XSSFCellStyle)wb.CreateCellStyle();
+            cellStyleHeader.FillForegroundColor = IndexedColors.LightTurquoise.Index;
+            cellStyleHeader.FillPattern = FillPattern.SolidForeground;
+
+
+            int colcount = 0;
+            foreach(var column in reportLayout.columns)
+            {
+                if (column.hidden != null && column.hidden == true) continue;
+                ICell col = header.CreateCell(colcount);
+                col.SetCellValue(column.title);
+                col.CellStyle = cellStyleHeader;
+                colcount++;
+            }
+
+            for (int r = 0; r < reportDataSet.ListData.Count; r++)
+            {
+                IRow row = sheet.CreateRow(r + 1);
+                colcount = 0;
+                foreach (var column in reportLayout.columns)
+                {
+                    if (column.hidden != null && column.hidden == true) continue;
+
+                    ICell col = row.CreateCell(colcount);
+                    string coln = column.field;
+
+                    if (reportDataSet.ListData[r].ContainsKey(coln) && reportDataSet.ListData[r][coln] != null)
+                        col.SetCellValue(reportDataSet.ListData[r][coln].ToString());
+                    else
+                        col.SetCellValue("");
+
+                    colcount++;
+                }
+            }
+
+            ReportFileData rfd = new ReportFileData();
+            using (MemoryStream ms = new MemoryStream())
+            {
+                wb.Write(ms);
+
+                string filename = $@"{reportname}_{DateTime.Now.ToString("yyyyMMddHHmm")}.xlsx";
+                rfd.FileName = filename;
+                rfd.FileDataBase64 = Convert.ToBase64String(ms.ToArray());
+            }
+
+            wb.Close();
+            wb = null;
+
+            List<ReportFileData> list = new List<ReportFileData>() { rfd };
+            return list;
         }
 
         private void CallReport(string qid, string token, string sysfuncid)
@@ -231,6 +348,171 @@ namespace SOH_LaunchPad_Web
                     var ret = await GenericRequest.Post(Common.SapReportWSEndpointUrl + uri, content);
                 }
             });            
+        }
+
+        class ReportData : Dictionary<string, object>
+        {
+            public bool FilterPass(KendoFilter filter)
+            {
+                if (!filter.isValid) return true;
+
+                if (!this.ContainsKey(filter.field))
+                    return false;
+
+                object value = this[filter.field];
+                return filter.DoCompare(value);
+            }
+
+            public bool FilterPass(KendoFilterLevel2 filterSet)
+            {
+                if (filterSet.logic == "or")
+                {
+                    foreach (var filter in filterSet.filters)
+                    {
+                        if (FilterPass(filter))
+                            return true;
+                    }
+                }
+                else if (filterSet.logic == "and")
+                {
+                    foreach (var filter in filterSet.filters)
+                    {
+                        if (!FilterPass(filter))
+                            return false;
+                    }
+                    return true;
+                }
+
+                return false;
+            }
+
+            public bool FilterPass(KendoFilterLevel3 filterSet)
+            {
+                if (filterSet.logic == "or")
+                {
+                    foreach (var filter in filterSet.filters)
+                    {
+                        if (FilterPass(filter))
+                            return true;
+                    }
+                }
+                else if (filterSet.logic == "and")
+                {
+                    foreach (var filter in filterSet.filters)
+                    {
+                        if (!FilterPass(filter))
+                            return false;
+                    }
+                    return true;
+                }
+
+                return false;
+            }
+        }
+
+        class ReportDataSet
+        {
+            public List<ReportData> ListData = new List<ReportData>();
+            public int TotalCount;
+
+            public void ApplySort(KendoSort sort)
+            {
+                if (sort == null)
+                    return;
+
+                var cpr = (IComparer<ReportData>)new KendoSortComparer(sort.field);
+                ListData.Sort(cpr);
+                if (sort.dir == "desc")
+                    ListData.Reverse();
+            }
+
+            public void ApplyPaging(int skip, int take)
+            {
+                if (skip > ListData.Count)
+                {
+                    ListData.Clear();
+                    return;
+                }
+
+                ListData.RemoveRange(0, skip);
+
+                if (ListData.Count > take)
+                {
+                    ListData.RemoveRange(take, ListData.Count - take);
+                }
+            }
+
+            public void ApplyFilter(object filter)
+            {
+                if (filter == null) return;
+
+                if (filter is KendoFilterLevel2)
+                {
+                    KendoFilterLevel2 filterSet = (KendoFilterLevel2)filter;
+                    if (filterSet.isValid)
+                    {
+                        List<ReportData> newList = new List<ReportData>();
+                        foreach (var md in ListData)
+                        {
+                            if (md.FilterPass(filterSet))
+                                newList.Add(md);
+                        }
+
+                        ListData = newList;
+                    }
+                }
+                if (filter is KendoFilterLevel3)
+                {
+                    KendoFilterLevel3 filterSet = (KendoFilterLevel3)filter;
+                    if (filterSet.isValid)
+                    {
+                        List<ReportData> newList = new List<ReportData>();
+                        foreach (var md in ListData)
+                        {
+                            if (md.FilterPass(filterSet))
+                                newList.Add(md);
+                        }
+
+                        ListData = newList;
+                    }
+                }
+
+                TotalCount = ListData.Count;
+            }
+        }
+
+        class KendoFilterComparer : IComparer
+        {
+            int IComparer.Compare(object a, object b)
+            {
+                decimal a_dec = 0;
+                decimal b_dec = 0;
+                if (decimal.TryParse(a.ToString(), out a_dec) && decimal.TryParse(b.ToString(), out b_dec))
+                {
+                    return a_dec.CompareTo(b_dec);
+                }
+                else
+                    return a.ToString().CompareTo(b.ToString());
+            }
+        }
+
+        class KendoSortComparer : IComparer<ReportData>
+        {
+            string checkfield;
+
+            public KendoSortComparer(string cfield)
+            {
+                checkfield = cfield;
+            }
+
+            public int Compare(ReportData x, ReportData y)
+            {
+                object a_field = x[checkfield];
+                object b_field = y[checkfield];
+
+                var cpr = (IComparer)new KendoFilterComparer();
+                return cpr.Compare(a_field, b_field);
+            }
         }
 
         class MasterData
@@ -411,6 +693,83 @@ namespace SOH_LaunchPad_Web
                     return !(string.IsNullOrEmpty(field) || string.IsNullOrEmpty(@operator));
                 }
             }
+
+            public bool DoCompare(object targetValue)
+            {
+                IComparer cpr = (IComparer)new KendoFilterComparer();
+                if (@operator == "eq")
+                {
+                    int r = cpr.Compare(targetValue, value);
+                    return r == 0;
+                }
+                else if (@operator == "neq")
+                {
+                    int r = cpr.Compare(targetValue, value);
+                    return r != 0;
+                }
+                else if (@operator == "gt")
+                {
+                    int r = cpr.Compare(targetValue, value);
+                    return r == 1;
+                }
+                else if (@operator == "lt")
+                {
+                    int r = cpr.Compare(targetValue, value);
+                    return r == -1;
+                }
+                else if (@operator == "gte")
+                {
+                    int r = cpr.Compare(targetValue, value);
+                    return r == 1 || r == 0;
+                }
+                else if (@operator == "lte")
+                {
+                    int r = cpr.Compare(targetValue, value);
+                    return r == -1 || r == 0;
+                }
+                else if (@operator == "isnull")
+                {
+                    return targetValue == null;
+                }
+                else if (@operator == "isnotnull")
+                {
+                    return targetValue != null;
+                }
+                else if (@operator == "isempty")
+                {
+                    return string.IsNullOrEmpty(targetValue.ToString());
+                }
+                else if (@operator == "isnotempty")
+                {
+                    return !string.IsNullOrEmpty(targetValue.ToString());
+                }
+                else if (@operator == "startswith")
+                {
+                    return targetValue.ToString().StartsWith(value);
+                }
+                else if (@operator == "doesnotstartwith")
+                {
+                    return !targetValue.ToString().StartsWith(value);
+                }
+                else if (@operator == "endswith")
+                {
+                    return targetValue.ToString().EndsWith(value);
+                }
+                else if (@operator == "doesnotendwith")
+                {
+                    return !targetValue.ToString().EndsWith(value);
+                }
+                else if (@operator == "contains")
+                {
+                    return targetValue.ToString().Contains(value);
+                }
+                else if (@operator == "doesnotcontain")
+                {
+                    return !targetValue.ToString().Contains(value);
+                }
+
+                return true;
+            }
         }
 
         public class KendoFilterLevel2
@@ -469,7 +828,46 @@ namespace SOH_LaunchPad_Web
             }
         }
 
+        public class KendoSort
+        {
+            public string field { get; set; }
+            public string dir { get; set; }
 
+            public static KendoSort Parse(string json)
+            {
+                if (string.IsNullOrEmpty(json))
+                    return null;
+
+                var sort = JsonConvert.DeserializeObject<KendoSort[]>(json);
+                if (sort.Length <= 0)
+                    return null;
+                else
+                    return sort[0];
+            }
+        }
+
+        internal class ReportFileData
+        {
+            public string FileName;
+            public string FileDataBase64;
+        }
+
+        internal class ReportLayoutObj
+        {
+            public List<ReportLayoutColumn> columns { get; set; }
+            public bool groupable { get; set; }
+        }
+
+        internal class ReportLayoutColumn
+        {
+            public bool encoded { get; set; }
+            public string field { get; set; }
+            public string title { get; set; }
+            public string width { get; set; }
+            public string template { get; set; }
+            public bool locked { get; set; }
+            public bool? hidden { get; set; }
+        }
 
         public override bool IsReusable
         {

@@ -85,8 +85,10 @@ function Start()
         });
 
         $('.btnDownloadExcel').on( 'click', function() {
-            var grid = alvgrid.data("kendoGrid");
-            grid.saveAsExcel();
+            // var grid = alvgrid.data("kendoGrid");
+            // grid.saveAsExcel();
+            let option = alvgrid.data("kendoGrid").getOptions();
+            DownloadALVFileData(JSON.stringify(option));
         });
 
         $('#btnBack').on( 'click', function() {   
@@ -948,7 +950,14 @@ function Start()
                     error: function (xhr, error) {
                         console.debug(xhr); console.debug(error);
                     }
-                }
+                },
+                parameterMap: function(data, type) {
+                    if(data.filter)
+                        data.filter = kendo.stringify(data.filter);
+                    if(data.sort)
+                        data.sort = kendo.stringify(data.sort);
+                    return data;
+                },
             },
             schema: {
                 model: {
@@ -958,10 +967,10 @@ function Start()
                 data: "ListData",
                 total: "TotalCount"
             },
-            pageSize: 10,
-            serverPaging: false,
-            serverFiltering: false,
-            serverSorting: false
+            pageSize: 100,
+            serverPaging: true,
+            serverFiltering: true,
+            serverSorting: true
         });
 
         var columnSetting = JSON.parse(config.ColumnSetting);
@@ -982,6 +991,9 @@ function Start()
             filterable: true,
             columnMenu: true,
             //selectable: "row",
+            scrollable: {
+                virtual: true
+            },
             change: ALVGridonSelect,
             persistSelection: true,
             pageable: false,
@@ -1063,13 +1075,13 @@ function Start()
     function ALVGridGetDataReturn(_jqXHR, _textStatus) 
     {
         var grid = alvgrid.data("kendoGrid");
-        var total = grid.dataSource.total();
-        if(total > 0) {
-            grid.dataSource.pageSize(total);
+        //var total = grid.dataSource.total();
+        //if(total > 0) {
+        //    grid.dataSource.pageSize(total);
             //grid.dataSource.page(1);
-            grid.refresh();
+        //    grid.refresh();
             //grid.pager.refresh();
-        }
+        //}
     }
 
     function BuildReportSelection()
@@ -1380,6 +1392,8 @@ function Start()
                 });
             }
         });
+
+        reportData = SoldtoPartyLeadingZeroApply(reportData);
         
         return JSON.stringify(reportData);
     }
@@ -1540,7 +1554,7 @@ function Start()
                 Token: AccessToken,
                 FuncID: FuncID,
                 Report: ReportName,
-                Data: ''      
+                QID: lastQueueID      
             },
             contentType: "application/json; charset=utf-8",
             dataType: "json",
@@ -1762,6 +1776,53 @@ function Start()
         });
     }
 
+    
+    function DownloadALVFileData(layoutcontent) 
+    {
+        $.ajax({
+            type: "POST",
+            async: true,
+            url: "../Reports/SapReport.ashx",
+            data: {
+                Action: "downloadalvdata",
+                Token: AccessToken,
+                FuncID: FuncID,
+                Report: ReportDisplayName,
+                LayoutContent: layoutcontent,
+                QID:  lastQueueID
+            },
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            error: function (request, error) {
+                console.log(request.statusText);
+                alert(request.statusText);
+            },
+            success: function (resultset) {
+                DataToDownloadFile(resultset);
+            }
+        });
+    }
+
+    function SoldtoPartyLeadingZeroApply(reportData)
+    {
+        for(var i=0; i<reportData.Selection.length; i++){
+            var item = reportData.Selection[i];
+            if(item.SelName == "S_KUNNR") {
+                if(item.SelOption != "CP") {
+                    if(item.Low != null && item.Low.length < 10 && item.Low.length > 1) {
+                        var s = "0000000000" + item.Low;
+                        item.Low = s.substr(s.length-10);
+                    }
+                    if(item.High != null && item.High.length < 10 && item.High.length > 1) {
+                        var s = "0000000000" + item.High;
+                        item.High = s.substr(s.length-10);
+                    }
+                }
+            }
+        }
+
+        return reportData;
+    }
 }
 
 function DataToDownloadFile(fileset) {

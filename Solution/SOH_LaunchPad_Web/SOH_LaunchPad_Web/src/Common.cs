@@ -79,5 +79,7 @@ namespace SOH_LaunchPad_Web
         {
             return "^" + Regex.Escape(value).Replace("\\?", ".").Replace("\\*", ".*") + "$";
         }
+
+
     }
 }

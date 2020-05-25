@@ -26,6 +26,7 @@ function Start()
     var listLayoutDS = null;
 
     var selectedReport = "";
+    var selectedReportName = "";
 
     $(document).ready(Begin);
 
@@ -63,8 +64,10 @@ function Start()
         });
 
         $('.btnDownloadExcel').on( 'click', function() {
-            var grid = alvgrid.data("kendoGrid");
-            grid.saveAsExcel();
+            // var grid = alvgrid.data("kendoGrid");
+            // grid.saveAsExcel();
+            let option = alvgrid.data("kendoGrid").getOptions();
+            DownloadALVFileData(JSON.stringify(option));
         });
 
         $('#btnToggle').on( 'click', function(){
@@ -295,6 +298,7 @@ function Start()
 
         selectedReport = selectedItem.ReportName;
         selectedQueueID = selectedItem.Id;
+        selectedReportName = selectedItem.ReportDisplayName;
 
         if(selectedItem.OutputType == "ALV") {
 
@@ -365,7 +369,16 @@ function Start()
                     error: function (xhr, error) {
                         console.debug(xhr); console.debug(error);
                     }
-                }
+                },
+                parameterMap: function(data, type) {
+                    if(data == null) return data;
+
+                    if(data.filter)
+                        data.filter = kendo.stringify(data.filter);
+                    if(data.sort)
+                        data.sort = kendo.stringify(data.sort);
+                    return data;
+                },
             },
             schema: {
                 model: {
@@ -375,10 +388,10 @@ function Start()
                 data: "ListData",
                 total: "TotalCount"
             },
-            pageSize: 10,
-            serverPaging: false,
-            serverFiltering: false,
-            serverSorting: false
+            pageSize: 100,
+            serverPaging: true,
+            serverFiltering: true,
+            serverSorting: true
         });
 
         alvgrid = $("#gridResult").kendoGrid({
@@ -393,10 +406,18 @@ function Start()
             filterable: true,
             columnMenu: true,
             selectable: "row",
-            pageable: false,
+            scrollable: {
+                virtual: true
+            },
             excel: {
                 allPages: true
             },
+            // pageable: {
+            //     refresh: true,
+            //     pageSize: 10,
+            //     pageSizes: true,
+            //     buttonCount: 5
+            // },
             // dataBound: function() {
             //     for (var i = 0; i < this.columns.length; i++) {
             //       this.autoFitColumn(i);
@@ -442,13 +463,13 @@ function Start()
     function ALVGridGetDataReturn(_jqXHR, _textStatus) 
     {
         var grid = alvgrid.data("kendoGrid");
-        var total = grid.dataSource.total();
-        if(total > 0) {
-            grid.dataSource.pageSize(total);
+        //var total = grid.dataSource.total();
+        //if(total > 0) {
+            //grid.dataSource.pageSize(total);
             //grid.dataSource.page(1);
-            grid.refresh();
+            //grid.refresh();
             //grid.pager.refresh();
-        }
+        //}
     }
 
 
@@ -463,7 +484,7 @@ function Start()
                 Token: AccessToken,
                 FuncID: FuncID,
                 Report: selectedReport,
-                Data: ''      
+                QID: selectedQueueID     
             },
             contentType: "application/json; charset=utf-8",
             dataType: "json",
@@ -489,6 +510,32 @@ function Start()
                 FuncID: FuncID,
                 Report: selectedReport,
                 Data: '',
+                QID:  selectedQueueID
+            },
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            error: function (request, error) {
+                console.log(request.statusText);
+                alert(request.statusText);
+            },
+            success: function (resultset) {
+                DataToDownloadFile(resultset);
+            }
+        });
+    }
+
+    function DownloadALVFileData(layoutcontent) 
+    {
+        $.ajax({
+            type: "POST",
+            async: true,
+            url: "../Reports/SapReport.ashx",
+            data: {
+                Action: "downloadalvdata",
+                Token: AccessToken,
+                FuncID: FuncID,
+                Report: selectedReportName,
+                LayoutContent: layoutcontent,
                 QID:  selectedQueueID
             },
             contentType: "application/json; charset=utf-8",
