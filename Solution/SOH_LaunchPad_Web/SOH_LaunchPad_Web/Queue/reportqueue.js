@@ -248,6 +248,7 @@ function Start()
             change: HistGridonSelect,
             selectable: true,
             persistSelection: true,
+            mobile: true,
             pageable: {
                 refresh: true,
                 numeric: true,
@@ -406,6 +407,7 @@ function Start()
             filterable: true,
             columnMenu: true,
             selectable: "row",
+            mobile: true,
             scrollable: {
                 virtual: true
             },

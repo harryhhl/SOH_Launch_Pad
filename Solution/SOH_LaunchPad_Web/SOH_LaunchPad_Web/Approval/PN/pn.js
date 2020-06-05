@@ -417,6 +417,7 @@ function Start() {
             persistSelection: true,
             pageable: false,
             scrollable: true,
+            mobile: true,
             dataBound: function() {
                 for (var i = 0; i < this.columns.length; i++) {
                   this.autoFitColumn(i);

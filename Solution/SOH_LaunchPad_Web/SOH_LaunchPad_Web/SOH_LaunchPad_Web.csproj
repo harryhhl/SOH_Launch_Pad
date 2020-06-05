@@ -118,6 +118,9 @@
     <Content Include="Admin\UserManage.css" />
     <Content Include="Admin\UserManage.html" />
     <Content Include="Admin\UserManage.js" />
+    <Content Include="Approval\Claim\claim.css" />
+    <Content Include="Approval\Claim\Claim.html" />
+    <Content Include="Approval\Claim\claim.js" />
     <Content Include="Approval\img\report04.png" />
     <Content Include="Approval\PN\pn.css" />
     <Content Include="Approval\PN\PN.html" />

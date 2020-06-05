@@ -111,7 +111,7 @@ iframe {
   height: 48px;
   line-height: 32px;
   padding: 0;
-  font-size: 17px;
+  font-size: 16px;
 }
 
 .btnSetting {
@@ -229,8 +229,17 @@ iframe {
 
 .topNavMiddle {
   flex-grow: 1;
-  min-width: 240px;
+  min-width: 200px;
   cursor: auto;
+}
+
+@media screen and (max-width: 520px) {
+  .topNavMiddle {
+    min-width: 40px;
+  }
+  #lbUserName {
+    display: none;
+  }
 }
 
 .topNavRight {
