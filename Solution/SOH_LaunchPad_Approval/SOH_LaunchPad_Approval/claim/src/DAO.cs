@@ -82,10 +82,15 @@ namespace SOH_LaunchPad_Approval.claim.src
                 {
                     throw new Exception(msg);
                 }
+                else if(applevel == "0000")
+                {
+                    throw new Exception("Claim Level not maintained in CEN!");
+                }
 
                 ReleaseStrategy rs = new ReleaseStrategy();
                 rs.ClaimApproverLevel = $@"{company}_{type}_{applevel}";
                 
+
                 return rs;
             }
             catch (Exception ex)
@@ -111,7 +116,7 @@ namespace SOH_LaunchPad_Approval.claim.src
                 IRfcFunction rfcFunction = sapRfcRepository.CreateFunction("ZBAPI_SOH_CLAIM_APPROVE");
                 rfcFunction.SetValue("I_Type", rst.Type.ToUpper());
                 rfcFunction.SetValue("I_DOCNO", rst.Doc.ToUpper());
-                //rfcFunction.SetValue("I_USERNAME", userid.ToUpper());
+                rfcFunction.SetValue("I_USERID", userid.ToUpper());
 
                 rfcFunction.Invoke(destination);
 

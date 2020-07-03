@@ -111,6 +111,13 @@
     <Compile Include="common\GenericInput.cs" />
     <Compile Include="common\ReleaseStrategy.cs" />
     <Compile Include="common\SqlHelper.cs" />
+    <Compile Include="confirmsoplan\approve.ashx.cs">
+      <DependentUpon>approve.ashx</DependentUpon>
+    </Compile>
+    <Compile Include="confirmsoplan\list.ashx.cs">
+      <DependentUpon>list.ashx</DependentUpon>
+    </Compile>
+    <Compile Include="confirmsoplan\src\DAO.cs" />
     <Compile Include="getaapr.ashx.cs">
       <DependentUpon>getaapr.ashx</DependentUpon>
     </Compile>
@@ -199,6 +206,13 @@
     <Compile Include="pricing\src\DAO.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="common\RequestResult.cs" />
+    <Compile Include="pr\approve.ashx.cs">
+      <DependentUpon>approve.ashx</DependentUpon>
+    </Compile>
+    <Compile Include="pr\list.ashx.cs">
+      <DependentUpon>list.ashx</DependentUpon>
+    </Compile>
+    <Compile Include="pr\src\DAO.cs" />
     <Compile Include="soapproval\approve.ashx.cs">
       <DependentUpon>approve.ashx</DependentUpon>
     </Compile>
@@ -221,11 +235,15 @@
     <Content Include="pn\list.ashx" />
     <Content Include="claim\list.ashx" />
     <Content Include="claim\approve.ashx" />
+    <Content Include="confirmsoplan\list.ashx" />
+    <Content Include="confirmsoplan\approve.ashx" />
     <None Include="Properties\PublishProfiles\publish1.pubxml" />
     <Content Include="soapproval\list.ashx" />
     <Content Include="soapproval\approve.ashx" />
     <Content Include="soapproval\listcount.ashx" />
     <None Include="Properties\PublishProfiles\publish2.pubxml" />
+    <Content Include="pr\list.ashx" />
+    <Content Include="pr\approve.ashx" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

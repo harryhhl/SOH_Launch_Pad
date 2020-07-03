@@ -114,13 +114,14 @@ namespace SOH_LaunchPad_Approval.pricing.src
                 RfcRepository sapRfcRepository = destination.Repository;
 
                 IRfcFunction rfcFunction = sapRfcRepository.CreateFunction("ZBAPI_SOH_PRICING_APPROVE");
-                rfcFunction.SetValue("I_BNAME", userid.ToUpper());
+                //rfcFunction.SetValue("I_BNAME", userid.ToUpper());
 
                 IRfcTable rtable = rfcFunction.GetTable("TT_RSLT");
                 foreach (var r in rst)
                 {
                     IRfcStructure itemRow = sapRfcRepository.GetStructureMetadata("ZSO_APPROVE").CreateStructure();
                     itemRow.SetValue("Vbeln", r.Vbeln);
+                    itemRow.SetValue("Zzbname", userid.ToUpper());
                     rtable.Insert(itemRow);
                 }
 
