@@ -70,7 +70,7 @@ function Start()
                         AzureAuthen.SignOut();
                     }
                 });
-            })
+            });
         }, ShowLoginButton);
 
         $('.btnLoginMain').on( 'click', function(){
@@ -134,7 +134,7 @@ function Start()
 
             if (e.data.startsWith("[RefreshME]"))
             {
-                document.getElementById('theframe').contentWindow.location.reload();;
+                document.getElementById('theframe').contentWindow.location.reload();
             } 
             
             //console.log(e);
@@ -143,7 +143,7 @@ function Start()
         window.addEventListener("resize", function(event) {
             //console.log(document.body.clientWidth + ' wide by ' + document.body.clientHeight+' high');
             ResetDrawerSize();
-        })
+        });
 
         $('.btnChangeTheme').on('click', function(){
             var newTheme = $(this).attr('theme');
@@ -374,7 +374,7 @@ function Start()
 
                     templateContent += "<li data-role='drawer-separator' data-parent='"+childfunc.ParentId+"' style='display: none;'></li>";
                 }
-                drawerContent += '</div></div></div>';
+                drawerContent += '</div><br><br></div></div>';
             }
             else {
                 templateContent += "<div class='widgetNotifyNum2'></div></li>";

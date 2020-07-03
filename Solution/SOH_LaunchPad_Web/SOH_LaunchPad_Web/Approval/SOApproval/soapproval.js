@@ -423,7 +423,7 @@ function Start()
 
     function GetDetail(sono) 
     {
-        var reportData = new Object();
+        var reportData = {};
         reportData.ReportName = "ZRSD058";
         reportData.Selection = [{"SelName":"ZVBELN","Kind":"S","Sign":"I","SelOption":"EQ","Low":sono,"High":""}];
 

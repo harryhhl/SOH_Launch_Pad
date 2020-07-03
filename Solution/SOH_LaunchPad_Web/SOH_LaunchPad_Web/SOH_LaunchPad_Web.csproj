@@ -121,6 +121,9 @@
     <Content Include="Approval\Claim\claim.css" />
     <Content Include="Approval\Claim\Claim.html" />
     <Content Include="Approval\Claim\claim.js" />
+    <Content Include="Approval\ConfirmSOPlan\ConfirmSOPlan.css" />
+    <Content Include="Approval\ConfirmSOPlan\ConfirmSOPlan.html" />
+    <Content Include="Approval\ConfirmSOPlan\ConfirmSOPlan.js" />
     <Content Include="Approval\img\report04.png" />
     <Content Include="Approval\PN\pn.css" />
     <Content Include="Approval\PN\PN.html" />
@@ -129,6 +132,9 @@
     <Content Include="Approval\Pricing\pricing.css" />
     <Content Include="Approval\Pricing\Pricing.html" />
     <Content Include="Approval\Pricing\pricing.js" />
+    <Content Include="Approval\PR\pr.css" />
+    <Content Include="Approval\PR\PR.html" />
+    <Content Include="Approval\PR\pr.js" />
     <Content Include="Approval\SOApproval\pdfviewer.html" />
     <Content Include="Approval\SOApproval\soapproval.css" />
     <Content Include="Approval\SOApproval\SOApproval.html" />
@@ -257,11 +263,17 @@
     <Compile Include="Approval\Claim\Claim.ashx.cs">
       <DependentUpon>Claim.ashx</DependentUpon>
     </Compile>
+    <Compile Include="Approval\ConfirmSOPlan\ConfirmSOPlan.ashx.cs">
+      <DependentUpon>ConfirmSOPlan.ashx</DependentUpon>
+    </Compile>
     <Compile Include="Approval\PN\PN.ashx.cs">
       <DependentUpon>PN.ashx</DependentUpon>
     </Compile>
     <Compile Include="Approval\Pricing\Pricing.ashx.cs">
       <DependentUpon>Pricing.ashx</DependentUpon>
+    </Compile>
+    <Compile Include="Approval\PR\PR.ashx.cs">
+      <DependentUpon>PR.ashx</DependentUpon>
     </Compile>
     <Compile Include="Approval\SOApproval\GetSODetail.ashx.cs">
       <DependentUpon>GetSODetail.ashx</DependentUpon>
@@ -292,6 +304,7 @@
     <Compile Include="Queue\ReportQueue.ashx.cs">
       <DependentUpon>ReportQueue.ashx</DependentUpon>
     </Compile>
+    <Compile Include="src\KendoHelper.cs" />
     <Compile Include="src\RequestResult.cs" />
     <Compile Include="Reports\SapReport.ashx.cs">
       <DependentUpon>SapReport.ashx</DependentUpon>
@@ -321,6 +334,8 @@
     <Content Include="Approval\Pricing\Pricing.ashx" />
     <Content Include="Approval\PN\PN.ashx" />
     <Content Include="Approval\Claim\Claim.ashx" />
+    <Content Include="Approval\PR\PR.ashx" />
+    <Content Include="Approval\ConfirmSOPlan\ConfirmSOPlan.ashx" />
     <None Include="Properties\PublishProfiles\publish1.pubxml" />
     <Content Include="Queue\ReportQueue.ashx" />
     <None Include="Properties\PublishProfiles\publish2.pubxml" />

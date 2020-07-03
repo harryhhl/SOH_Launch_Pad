@@ -1,13 +1,10 @@
-﻿using Helper;
+﻿using KendoHelper;
 using Newtonsoft.Json;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
-using System.Data.SqlClient;
 using System.IO;
 using System.Net.Http;
 using System.Text.RegularExpressions;
@@ -253,7 +250,7 @@ namespace SOH_LaunchPad_Web
                     }
 
                     ReportDataSet rds = JsonConvert.DeserializeObject<ReportDataSet>(rptdatajson);
-                    ReportLayoutObj layout = JsonConvert.DeserializeObject<ReportLayoutObj>(layoutcontent);
+                    var layout = KendoGridLayout.FromJson(layoutcontent);
 
                     var rfd = ExportALVFile(rds, layout, reportname);
 
@@ -274,10 +271,13 @@ namespace SOH_LaunchPad_Web
             }
         }
 
-        private List<ReportFileData> ExportALVFile(ReportDataSet reportDataSet, ReportLayoutObj reportLayout, string reportname)
+        private List<ReportFileData> ExportALVFile(ReportDataSet reportDataSet, KendoGridLayout reportLayout, string reportname)
         {
             IWorkbook wb = new XSSFWorkbook();
             ISheet sheet = wb.CreateSheet();
+            IDataFormat dataFormatCustom = wb.CreateDataFormat();
+            var dateStyle = wb.CreateCellStyle();
+            dateStyle.DataFormat = dataFormatCustom.GetFormat("yyyy-MM-dd");
 
             IRow header = sheet.CreateRow(0);
 
@@ -287,11 +287,11 @@ namespace SOH_LaunchPad_Web
 
 
             int colcount = 0;
-            foreach(var column in reportLayout.columns)
+            foreach(var column in reportLayout.Columns)
             {
-                if (column.hidden != null && column.hidden == true) continue;
+                if (column.Hidden != null && column.Hidden == true) continue;
                 ICell col = header.CreateCell(colcount);
-                col.SetCellValue(column.title);
+                col.SetCellValue(column.Title);
                 col.CellStyle = cellStyleHeader;
                 colcount++;
             }
@@ -300,15 +300,17 @@ namespace SOH_LaunchPad_Web
             {
                 IRow row = sheet.CreateRow(r + 1);
                 colcount = 0;
-                foreach (var column in reportLayout.columns)
+                foreach (var column in reportLayout.Columns)
                 {
-                    if (column.hidden != null && column.hidden == true) continue;
+                    if (column.Hidden != null && column.Hidden == true) continue;
 
                     ICell col = row.CreateCell(colcount);
-                    string coln = column.field;
+                    string coln = column.Field;
+
+                    var field = reportLayout.DataSource.Schema.Model.Fields[coln];
 
                     if (reportDataSet.ListData[r].ContainsKey(coln) && reportDataSet.ListData[r][coln] != null)
-                        col.SetCellValue(reportDataSet.ListData[r][coln].ToString());
+                        SetCellValue(col, reportDataSet.ListData[r][coln], field, dateStyle);
                     else
                         col.SetCellValue("");
 
@@ -349,6 +351,27 @@ namespace SOH_LaunchPad_Web
                 }
             });            
         }
+
+        private void SetCellValue(ICell cell, object val, Field f, ICellStyle dateStyle)
+        {
+            if (f != null && f.Type != null && f.Type == TypeEnum.Date)
+            {
+                DateTime dt = DateTime.Parse(val.ToString());
+                cell.SetCellValue(dt);
+                cell.CellStyle = dateStyle;
+            }
+            else if (f != null && f.Type != null && f.Type == TypeEnum.Number)
+            {
+                double num = 0.0f;
+                double.TryParse(val.ToString(), out num);
+                cell.SetCellValue(num);
+            }
+            else
+            {
+                cell.SetCellValue(val.ToString());
+            }
+        }
+        
 
         class ReportData : Dictionary<string, object>
         {
@@ -852,22 +875,7 @@ namespace SOH_LaunchPad_Web
             public string FileDataBase64;
         }
 
-        internal class ReportLayoutObj
-        {
-            public List<ReportLayoutColumn> columns { get; set; }
-            public bool groupable { get; set; }
-        }
 
-        internal class ReportLayoutColumn
-        {
-            public bool encoded { get; set; }
-            public string field { get; set; }
-            public string title { get; set; }
-            public string width { get; set; }
-            public string template { get; set; }
-            public bool locked { get; set; }
-            public bool? hidden { get; set; }
-        }
 
         public override bool IsReusable
         {

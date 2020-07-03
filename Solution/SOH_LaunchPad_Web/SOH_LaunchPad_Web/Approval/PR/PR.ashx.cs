@@ -1,18 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.SessionState;
 
-namespace SOH_LaunchPad_Web.Approval.PN
+namespace SOH_LaunchPad_Web.Approval.PR
 {
     /// <summary>
-    /// Summary description for PN
+    /// Summary description for PR
     /// </summary>
-    public class PN : HttpTaskAsyncHandler, IRequiresSessionState
+    public class PR : HttpTaskAsyncHandler, IRequiresSessionState
     {
         public override async Task ProcessRequestAsync(HttpContext context)
         {
@@ -34,7 +33,7 @@ namespace SOH_LaunchPad_Web.Approval.PN
 
                     if (action == "list")
                     {
-                        var result = await GenericRequest.Post(Common.ApprovalWSEndpointUrl + "pn/list.ashx", new StringContent(input));
+                        var result = await GenericRequest.Post(Common.ApprovalWSEndpointUrl + "pr/list.ashx", new StringContent(input));
                         if (result.Status == RequestResult.ResultStatus.Failure)
                         {
                             context.Response.StatusCode = 400;
@@ -48,7 +47,7 @@ namespace SOH_LaunchPad_Web.Approval.PN
                     }
                     else if (action == "approve")
                     {
-                        var result = await GenericRequest.Post(Common.ApprovalWSEndpointUrl + "pn/approve.ashx", new StringContent(input));
+                        var result = await GenericRequest.Post(Common.ApprovalWSEndpointUrl + "pr/approve.ashx", new StringContent(input));
                         if (result.Status == RequestResult.ResultStatus.Failure)
                         {
                             context.Response.StatusCode = 400;

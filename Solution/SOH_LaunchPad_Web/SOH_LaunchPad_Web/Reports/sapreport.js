@@ -271,7 +271,7 @@ function Start()
                 invalidateContent += '<div><span data-for="'+item.SelName+'-From" class="k-invalid-msg"></span></div>';
                 invalidateContent += '<div><span data-for="'+item.SelName+'-To" class="k-invalid-msg"</span></div>';
             }   
-            else if(item.ControlType == "Range" && item.DataType == "N" & item.Length == 8) {
+            else if(item.ControlType == "Range" && item.DataType == "N" && item.Length == 8) {
                 htmlContent += '<div class="sspcontrol" type="RangeDate" style="display:flex; align-items:center; flex-wrap: wrap;" date-format="yyyy0MM">';
                 htmlContent += '  <div class="sspcontrol-Range"><label for="'+item.SelName+'-low" class="sspcontrol-desc">'+item.SelDesc+''+(item.IsMandatory==1?'<label class="sspcontrol-req">*</label>':'')+'</label></div>';
                 htmlContent += '  <div class="sspcontrol-Range"><input id="'+item.SelName+'-low" name="'+item.SelName+'-From" date-format="yyyy0MM" type="date2" '+(item.IsMandatory==1?' required ':'')+'></div>';
@@ -546,7 +546,7 @@ function Start()
                             success: function (data) {
                                 options.success(data);
                             }
-                        })
+                        });
                     }
                 },            
                 dataBound: function (e) {
@@ -640,7 +640,7 @@ function Start()
                             success: function (data) {
                                 options.success(data);
                             }
-                        })
+                        });
                     }
                 },
                 dataBound: function (e) {
@@ -726,8 +726,8 @@ function Start()
 
     function GetMSFilterbyDependant(dependant) 
     {
-        var filterObject = new Object();
-        var filterList = new Array();
+        var filterObject = {};
+        var filterList = [];
 
         var inputs = $('input[dependant='+dependant+']');
         for(var i=0; i<inputs.length; i++){
@@ -1021,7 +1021,7 @@ function Start()
             var dataItem = alvgrid.data("kendoGrid").dataItem(this);
             dataItemSet.push(dataItem);
             //console.log(dataItem);
-        })
+        });
 
         ALVGridSetResultSelectBind(dataItemSet);
     }
@@ -1088,7 +1088,7 @@ function Start()
     {
         var controls = $('#dvNewCallContent').find('.sspcontrol');
 
-        var reportData = new Object();
+        var reportData = {};
         reportData.ReportName = ReportStep == 1? ReportName : Report2ndName;
         reportData.Selection = [];
         
@@ -1096,7 +1096,7 @@ function Start()
             var type = $(this).attr('type');
             var checkRestrict = $(this).attr('CheckRestrict');
             if(type == 'Range') {
-                var sel = new Object();
+                let sel = {};
                 sel.SelName = $($(this).find('input')[0]).attr('id').split('-')[0];
                 sel.Kind = 'S';
                 sel.Sign = 'I';
@@ -1107,7 +1107,7 @@ function Start()
                 if(sel.Low.includes(",")) {
                     var selarr = sel.Low.split(',');
                     for(var i=0; i<selarr.length; i++){
-                        var item = new Object();
+                        var item = {};
                         item.SelName = sel.SelName;
                         item.Kind = sel.Kind;
                         item.Sign = sel.Sign;
@@ -1142,7 +1142,7 @@ function Start()
                 }
             }
             else if(type == 'RangeNum') {
-                var sel = new Object();
+                let sel = {};
                 sel.SelName = $($(this).find('input')[1]).attr('id').split('-')[0];
                 sel.Kind = 'S';
                 sel.Sign = 'I';
@@ -1157,15 +1157,15 @@ function Start()
                     reportData.Selection.push(sel);
             }
             else if(type == 'RangeDate') {
-                var sel = new Object();
+                let sel = {};
                 sel.SelName = $($(this).find('input')[0]).attr('id').split('-')[0];
                 sel.Kind = 'S';
                 sel.Sign = 'I';
                 sel.SelOption = $($(this).find('select')[0]).val();
 
-                var dateformat = $(this).attr('date-format');
-                var datefrom = $($(this).find('input')[0]).data("kendoDatePicker").value();
-                var dateto = $($(this).find('input')[1]).data("kendoDatePicker").value();
+                let dateformat = $(this).attr('date-format');
+                let datefrom = $($(this).find('input')[0]).data("kendoDatePicker").value();
+                let dateto = $($(this).find('input')[1]).data("kendoDatePicker").value();
                 sel.Low = kendo.toString(datefrom, dateformat);
                 sel.High = kendo.toString(dateto, dateformat);
 
@@ -1176,15 +1176,15 @@ function Start()
                     reportData.Selection.push(sel);
             }  
             else if(type == 'RangeTime') {
-                var sel = new Object();
+                let sel = {};
                 sel.SelName = $($(this).find('input')[0]).attr('id').split('-')[0];
                 sel.Kind = 'S';
                 sel.Sign = 'I';
                 sel.SelOption = $($(this).find('select')[0]).val();
 
-                var dateformat = $(this).attr('time-format');
-                var datefrom = $($(this).find('input')[0]).data("kendoTimePicker").value();
-                var dateto = $($(this).find('input')[1]).data("kendoTimePicker").value();
+                let dateformat = $(this).attr('time-format');
+                let datefrom = $($(this).find('input')[0]).data("kendoTimePicker").value();
+                let dateto = $($(this).find('input')[1]).data("kendoTimePicker").value();
                 sel.Low = kendo.toString(datefrom, dateformat);
                 sel.High = kendo.toString(dateto, dateformat);
 
@@ -1195,14 +1195,14 @@ function Start()
                     reportData.Selection.push(sel);
             }           
             else if(type == 'RangeCbx') {
-                var sel = new Object();
+                let sel = {};
                 sel.SelName = $($(this).find('input')[1]).attr('id').split('-')[0];
                 sel.Kind = 'S';
                 sel.Sign = 'I';
                 sel.SelOption = $($(this).find('select')[0]).val();
 
-                var from = $($(this).find('input')[1]).data("kendoComboBox").value();
-                var to = $($(this).find('input')[3]).data("kendoComboBox").value();
+                let from = $($(this).find('input')[1]).data("kendoComboBox").value();
+                let to = $($(this).find('input')[3]).data("kendoComboBox").value();
                 sel.Low = from;
                 sel.High = to;
 
@@ -1225,17 +1225,17 @@ function Start()
                 
             }
             else if(type == 'RangeMS') {
-                var sel = new Object();
+                let sel = {};
                 sel.SelName = $($(this).find('input')[1]).attr('id').split('-')[0];
                 sel.Kind = 'S';
                 sel.Sign = 'I';
                 sel.SelOption = $($(this).find('select')[0]).val();
 
-                var fromVals = $($(this).find('input')[1]).data("kendoMultiSelect").value();
-                var toVals = $($(this).find('input')[3]).data("kendoMultiSelect").value();
+                let fromVals = $($(this).find('input')[1]).data("kendoMultiSelect").value();
+                let toVals = $($(this).find('input')[3]).data("kendoMultiSelect").value();
                                 
-                for(var i=0; i<fromVals.length; i++) {
-                    var item = new Object();
+                for(let i=0; i<fromVals.length; i++) {
+                    let item = {};
                     item.SelName = sel.SelName;
                     item.Kind = sel.Kind;
                     item.Sign = sel.Sign;
@@ -1269,13 +1269,13 @@ function Start()
                 }
             }
             else if(type == 'ComboBox') {
-                var sel = new Object();
+                let sel = {};
                 sel.SelName = $($(this).find('input')[1]).attr('id').split('-')[0];
                 sel.Kind = 'S';
                 sel.Sign = 'I';
                 sel.SelOption = 'EQ';
 
-                var from = $($(this).find('input')[1]).data("kendoComboBox").value();
+                let from = $($(this).find('input')[1]).data("kendoComboBox").value();
                 sel.Low = from;
 
                 if(sel.Low != null) {
@@ -1294,14 +1294,14 @@ function Start()
                 }
             } 
             else if(type == 'Date') {
-                var sel = new Object();
+                let sel = {};
                 sel.SelName = $($(this).find('input')[0]).attr('id').split('-')[0];
                 sel.Kind = 'P';
                 sel.Sign = 'I';
                 sel.SelOption = "EQ";
 
-                var dateformat = $(this).attr('date-format');
-                var datefrom = $($(this).find('input')[0]).data("kendoDatePicker").value();
+                let dateformat = $(this).attr('date-format');
+                let datefrom = $($(this).find('input')[0]).data("kendoDatePicker").value();
                 sel.Low = kendo.toString(datefrom, dateformat);
                 sel.High = '';
 
@@ -1309,14 +1309,14 @@ function Start()
                     reportData.Selection.push(sel);
             } 
             else if(type == 'Time') {
-                var sel = new Object();
+                let sel = {};
                 sel.SelName = $($(this).find('input')[0]).attr('id').split('-')[0];
                 sel.Kind = 'P';
                 sel.Sign = 'I';
                 sel.SelOption = "EQ";
 
-                var dateformat = $(this).attr('time-format');
-                var datefrom = $($(this).find('input')[0]).data("kendoTimePicker").value();
+                let dateformat = $(this).attr('time-format');
+                let datefrom = $($(this).find('input')[0]).data("kendoTimePicker").value();
                 sel.Low = kendo.toString(datefrom, dateformat);
                 sel.High = '';
 
@@ -1324,7 +1324,7 @@ function Start()
                     reportData.Selection.push(sel);
             }              
             else if( type == 'Text' ) {
-                var sel = new Object();
+                let sel = {};
                 sel.SelName = $($(this).find('input')).attr('id');
                 sel.Kind = 'P';
                 sel.Sign = 'I';
@@ -1334,9 +1334,9 @@ function Start()
 
                 if(sel.Low.length > 0) {
                     if(sel.Low.includes(",")) {
-                        var selarr = sel.Low.split(',');
-                        for(var i=0; i<selarr.length; i++) {
-                            var item = new Object();
+                        let selarr = sel.Low.split(',');
+                        for(let i=0; i<selarr.length; i++) {
+                            let item = {};
                             item.SelName = sel.SelName;
                             item.Kind = sel.Kind;
                             item.Sign = sel.Sign;
@@ -1365,7 +1365,7 @@ function Start()
                 }
             }
             else if( type == 'CheckBox' ){
-                var sel = new Object();
+                let sel = {};
                 sel.SelName = $($(this).find('input')).attr('id');
                 sel.Kind = 'P';
                 sel.Sign = 'I';
@@ -1376,11 +1376,11 @@ function Start()
                 reportData.Selection.push(sel);
             }
             else if( type == 'Radio' ){
-                var idname = $('input[name='+$(this).attr('data-name')+']:checked').val();
+                let idname = $('input[name='+$(this).attr('data-name')+']:checked').val();
 
-                var allradcontrols = $(this).find('input[type=radio]');
+                let allradcontrols = $(this).find('input[type=radio]');
                 allradcontrols.each(function(){
-                    var sel = new Object();
+                    let sel = {};
                     sel.SelName = $(this).attr('id');
                     sel.Kind = 'P';
                     sel.Sign = 'I';
@@ -1810,11 +1810,11 @@ function Start()
             if(item.SelName == "S_KUNNR") {
                 if(item.SelOption != "CP") {
                     if(item.Low != null && item.Low.length < 10 && item.Low.length > 1) {
-                        var s = "0000000000" + item.Low;
+                        let s = "0000000000" + item.Low;
                         item.Low = s.substr(s.length-10);
                     }
                     if(item.High != null && item.High.length < 10 && item.High.length > 1) {
-                        var s = "0000000000" + item.High;
+                        let s = "0000000000" + item.High;
                         item.High = s.substr(s.length-10);
                     }
                 }
@@ -1864,4 +1864,4 @@ function AddNewLayout(widgetId, value) {
 
         dataSource.sync();
     }
-};
+}

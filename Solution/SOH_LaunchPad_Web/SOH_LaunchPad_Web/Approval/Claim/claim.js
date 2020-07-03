@@ -276,16 +276,16 @@ function Start() {
     function BuildInputSelection() {
         const controls = $('#dvNewCallContent').find('.sspcontrol');
 
-        let inputData = new Object();
+        let inputData = {};
         inputData.Selection = [];
         
-        selectedRst = new Object();
+        selectedRst = {};
 
         controls.each(function(){
             let type = $(this).attr('type');
             
             if( type == 'Text' ) {
-                let sel = new Object();
+                let sel = {};
                 sel.Name = $($(this).find('input')).attr('id');
                 sel.Value = $($(this).find('input')).val();
 
@@ -294,7 +294,7 @@ function Start() {
                 selectedRst.Doc = sel.Value;
             }
             else if(type == 'ComboBox') {
-                let sel = new Object();
+                let sel = {};
                 sel.Name = $($(this).find('input')[1]).attr('id');
                 sel.Value = $($(this).find('input')[1]).data("kendoComboBox").value();
 
@@ -365,20 +365,20 @@ function Start() {
                 { type: "spaceholder"},
                 { type: "label", field: "ZLSCH", title: "Payment method"}, 
                 { type: "label", field: "CSDAT", title: "Claim Case Date"}, 
-                { type: "label", field: "BUKRS", title: "Created On"}, 
+                { type: "label", field: "ERDAT", title: "Created On"}, 
                 { type: "spaceholder"},
                 { type: "label", field: "WAERS", title: "Currency"}, 
                 { type: "label", field: "ARDAT", title: "Exp. Air Date"}, 
-                { type: "label", field: "BUKRS", title: "Created By"}, 
+                { type: "label", field: "ERNAM", title: "Created By"}, 
                 { type: "spaceholder"},
                 { type: "label", field: "ESTCOST", title: "Total Claim Amt", format: "money"}, 
                 { type: "label", field: "PORTION", title: "Claim Portion"}, 
-                { type: "label", field: "BUKRS", title: "Follow By"}, 
+                { type: "label", field: "FOLLW", title: "Follow By"}, 
                 { type: "spaceholder"},
                 { type: "label-2", field: "ESTQTY", field2: "EMEIN", title: "Est. Total Qty", format: "integer"},  
                 { type: "label", field: "PORTION", title: "Air Bill Mark"}, 
                 { type: "spaceholder"},
-                { type: "label", field: "ESTCOST", title: "Provision Amt", format: "money"}, 
+                { type: "label", field: "PRVAMT", title: "Provision Amt", format: "money"}, 
                 { type: "spaceholder"},
             ];
         }
@@ -394,15 +394,15 @@ function Start() {
                 { type: "spaceholder"},
                 { type: "label", field: "ZLSCH", title: "Payment method"}, 
                 { type: "label", field: "CSDAT", title: "Claim Case Date"}, 
-                { type: "label", field: "BUKRS", title: "Created On"}, 
+                { type: "label", field: "ERDAT", title: "Created On"}, 
                 { type: "spaceholder"},
                 { type: "label", field: "WAERS", title: "Currency"}, 
-                { type: "label", field: "BUKRS", title: "Created By"}, 
+                { type: "label", field: "ERNAM", title: "Created By"}, 
                 { type: "spaceholder"},
                 { type: "label", field: "ESTCOST", title: "Est. Cost", format: "money"}, 
-                { type: "label", field: "BUKRS", title: "Follow By"}, 
+                { type: "label", field: "FOLLW", title: "Follow By"}, 
                 { type: "spaceholder"},
-                { type: "label", field: "ESTCOST", title: "Provision Amt", format: "money"}, 
+                { type: "label", field: "PRVAMT", title: "Provision Amt", format: "money"}, 
                 { type: "spaceholder"},
             ];
         }
@@ -418,14 +418,14 @@ function Start() {
                 { type: "spaceholder"},
                 { type: "label", field: "ZLSCH", title: "Payment method"}, 
                 { type: "label", field: "CSDAT", title: "Claim Case Date"}, 
-                { type: "label", field: "BUKRS", title: "Created On"}, 
+                { type: "label", field: "ERDAT", title: "Created On"}, 
                 { type: "spaceholder"},
                 { type: "label", field: "WAERS", title: "Currency"}, 
-                { type: "label", field: "BUKRS", title: "Created By"}, 
-                { type: "label", field: "BUKRS", title: "Attend to"}, 
+                { type: "label", field: "ERNAM", title: "Created By"}, 
+                { type: "label", field: "ATTN", title: "Attend to"}, 
                 { type: "spaceholder"},
                 { type: "label", field: "ESTCOST", title: "Total Claim Amt", format: "money"}, 
-                { type: "label", field: "BUKRS", title: "Follow By"}, 
+                { type: "label", field: "FOLLW", title: "Follow By"}, 
                 { type: "spaceholder"},
                 { type: "label", field: "CREDI", title: "Debtor"}, 
                 { type: "spaceholder"},

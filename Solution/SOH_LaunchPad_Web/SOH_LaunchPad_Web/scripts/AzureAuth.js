@@ -89,7 +89,7 @@ var AzureAuthen = (function()
         xmlHttp.onreadystatechange = function () {
             if (this.readyState == 4 && this.status == 200)
                 callback(JSON.parse(this.responseText), endpoint);
-        }
+        };
         xmlHttp.open(method, theUrl, true); // true for asynchronous
         xmlHttp.setRequestHeader('Authorization', 'Bearer ' + accessToken);
         xmlHttp.setRequestHeader('Content-Type', 'application/json;odata=verbose');
@@ -108,7 +108,7 @@ var AzureAuthen = (function()
                 callback(this.response, endpoint);
             else if (this.readyState == 4)
                 callback(null, endpoint);
-        }
+        };
         xmlHttp.open(method, theUrl, true); // true for asynchronous
         xmlHttp.setRequestHeader('Authorization', 'Bearer ' + accessToken);
         xmlHttp.setRequestHeader('Content-Type', 'application/json;odata=verbose');
@@ -186,8 +186,7 @@ var AzureAuthen = (function()
             //myMSALObj.loginRedirect(requestObj);
             waitLoginCallback();
         }
-      }
-      ,
+      },
       SignIn: function() {
         myMSALObj.loginRedirect(requestObj);
       },
@@ -195,8 +194,7 @@ var AzureAuthen = (function()
         AzureAccessToken = "";
         AzureAccount = null;
         signOut();
-      }
-      ,
+      },
       GetUserInitial: getInitial
     };
 }());

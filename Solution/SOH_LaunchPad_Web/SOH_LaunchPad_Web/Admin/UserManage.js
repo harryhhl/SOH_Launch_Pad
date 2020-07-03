@@ -186,7 +186,7 @@ function Start()
     function OnRoleCASaveChanges() {
         var list = [];
         $('#dvRoleCENAccess textarea').each(function(){  
-            var item = new Object();
+            var item = {};
             item.Id = $(this).attr('data');
             item.Name = $(this).val();
             list.push(item);
