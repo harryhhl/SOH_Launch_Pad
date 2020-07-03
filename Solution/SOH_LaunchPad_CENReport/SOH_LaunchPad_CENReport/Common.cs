@@ -10,6 +10,7 @@ using Helper;
 using System.Text.RegularExpressions;
 using crystal_sap_cryto;
 using System.Data.SqlClient;
+using System.Drawing;
 
 namespace SOH_LaunchPad_CENReport
 {
@@ -161,6 +162,15 @@ namespace SOH_LaunchPad_CENReport
         public static string WildCardToRegular(string value)
         {
             return "^" + Regex.Escape(value).Replace("\\?", ".").Replace("\\*", ".*") + "$";
+        }
+
+        public static float GetFontSize(string text)
+        {
+            using (System.Drawing.Graphics graphics = System.Drawing.Graphics.FromImage(new Bitmap(1, 1)))
+            {
+                SizeF size = graphics.MeasureString(text, new Font("Helvetica", 11, FontStyle.Regular, GraphicsUnit.Point));
+                return size.Width;
+            }
         }
     }
 }

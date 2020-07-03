@@ -157,6 +157,9 @@ namespace SOH_LaunchPad_CENReport
 
                     IWorkbook wb = new XSSFWorkbook();
                     ISheet sheet = wb.CreateSheet();
+                    IDataFormat dataFormatCustom = wb.CreateDataFormat();
+                    var dateStyle = wb.CreateCellStyle();
+                    dateStyle.DataFormat = dataFormatCustom.GetFormat("yyyy-MM-dd");
 
                     IRow header = sheet.CreateRow(0);
 
@@ -180,7 +183,7 @@ namespace SOH_LaunchPad_CENReport
                             string coln = columnSettings[c].field;
                             
                             if (reportData.ListData[r].ContainsKey(coln) && reportData.ListData[r][coln] != null)
-                                col.SetCellValue(reportData.ListData[r][coln].ToString());
+                                SetCellValue(col, reportData.ListData[r][coln], columnSettings[c].type, dateStyle);
                             else
                                 col.SetCellValue("");
                         }
@@ -203,6 +206,26 @@ namespace SOH_LaunchPad_CENReport
                     var rptData = rptDataList[0];
                     WriteToEMLDB(userName, qid, rptData.FileName, rptData.FileData, $"SOH - {tcode} is completed", "Report run success.");
                 }
+            }
+        }
+
+        private void SetCellValue(ICell cell, object val, string type, ICellStyle dateStyle)
+        {
+            if (type != null && type == "date")
+            {
+                DateTime dt = DateTime.Parse(val.ToString());
+                cell.SetCellValue(dt);
+                cell.CellStyle = dateStyle;
+            }
+            else if (type != null && type == "number")
+            {
+                double num = 0.0f;
+                double.TryParse(val.ToString(), out num);
+                cell.SetCellValue(num);
+            }
+            else
+            {
+                cell.SetCellValue(val.ToString());
             }
         }
 

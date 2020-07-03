@@ -240,6 +240,7 @@ namespace SOH_LaunchPad_CENReport
             public string title { get; set; }
             public string width { get; set; }
             public string template { get; set; }
+            public string type { get; set; }
 
             public static KendoGridColumnSetting Create(string columname, string title, string datatype, int datalength)
             {
@@ -247,12 +248,13 @@ namespace SOH_LaunchPad_CENReport
 
                 s.field = columname;
                 s.title = title.Length > 0 ? title : columname;
+                s.type = KendoGridSchemaSetting.GetKendoType(datatype);
 
                 if (KendoGridSchemaSetting.GetKendoType(datatype) == "date")
                 {
                     int len = 90;
 
-                    int title_len = title.Trim().Length * 8 + 40;
+                    int title_len = (int)Math.Ceiling(Common.GetFontSize(title.Trim()) + 36);
                     len = Math.Max(len, title_len);
                     s.width = $"{len}px";
 
@@ -264,7 +266,7 @@ namespace SOH_LaunchPad_CENReport
                 {
                     int len = 80;
 
-                    int title_len = title.Trim().Length * 8 + 40;
+                    int title_len = (int)Math.Ceiling(Common.GetFontSize(title.Trim()) + 36);
                     len = Math.Max(len, title_len);
                     s.width = $"{len}px";
 
@@ -278,7 +280,7 @@ namespace SOH_LaunchPad_CENReport
                     else
                         len = len + Math.Max(datalength * 8, 40);
 
-                    int title_len = title.Trim().Length * 8 + 40;
+                    int title_len = (int)Math.Ceiling(Common.GetFontSize(title.Trim()) + 36);
                     len = Math.Max(len, title_len);
                     s.width = $"{len}px";
 
