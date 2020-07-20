@@ -24,7 +24,6 @@ function Start() {
     $(document).ready(Begin);
 
     function Begin() {
-        LoadThemeSetting();
 
         GetActingApprover(function () {
             GetPendingList();
@@ -63,15 +62,6 @@ function Start() {
             }
         });
 
-        var eventMethod = window.addEventListener ? "addEventListener" : "attachEvent";
-        var eventer = window[eventMethod];
-        var messageEvent = eventMethod === "attachEvent" ? "onmessage" : "message";
-        eventer(messageEvent, function (e) {
-
-            if (e.data.startsWith("[UpdateTheme]"))
-                LoadThemeSetting();
-
-        });
 
         $('#btnDisplay').on('click', function () {
             ShowLoading(true);
@@ -86,28 +76,6 @@ function Start() {
         InitKendoKW();
     }
 
-    function LoadThemeSetting() {
-        var t = localStorage.getItem('SOH_MainTheme');
-        if (t == null) return;
-        UpdateThemeCSS(t);
-    }
-
-    function UpdateThemeCSS(newTheme) {
-        var targetelement = "link";
-        var targetattr = "tag";
-        var targetattrval = "themecss";
-        var allsuspects = document.getElementsByTagName(targetelement);
-        for (var i = allsuspects.length; i >= 0; i--) {
-            if (allsuspects[i] && allsuspects[i].getAttribute(targetattr) != null && allsuspects[i].getAttribute(targetattr) == targetattrval) {
-                var newelement = document.createElement("link");
-                newelement.setAttribute("rel", "stylesheet");
-                newelement.setAttribute("type", "text/css");
-                newelement.setAttribute("href", "../../styles/kgrid_" + newTheme + ".css");
-                newelement.setAttribute(targetattr, targetattrval);
-                allsuspects[i].parentNode.replaceChild(newelement, allsuspects[i]);
-            }
-        }
-    }
 
     function GetListResultProcess(result_data) {
         InitResultGrid(result_data);
@@ -279,17 +247,7 @@ function Start() {
     }
 
     function DetailViewerWindowOnRefresh() {
-        //var pdfViewer = $("#pdfViewer").kendoPDFViewer({
-        //    pdfjsProcessing: {
-        //        file: {
-        //            url: "getsodetail.ashx?sid="+selectedDetailSID,
-        //            cMapUrl: '../../styles/pdfjs/cmaps/',
-        //            cMapPacked: true
-        //        }
-        //    },              
-        //    width: "100%",
-        //    height: 700
-        //}).data("kendoPDFViewer");
+
         var d = selectedDetailData;
         var header = d.T_HEAD[0];
         $('#dvHeader').empty();

@@ -128,6 +128,10 @@
     <Content Include="Approval\PN\pn.css" />
     <Content Include="Approval\PN\PN.html" />
     <Content Include="Approval\PN\pn.js" />
+    <Content Include="Approval\PO\pdfviewer.html" />
+    <Content Include="Approval\PO\PO.css" />
+    <Content Include="Approval\PO\PO.html" />
+    <Content Include="Approval\PO\PO.js" />
     <Content Include="Approval\Pricing\Detail.html" />
     <Content Include="Approval\Pricing\pricing.css" />
     <Content Include="Approval\Pricing\Pricing.html" />
@@ -163,6 +167,7 @@
     <Content Include="scripts\iframeResizer.contentWindow.min.js" />
     <Content Include="scripts\iframeResizer.min.js" />
     <Content Include="scripts\index.js" />
+    <Content Include="scripts\init.js" />
     <Content Include="scripts\jquery.min.js" />
     <Content Include="scripts\jquery.transit.min.js" />
     <Content Include="scripts\jszip.js" />
@@ -269,6 +274,12 @@
     <Compile Include="Approval\PN\PN.ashx.cs">
       <DependentUpon>PN.ashx</DependentUpon>
     </Compile>
+    <Compile Include="Approval\PO\GetPOPrintPreview.ashx.cs">
+      <DependentUpon>GetPOPrintPreview.ashx</DependentUpon>
+    </Compile>
+    <Compile Include="Approval\PO\PO.ashx.cs">
+      <DependentUpon>PO.ashx</DependentUpon>
+    </Compile>
     <Compile Include="Approval\Pricing\Pricing.ashx.cs">
       <DependentUpon>Pricing.ashx</DependentUpon>
     </Compile>
@@ -336,6 +347,8 @@
     <Content Include="Approval\Claim\Claim.ashx" />
     <Content Include="Approval\PR\PR.ashx" />
     <Content Include="Approval\ConfirmSOPlan\ConfirmSOPlan.ashx" />
+    <Content Include="Approval\PO\PO.ashx" />
+    <Content Include="Approval\PO\GetPOPrintPreview.ashx" />
     <None Include="Properties\PublishProfiles\publish1.pubxml" />
     <Content Include="Queue\ReportQueue.ashx" />
     <None Include="Properties\PublishProfiles\publish2.pubxml" />
