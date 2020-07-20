@@ -191,6 +191,16 @@
     </Compile>
     <Compile Include="poapproval\UserDestinationConfiguration.cs" />
     <Compile Include="poapproval\Util.cs" />
+    <Compile Include="po\approve.ashx.cs">
+      <DependentUpon>approve.ashx</DependentUpon>
+    </Compile>
+    <Compile Include="po\list.ashx.cs">
+      <DependentUpon>list.ashx</DependentUpon>
+    </Compile>
+    <Compile Include="po\printpreview.ashx.cs">
+      <DependentUpon>printpreview.ashx</DependentUpon>
+    </Compile>
+    <Compile Include="po\src\DAO.cs" />
     <Compile Include="pricing\approve.ashx.cs">
       <DependentUpon>approve.ashx</DependentUpon>
     </Compile>
@@ -237,6 +247,9 @@
     <Content Include="claim\approve.ashx" />
     <Content Include="confirmsoplan\list.ashx" />
     <Content Include="confirmsoplan\approve.ashx" />
+    <Content Include="po\list.ashx" />
+    <Content Include="po\printpreview.ashx" />
+    <Content Include="po\approve.ashx" />
     <None Include="Properties\PublishProfiles\publish1.pubxml" />
     <Content Include="soapproval\list.ashx" />
     <Content Include="soapproval\approve.ashx" />
