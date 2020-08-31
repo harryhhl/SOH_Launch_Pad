@@ -1,0 +1,65 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <meta charset="utf-8" />
+    
+    <link rel="stylesheet" href="../../styles/kendo.common.min.css" />
+    <link rel="stylesheet" href="../../styles/kendo.default-v2.min.css" />
+    <link rel="stylesheet" href="report.css?2"/>
+
+    <script src="../../scripts/jquery.min.js"></script>
+    <script src="../../scripts/jszip.js"></script>
+    <script src="../../scripts/kendo.all.min.js?1"></script>
+    <script src="../../scripts/iframeResizer.contentWindow.min.js"></script>
+    <script src="report.js?28"></script>
+</head>
+<body>
+    <div id="dvMainContent">
+        <div style="margin:10px">
+            <div class="HeaderTitle">
+                <div style="display: inline-block; margin: 12px;"><img src='../img/report05.png'/></div>
+                <div>
+                    <span id="lbRptName"><h3>Report 01</h3></span>
+                    <button class="k-button" id="btnSubmit">Display</button>
+                    <!-- <button class="k-button" id="btnAddQueue">Add to Queue</button>
+                    <button class="k-button" id="btnAddEmail">Send to Email</button> -->
+                    <button class="k-button" id="btnExport">Export</button>
+                    <button class="k-button" id="btnBack">Back</button>
+                    <button class="FavorStarBtn" title="Toggle Favorite">
+                        <span class="k-icon k-i-star-outline"></span>
+                    </button>
+                </div>
+            </div>
+            <hr>
+            <div id="dvNewCallContent">
+          
+            </div>
+            <div id="dvResultPanel_ALV" class="hidden">  
+                <div id="dvResultHeader" style="width: 95%; display: flex; flex-wrap: wrap; align-items: flex-start; margin-left: 0em;"></div>           
+                <div id="gridResult_Item" style="width: 95%; margin-top: 6px">
+                </div>
+                <div id="gridResult_Detail" style="width: 95%; margin-top: 6px">
+                </div>                
+            </div>
+
+            <div id="dvResultPanel_File" class="hidden">
+                <div><span>Result Panel File</span>
+                </div>
+                <div>
+                    <label>Download File : </label>
+                    <button id="btnDownloadFile" class="k-button" title="Download file">Download</button>
+                </div>
+            </div>     
+            <div id="frameFooter">
+
+            </div>                      
+        </div>
+    </div>
+    <div id="dvLoadingOverlay" class="overlay-loading">
+        <div class="overlay-loading-content">        
+            <p><progress></progress></p>
+        </div>
+    </div>   
+</body>
+</html>

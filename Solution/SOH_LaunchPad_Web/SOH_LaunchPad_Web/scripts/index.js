@@ -363,7 +363,7 @@ function Start()
             
             if(menuItem.childFunctions.length > 0) { 
                 templateContent += "<button class='btnMenuExpand'><span class='k-icon k-i-arrow-chevron-right'></span></button></li>";
-                drawerContent += '<div id="'+menuItem.FuncName+'" class="hidden"><div class="widgetArea"><div class="widgetContainer">';
+                drawerContent += '<div id="'+GetSafeIDfromName(menuItem.FuncName)+'" class="hidden"><div class="widgetArea"><div class="widgetContainer">';
                 for(var j = 0; j<menuItem.childFunctions.length; j++){
                     var childfunc = menuItem.childFunctions[j];
                     templateContent += "<li data-role='drawer-item' data-id='"+childfunc.FuncID+"' data-parent='"+childfunc.ParentId+"' data-uri='"+childfunc.Uri+"' style='display: none;'><span class='k-item-text menusubitem' title='"+childfunc.FuncName+"'>"+childfunc.FuncName+"</span></li>";
@@ -403,16 +403,22 @@ function Start()
                 e.sender.element.find("#drawer-content > div").addClass("hidden");
 
                 if(typeof uri !== 'undefined' && uri.length > 0) {
-                    e.sender.element.find("#drawer-content").find("#dvFrame").removeClass("hidden");
-                    uri = uri + "&fid=" + funcID + "&fname=" + encodeURIComponent(itemText)  + '&timestamp=' + Date.now();
-                    if($('#theframe').attr('funcid')!=funcID) {
-                        $('#theframe').attr('src', uri);
-                        $('#theframe').attr('funcid', funcID);
-                        $('#theframe').attr('name', Date.now());
+
+                    if(uri.startsWith("blank_http")){
+                        window.open(uri.replace("blank_http", "http"),'_blank');
+                    }
+                    else {
+                        e.sender.element.find("#drawer-content").find("#dvFrame").removeClass("hidden");
+                        uri = uri + "&fid=" + funcID + "&fname=" + encodeURIComponent(itemText)  + '&timestamp=' + Date.now();
+                        if($('#theframe').attr('funcid')!=funcID) {
+                            $('#theframe').attr('src', uri);
+                            $('#theframe').attr('funcid', funcID);
+                            $('#theframe').attr('name', Date.now());
+                        }
                     }
                 }
                 else {
-                    var content = e.sender.element.find("#drawer-content").find("#" + itemText);
+                    var content = e.sender.element.find("#drawer-content").find("#" + GetSafeIDfromName(itemText));
                     content.removeClass("hidden");
                     UpdateFavouriteStar(content);
                 }
@@ -629,6 +635,13 @@ function Start()
         //$('#theframe').height($('#drawer-content').height());
 
         iFrameResize({ log: false, minHeight:Math.max(document.documentElement.clientHeight, window.innerHeight || 0)  }, '#theframe');
+    }
+
+    function GetSafeIDfromName(name)
+    {
+        let a = name.replace(/\s/g, "_");
+        a = a.replace(/&/g, "_");
+        return a;
     }
 
     function GetOULabelfromUser(username)

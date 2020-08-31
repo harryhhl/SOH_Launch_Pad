@@ -99,7 +99,8 @@ namespace SOH_LaunchPad_Web
                 else if (action == "getalvdata")
                 {
                     var qid = inputset.Get("QID");
-                    string rptdatajson = HttpContext.Current.Session["RptALV_" + qid] as string;
+                    var rptName = inputset.Get("Report");
+                    string rptdatajson = HttpContext.Current.Session[$"RptALV_{rptName}_{qid}"] as string;
                     if (string.IsNullOrEmpty(rptdatajson))
                     {
                         var result = await GenericRequest.Post(Common.SapReportWSEndpointUrl + "GetALVReportData.ashx", new StringContent(input));
@@ -112,9 +113,9 @@ namespace SOH_LaunchPad_Web
                         else
                         {
                             rptdatajson = result.Data;
-                            HttpContext.Current.Session["RptALV_" + qid] = rptdatajson;
+                            HttpContext.Current.Session[$"RptALV_{rptName}_{qid}"] = rptdatajson;
                         }
-                    }
+                    } 
 
                     string skip = inputset.Get("skip");
                     string take = inputset.Get("take");

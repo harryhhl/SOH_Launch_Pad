@@ -248,281 +248,274 @@ function Start() {
 
     function DetailViewerWindowOnRefresh() {
 
-        var d = selectedDetailData;
-        var header = d.T_HEAD[0];
-        $('#dvHeader').empty();
-        $('#dv_T_ITEM').empty();
-        $('#dv_T_ITEM_GRID').empty();
+        let d = selectedDetailData;
+
+        $('#dv_T_head').empty();
+        $('#dv_T_MAT_head').empty();
         $('#dv_T_MAT').empty();
+        $('#dv_T_MAT_GRIDGROUP_head').empty();
+        $('#dv_T_MAT_GRIDGROUP').empty();
+        $('#dv_T_MAT_GRID_head').empty();
+        $('#dv_T_MAT_GRID').empty();
+        $('#dv_T_PO_head').empty();
         $('#dv_T_PO').empty();
-        $('#dv_T_PO_GROUP').empty();
+        $('#dv_T_SO_head').empty();
+        $('#dv_T_SO').empty();
+        $('#dv_T_PO_GRID_head').empty();
+        $('#dv_T_PO_GRID').empty();
+        $('#dv_T_SO_GRID_head').empty();
+        $('#dv_T_SO_GRID').empty();
         $('#dv_T_ZCKB').empty();
-        $('#dv_T_GRID').empty();
-        $('#dv_T_GROUP').empty();
 
-        var c_head = "";
-        c_head += '<div><span style="display:inline-block; width: 16em">Material No.</span><span>'+header.VBELN+'</span></div>';
-        c_head += '<div><span style="display:inline-block; width: 16em">Customer Style No.</span><span>'+header.BNAME+'</span></div>';
-        $('#dvHeader').append(c_head);
+        let titleMapping = [];
+        titleMapping["KSCHL"] = "Condition Type";
+        titleMapping["KBETR"] = "Rate";
+        titleMapping["DATAB"] = "Pricing Date";
+        titleMapping["COLOR"] = "Color/Size";
+        titleMapping["BSTKD"] = "PO No";
+        titleMapping["AUPOS"] = "SO Item";
 
-        if(d.T_MAT.length > 0) {
-            var t_source = new kendo.data.DataSource({
-                data: {
-                    "items": d.T_MAT
-                },
-                schema: {
-                    model: {
-                        id: "KSCHL",
-                        fields: {
-                            KSCHL: { type: "string" },
-                            KBETR: { type: "number" },
-                            KONWA: { type: "string" },
-                            KPEIN: { type: "string" },
-                            KMEIN: { type: "string" },
-                            KBSTAT: { type: "number" },
-                            DATAB: { type: "string" },
-                            TEXT: { type: "string" },
-                            KFRST: { type: "string" }
-                        }
-                    },
-                    data: "items"
-                },
-            });
-    
-            var t_grid = $("#dv_T_MAT").kendoGrid({
-                autoBind: false,
-                height: 50 + d.T_MAT.length * 25,
-                dataSource: t_source,
-                sortable: true,
-                reorderable: true,
-                groupable: false,
-                resizable: false,
-                filterable: false,
-                columnMenu: false,
-                pageable: false,
-                scrollable: true,
-                columns: [
-                        { field: "KSCHL", title: "Condition Type", width: "120px" },
-                        { field: "KBETR", title: "Rate", width: "100px" },
-                        { field: "KONWA", title: "Currency", width: "90px" },
-                        { field: "KPEIN", title: "Per", width: "80px" },
-                        { field: "KMEIN", title: "UOM", width: "80px" },
-                        { field: "KBSTAT", title: "Status For Conditions", width: "140px" },
-                        { field: "DATAB", title: "Pricing Date", width: "120px" },
-                        { field: "TEXT", title: "Approval Status", width: "200px" },                        
-                        { field: "KFRST", title: "Release Status", width: "80px" }
-                ]
-            });
-    
-            t_source.read();
+        let excludeColumns = [];
+        excludeColumns.push("TEXT");
+        excludeColumns.push("KONWA");
+        excludeColumns.push("KPEIN");
+        excludeColumns.push("KMEIN");
+
+
+        let c_head = "";
+        c_head += '<div><span style="display:inline-block; width: 16em">Material No.</span><span>'+d.MaterialNo+'</span></div>';
+        c_head += '<div><span style="display:inline-block; width: 16em">Customer Style No.</span><span>'+d.CustomerStyleNo+'</span></div>';
+        $('#dv_T_head').append(c_head);
+
+        let c_foot = "";
+        c_foot += '<div><span>ZCKB Information</span></div>';
+        c_foot += '<div style="display:inline-block;"><span>Quotation Price :</span><span>'+d.ZCKB_Quotation+'</span></div>';
+        c_foot += '<div style="display:inline-block; width:10em"></div>';
+        c_foot += '<div style="display:inline-block;"><span>Currency: </span><span>'+d.ZCKB_Currency+'</span></div>';
+        c_foot += '<div style="display:inline-block; width:10em"></div>';
+        c_foot += '<div style="display:inline-block;"><span>Per </span><span>'+d.ZCKB_PER+' '+d.ZCKB_UOM+'</span></div>';
+        $('#dv_T_ZCKB').append(c_foot);
+
+        if(d.Mat != null && d.Mat.length > 0) {
+            let dataset = d.Mat;
+            let firstItem = dataset[0];
+            let t_head = "";
+            t_head += '<div><span class="t-grid-head-title">By Material</span></div>';
+            t_head += '<div style="display:inline-block;"><span>Approval Status: </span><span>'+firstItem.TEXT+'</span></div>';
+            t_head += '<div style="display:inline-block; width:10em"></div>';
+            t_head += '<div style="display:inline-block;"><span>Currency: </span><span>'+firstItem.KONWA+'</span></div>';
+            t_head += '<div style="display:inline-block; width:10em"></div>';
+            t_head += '<div style="display:inline-block;"><span>Per </span><span>'+firstItem.KPEIN+' '+firstItem.KMEIN+'</span></div>';
+            $('#dv_T_MAT_head').append(t_head);
+
+            let schema = GenerateKendoModel(dataset);
+            let columns = GenerateKendoColumns(dataset, titleMapping, excludeColumns);
+
+            CreateTGridDetail(dataset, schema, columns, $("#dv_T_MAT"));
+            $("<br>").insertAfter($("#dv_T_MAT"));
         }
 
-        if(d.T_PO.length > 0) {
-            var t_source = new kendo.data.DataSource({
-                data: {
-                    "items": d.T_PO
-                },
-                schema: {
-                    model: {
-                        id: "BSTKD",
-                        fields: {
-                            BSTKD: { type: "string" },
-                            KSCHL: { type: "string" },
-                            KBETR: { type: "number" },
-                            KONWA: { type: "string" },
-                            KPEIN: { type: "string" },
-                            KMEIN: { type: "string" },
-                            KBSTAT: { type: "number" },
-                            DATAB: { type: "string" },
-                            TEXT: { type: "string" },
-                            KFRST: { type: "string" }
-                        }
-                    },
-                    data: "items"
-                },
-            });
-    
-            var t_grid = $("#dv_T_PO").kendoGrid({
-                autoBind: false,
-                height: 50 + d.T_PO.length * 25,
-                dataSource: t_source,
-                sortable: true,
-                reorderable: true,
-                groupable: false,
-                resizable: false,
-                filterable: false,
-                columnMenu: false,
-                pageable: false,
-                scrollable: true,
-                columns: [
-                        { field: "BSTKD", title: "PO No", width: "160px" },
-                        { field: "KSCHL", title: "Condition Type", width: "120px" },
-                        { field: "KBETR", title: "Rate", width: "100px" },
-                        { field: "KONWA", title: "Currency", width: "90px" },
-                        { field: "KPEIN", title: "Per", width: "80px" },
-                        { field: "KMEIN", title: "UOM", width: "80px" },
-                        { field: "KBSTAT", title: "Status For Conditions", width: "140px" },
-                        { field: "DATAB", title: "Pricing Date", width: "120px" },
-                        { field: "TEXT", title: "Approval Status", width: "200px" },                        
-                        { field: "KFRST", title: "Release Status", width: "80px" }
-                ]
-            });
-    
-            t_source.read();
+        if(d.MatGridGroup != null && d.MatGridGroup.length > 0) {
+            let dataset = d.MatGridGroup;
+            let firstItem = dataset[0];
+            let t_head = "";
+            t_head += '<div><span class="t-grid-head-title">By Material/By Grid Value Group</span></div>';
+            t_head += '<div style="display:inline-block;"><span>Approval Status: </span><span>'+firstItem.TEXT+'</span></div>';
+            t_head += '<div style="display:inline-block; width:10em"></div>';
+            t_head += '<div style="display:inline-block;"><span>Currency: </span><span>'+firstItem.KONWA+'</span></div>';
+            t_head += '<div style="display:inline-block; width:10em"></div>';
+            t_head += '<div style="display:inline-block;"><span>Per </span><span>'+firstItem.KPEIN+' '+firstItem.KMEIN+'</span></div>';
+            $('#dv_T_MAT_GRIDGROUP_head').append(t_head);
+
+            let schema = GenerateKendoModel(dataset);
+            let columns = GenerateKendoColumns(dataset, titleMapping, excludeColumns);
+
+            CreateTGridDetail(dataset, schema, columns, $("#dv_T_MAT_GRIDGROUP"));
+            $("<br>").insertAfter($("#dv_T_MAT_GRIDGROUP"));
         }
 
-        if(d.T_ITEM.length > 0) {
-            var t_source = new kendo.data.DataSource({
-                data: {
-                    "items": d.T_ITEM
-                },
-                schema: {
-                    model: {
-                        id: "AUPOS",
-                        fields: {
-                            AUPOS: { type: "string" },
-                            KSCHL: { type: "string" },
-                            KBETR: { type: "number" },
-                            KONWA: { type: "string" },
-                            KPEIN: { type: "string" },
-                            KMEIN: { type: "string" },
-                            KBSTAT: { type: "number" },
-                            DATAB: { type: "string" },
-                            TEXT: { type: "string" },
-                            KFRST: { type: "string" }
-                        }
-                    },
-                    data: "items"
-                },
-            });
+        if(d.MatGridValue != null && d.MatGridValue.length > 0) {
+            let dataset = d.MatGridValue;
+            let firstItem = dataset[0];
+            let t_head = "";
+            t_head += '<div><span class="t-grid-head-title">By Material/By Grid Value</span></div>';
+            t_head += '<div style="display:inline-block;"><span>Approval Status: </span><span>'+firstItem.TEXT+'</span></div>';
+            t_head += '<div style="display:inline-block; width:10em"></div>';
+            t_head += '<div style="display:inline-block;"><span>Currency: </span><span>'+firstItem.KONWA+'</span></div>';
+            t_head += '<div style="display:inline-block; width:10em"></div>';
+            t_head += '<div style="display:inline-block;"><span>Per </span><span>'+firstItem.KPEIN+' '+firstItem.KMEIN+'</span></div>';
+            $('#dv_T_MAT_GRID_head').append(t_head);
+
+            let schema = GenerateKendoModel(dataset);
+            let columns = GenerateKendoColumns(dataset, titleMapping, excludeColumns);
+
+            CreateTGridDetail(dataset, schema, columns, $("#dv_T_MAT_GRID"));
+            $("<br>").insertAfter($("#dv_T_MAT_GRID"));
+        }
+
+        if(d.MatPO != null && d.MatPO.length > 0) {
+            let dataset = d.MatPO;
+            let firstItem = dataset[0];
+            let t_head = "";
+            t_head += '<div><span class="t-grid-head-title">By Material / By PO</span></div>';
+            t_head += '<div style="display:inline-block;"><span>Approval Status: </span><span>'+firstItem.TEXT+'</span></div>';
+            t_head += '<div style="display:inline-block; width:10em"></div>';
+            t_head += '<div style="display:inline-block;"><span>Currency: </span><span>'+firstItem.KONWA+'</span></div>';
+            t_head += '<div style="display:inline-block; width:10em"></div>';
+            t_head += '<div style="display:inline-block;"><span>Per </span><span>'+firstItem.KPEIN+' '+firstItem.KMEIN+'</span></div>';
+            $('#dv_T_PO_head').append(t_head);
+
+            let schema = GenerateKendoModel(dataset);
+            let columns = GenerateKendoColumns(dataset, titleMapping, excludeColumns);
+
+            CreateTGridDetail(dataset, schema, columns, $("#dv_T_PO"));
+            $("<br>").insertAfter($("#dv_T_PO"));
+        }
     
-            var t_grid = $("#dv_T_ITEM").kendoGrid({
-                autoBind: false,
-                height: 50 + d.T_ITEM.length * 25,
-                dataSource: t_source,
-                sortable: true,
-                reorderable: true,
-                groupable: false,
-                resizable: false,
-                filterable: false,
-                columnMenu: false,
-                pageable: false,
-                scrollable: true,
-                columns: [
-                        { field: "AUPOS", title: "SO Item", width: "120px" },
-                        { field: "KSCHL", title: "Condition Type", width: "120px" },
-                        { field: "KBETR", title: "Rate", width: "100px" },
-                        { field: "KONWA", title: "Currency", width: "90px" },
-                        { field: "KPEIN", title: "Per", width: "80px" },
-                        { field: "KMEIN", title: "UOM", width: "80px" },
-                        { field: "KBSTAT", title: "Status For Conditions", width: "140px" },
-                        { field: "DATAB", title: "Pricing Date", width: "120px" },
-                        { field: "TEXT", title: "Approval Status", width: "200px" },                        
-                        { field: "KFRST", title: "Release Status", width: "80px" }
-                ]
-            });
+        if(d.MatSO != null && d.MatSO.length > 0) {
+            let dataset = d.MatSO;
+            let firstItem = dataset[0];
+            let t_head = "";
+            t_head += '<div><span class="t-grid-head-title">By Material/By SO Item</span></div>';
+            t_head += '<div style="display:inline-block;"><span>Approval Status: </span><span>'+firstItem.TEXT+'</span></div>';
+            t_head += '<div style="display:inline-block; width:10em"></div>';
+            t_head += '<div style="display:inline-block;"><span>Currency: </span><span>'+firstItem.KONWA+'</span></div>';
+            t_head += '<div style="display:inline-block; width:10em"></div>';
+            t_head += '<div style="display:inline-block;"><span>Per </span><span>'+firstItem.KPEIN+' '+firstItem.KMEIN+'</span></div>';
+            $('#dv_T_SO_head').append(t_head);
+
+            let schema = GenerateKendoModel(dataset);
+            let columns = GenerateKendoColumns(dataset, titleMapping, excludeColumns);
+
+            CreateTGridDetail(dataset, schema, columns, $("#dv_T_SO"));
+            $("<br>").insertAfter($("#dv_T_SO"));
+        }
+
+        if(d.MatPOGridGroup != null && d.MatPOGridGroup.length > 0) {
+            $('#dv_T_PO_GRID_head').append('<div><span class="t-grid-head-title">By Material/By PO/By Grid Value Group</span></div>');
+            for(var i=0; i<d.MatPOGridGroup.length; i++) {
+                let dataset = d.MatPOGridGroup[i];
+                let firstItem = dataset[0];
+                let t_head = "";
+                t_head += '<div style="display:inline-block;"><span>PO No. : </span><span>'+firstItem.BSTKD+'</span></div>';
+                t_head += '<div style="display:inline-block; width:8em"></div>';
+                t_head += '<div style="display:inline-block;"><span>Approval Status: </span><span>'+firstItem.TEXT+'</span></div>';
+                t_head += '<div style="display:inline-block; width:8em"></div>';
+                t_head += '<div style="display:inline-block;"><span>Currency: </span><span>'+firstItem.KONWA+'</span></div>';
+                t_head += '<div style="display:inline-block; width:8em"></div>';
+                t_head += '<div style="display:inline-block;"><span>Per </span><span>'+firstItem.KPEIN+' '+firstItem.KMEIN+'</span></div>';
+                $('#dv_T_PO_GRID').append(t_head);
     
-            t_source.read();
-        }
+                let dv_grid_id = "dv_T_PO_GRID_"+i;
+                let dv_grid = '<div id="'+dv_grid_id+'"></div><br>';
+                $('#dv_T_PO_GRID').append(dv_grid);
 
-        if(d.T_ZCKB.length > 0) {
-            var t_source = new kendo.data.DataSource({
-                data: {
-                    "items": d.T_ZCKB
-                },
-                schema: {
-                    model: {
-                        id: "KNUMV",
-                        fields: {
-                            KNUMV: { type: "string" },
-                            KPOSN: { type: "string" },
-                            KSCHL: { type: "string" },
-                            J_3AETENR: { type: "string" },
-                            KBETR: { type: "number" },
-                            WAERS: { type: "string" },
-                            KPEIN: { type: "string"},
-                            KMEIN: { type: "string"}
-                        }
-                    },
-                    data: "items"
-                },
-            });
+                let schema = GenerateKendoModel(dataset);
+                let columns = GenerateKendoColumns(dataset, titleMapping, excludeColumns);
     
-            var t_grid = $("#dv_T_ZCKB").kendoGrid({
-                autoBind: false,
-                height: 50 + d.T_ZCKB.length * 25,
-                dataSource: t_source,
-                sortable: true,
-                reorderable: true,
-                groupable: false,
-                resizable: false,
-                filterable: false,
-                columnMenu: false,
-                pageable: false,
-                scrollable: true,
-                columns: [
-                        { field: "KNUMV", title: "Document Condition", width: "140px" },
-                        { field: "KPOSN", title: "Condition Item Number", width: "160px" },
-                        { field: "KSCHL", title: "Condition Type", width: "140px" },
-                        { field: "J_3AETENR", title: "Delivery Schedule Line", width: "180px" },
-                        { field: "KBETR", title: "Quotation Price", width: "120px" },
-                        { field: "WAERS", title: "Currency", width: "100px" },
-                        { field: "KPEIN", title: "Per", width: "80px" },
-                        { field: "KMEIN", title: "UOM", width: "80px" }
-                ]
-            });
-    
-            t_source.read();
+                CreateTGridDetail(dataset, schema, columns, $("#"+dv_grid_id));
+            }
+            $("<br>").insertAfter($("#dv_T_PO_GRID"));
         }
 
-        if(d.T_GRID.length > 0){
-            CreateTGridDetail(d.T_GRID, $("#dv_T_GRID"));
-        }
+        if(d.MatSOGridGroup != null && d.MatSOGridGroup.length > 0) {
+            $('#dv_T_SO_GRID_head').append('<div><span class="t-grid-head-title">By Material/By SO/By Grid Value Group</span></div>');
+            for(var i=0; i<d.MatSOGridGroup.length; i++) {
+                let dataset = d.MatSOGridGroup[i];
+                let firstItem = dataset[0];
+                let t_head = "";
+                t_head += '<div style="display:inline-block;"><span>SO Item: </span><span>'+firstItem.AUPOS+'</span></div>';
+                t_head += '<div style="display:inline-block;"><span>Approval Status: </span><span>'+firstItem.TEXT+'</span></div>';
+                t_head += '<div style="display:inline-block; width:10em"></div>';
+                t_head += '<div style="display:inline-block;"><span>Currency: </span><span>'+firstItem.KONWA+'</span></div>';
+                t_head += '<div style="display:inline-block; width:10em"></div>';
+                t_head += '<div style="display:inline-block;"><span>Per </span><span>'+firstItem.KPEIN+' '+firstItem.KMEIN+'</span></div>';
+                $('#dv_T_SO_GRID').append(t_head);
 
-        if(d.T_GROUP.length > 0){ 
-            CreateTGridDetail(d.T_GROUP, $("#dv_T_GROUP"));
-        }
+                let dv_grid_id = "dv_T_SO_GRID_"+i;
+                let dv_grid = '<div id="'+dv_grid_id+'"></div><br>';
+                $('#dv_T_SO_GRID').append(dv_grid);
 
-        if(d.T_ITEM_GRID.length > 0){
-            CreateTGridDetail(d.T_ITEM_GRID, $("#dv_T_ITEM_GRID"));
-        }
+                let schema = GenerateKendoModel(dataset);
+                let columns = GenerateKendoColumns(dataset, titleMapping, excludeColumns);
 
-        if(d.T_PO_GROUP.length > 0){
-            CreateTGridDetail(d.T_PO_GROUP, $("#dv_T_PO_GROUP"));
+                CreateTGridDetail(dataset, schema, columns, $("#"+dv_grid_id));
+                $("#"+dv_grid_id).append("<br>");
+            }
+            $("<br>").insertAfter($("#dv_T_SO_GRID"));
         }
     }
 
-    function CreateTGridDetail(dataset, div) {
+    function GenerateKendoColumns(data, titlemapping, excludes)
+    {
+        let sampleDataItem = data[0];
+        let columns = [];
+
+        for (var property in sampleDataItem) {
+            if(excludes.includes(property)) {  continue; }
+            let title = titlemapping[property] ? titlemapping[property] : property;
+            title = title.replace("SSSZZZ", "");
+            columns.push({ field: property, title: title, template: (isDateField[property] ? "#= kendo.toString("+property+", \"yyyy-MM-dd\" ) #" : "#="+property+" != null? "+property+" : '' #") });
+        }
+
+        return columns;
+    }
+
+    var isDateField = [];
+    function GenerateKendoModel(data) 
+    {
+        isDateField = [];
+        let sampleDataItem = data[0];
+
+        let model = {};
+        let fields = {};
+        for (var property in sampleDataItem) {
+          if(property.indexOf("ID") !== -1){
+            model["id"] = property;
+          }
+          var propType = typeof sampleDataItem[property];
+
+          if (propType === "number" ) {
+            fields[property] = {
+              type: "number"
+            };
+          } else if (propType === "boolean") {
+            fields[property] = {
+              type: "boolean"
+            };
+          } else if (propType === "string") {
+            var parsedDate = kendo.parseDate(sampleDataItem[property]);
+            if (parsedDate) {
+              fields[property] = {
+                type: "date",
+              };
+              isDateField[property] = true;
+            } else {
+              fields[property] = {
+                type: "string",
+              };
+            }
+          } else {
+            fields[property] = {
+              validation: {
+                required: true
+              }
+            };
+          }
+        }
+
+        model.fields = fields;
+
+        return model;
+    }
+
+    function CreateTGridDetail(dataset, schema, columns, div) {
         var t_source = new kendo.data.DataSource({
             data: {
                 "items": dataset
             },
             schema: {
-                model: {
-                    id: "TYPE",
-                    fields: {
-                        TYPE: { type: "string" },
-                        INITIAL: { type: "string" },
-                        XSEQ: { type: "string" },
-                        YSEQ: { type: "string" },
-                        BSTKD: { type: "string" },
-                        AUPOS: { type: "string" },
-                        J_3ASZGR: { type: "string" },
-                        J_3ASIZE: { type: "string" },
-                        KSCHL: { type: "string" },
-                        KBETR: { type: "number" },
-                        KONWA: { type: "string" },
-                        KPEIN: { type: "string" },
-                        KMEIN: { type: "string" },
-                        KBSTAT: { type: "number" },
-                        DATAB: { type: "string" },
-                        KFRST: { type: "string" },
-                        INSEAM: { type: "string" },
-                        J_3AENTX: { type: "string" },
-                        KBETR_C: { type: "string" },
-                        TEXT: { type: "string" }                        
-                    }
-                },
+                model: schema,
                 data: "items"
             },
         });
@@ -532,35 +525,14 @@ function Start() {
             height: 50 + dataset.length * 25,
             dataSource: t_source,
             sortable: true,
-            reorderable: true,
+            reorderable: false,
             groupable: false,
             resizable: false,
             filterable: false,
             columnMenu: false,
             pageable: false,
-            scrollable: true,
-            columns: [
-                    { field: "TYPE", title: "TYPE", width: "60px" },
-                    { field: "INITIAL", title: "INITIAL", width: "260px" },
-                    { field: "XSEQ", title: "XSEQ", width: "40px" },
-                    { field: "YSEQ", title: "YSEQ", width: "40px" },
-                    { field: "BSTKD", title: "PO No", width: "160px" },
-                    { field: "AUPOS", title: "SO Item", width: "120px" },
-                    { field: "J_3ASZGR", title: "Grid Value Group", width: "120px" },
-                    { field: "J_3ASIZE", title: "Grid Value", width: "100px" },
-                    { field: "KSCHL", title: "Condition Type", width: "120px" },
-                    { field: "KBETR", title: "Rate", width: "100px" },
-                    { field: "KONWA", title: "Currency", width: "90px" },
-                    { field: "KPEIN", title: "Per", width: "80px" },
-                    { field: "KMEIN", title: "UOM", width: "80px" },
-                    { field: "KBSTAT", title: "Status For Conditions", width: "140px" },
-                    { field: "DATAB", title: "Pricing Date", width: "120px" },
-                    { field: "KFRST", title: "Release Status", width: "80px" },
-                    { field: "INSEAM", title: "INSEAM", width: "60px" },
-                    { field: "J_3AENTX", title: "Grid Entry", width: "80px" },
-                    { field: "KBETR_C", title: "RateC", width: "80px" },
-                    { field: "TEXT", title: "Approval Status", width: "180px" }                      
-            ]
+            scrollable: false,
+            columns: columns
         });
 
         t_source.read();

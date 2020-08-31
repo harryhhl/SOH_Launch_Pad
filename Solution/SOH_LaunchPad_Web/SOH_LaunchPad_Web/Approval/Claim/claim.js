@@ -316,8 +316,8 @@ function Start() {
                 { type: "label-2", field: "ESTQTY", field2: "EMEIN", title: "Est. Total Qty", format: "integer" }, 
                 { type: "spaceholder"},
                 { type: "label", field: "PORTION", title: "Air Method"}, 
-                { type: "spaceholder"},
                 { type: "JCostSp"},
+                { type: "spaceholder"},
                 { type: "spaceholder"},
             ];
         }
@@ -420,8 +420,9 @@ function Start() {
                 htmlContent += '    <input type="text" class="k-textbox" value="'+hdr[item.field2]+'" style="width: 2.4em;" readonly>';
                 htmlContent += '</div></div>'; 
             }
-            else if(item.type == "JCostSp") {                
-                htmlContent += '<div style="display: flex">';
+            else if(item.type == "JCostSp") {              
+                var margintop = $('#dvWAPanel').width() > 750 ? "-5em" : "0em";  
+                htmlContent += '<div style="display: flex; margin-top: '+margintop+'">';
                 htmlContent += '    <div class="FixLabel" style="width:250px; height:calc(1.6em + 50px)">';
                 htmlContent += '    <input type="radio" id="rdPrePaid" name="rdJCost" value="Pre-Paid" readonly '+(hdr['JCOST'].includes('Pre-Paid')? "checked" : "disabled")+'>';
                 htmlContent += '    <label for="rdPrePaid">Pre-Paid - Garment C&F</label><br>';

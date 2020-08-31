@@ -426,7 +426,7 @@ function Start() {
             }
             else if( type == 'CheckBox' ){
                 let name = $($(this).find('input')).attr('id');
-                inputData[name] = $($(this).find('input')).attr('checked') ? 'X' : '';
+                inputData[name] = $($(this).find('input')).is(":checked") ? 'X' : '';
             }
         });
 
@@ -599,7 +599,7 @@ function Start() {
     function ShowPODetails() 
     {
         ShowLoading(true);
-        var pono = selectedRst.POReleased[0].PO;
+        var pono = selectedRst.POReleased[0].PONo;
         GetDetail(pono);
     }
 

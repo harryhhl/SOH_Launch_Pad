@@ -125,6 +125,7 @@ namespace SOH_LaunchPad_Web.Approval.Pricing
             }
         }
 
+
         public override bool IsReusable
         {
             get

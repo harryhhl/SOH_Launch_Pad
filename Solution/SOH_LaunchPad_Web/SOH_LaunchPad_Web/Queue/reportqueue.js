@@ -536,7 +536,7 @@ function Start()
                 Action: "downloadalvdata",
                 Token: AccessToken,
                 FuncID: FuncID,
-                Report: selectedReportName,
+                Report: selectedReport,
                 LayoutContent: layoutcontent,
                 QID:  selectedQueueID
             },

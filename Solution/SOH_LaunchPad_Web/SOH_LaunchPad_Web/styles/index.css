@@ -672,6 +672,13 @@ span.k-icon.k-i-report {
   background-position: center;
 }
 
+span.k-icon.k-i-dataentry {
+  background-image: url("img/dataentry.jpg");
+  background-size: 60px 60px;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
 span.k-icon.k-i-home {
   background-image: url("img/home.png");
   background-position: center;

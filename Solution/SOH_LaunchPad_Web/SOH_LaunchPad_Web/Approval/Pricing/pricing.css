@@ -82,6 +82,11 @@ hr {
   margin-right: 0;    
 }  
 
+.t-grid-head-title {
+  color: #6647FF;
+  font-weight: bold;
+}
+
 .k-grid  .k-grid-header  .k-header  .k-link {
   /* height: 24px; */
   white-space: normal;
