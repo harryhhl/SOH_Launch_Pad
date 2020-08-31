@@ -37,6 +37,32 @@ namespace SOH_LaunchPad_CENReport
             }
         }
 
+        public string RunZMM198(string guid, string data_guid, string I_TYPE)
+        {
+            RfcDestination destination = RfcDestinationManager.GetDestination(getParameters());
+            RfcSessionManager.BeginContext(destination);
+            try
+            {
+                RfcRepository sapRfcRepository = destination.Repository;
+
+                IRfcFunction rfcFunction = sapRfcRepository.CreateFunction("ZBAPI_SOH_ZRMM198");
+                rfcFunction.SetValue("I_REQUEST_GUID", guid);
+                rfcFunction.SetValue("I_DATA_GUID", data_guid);
+                rfcFunction.SetValue("I_TYPE", I_TYPE);
+
+                rfcFunction.Invoke(destination);
+                return "OK";
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+            finally
+            {
+                RfcSessionManager.EndContext(destination);
+            }
+        }
+
         protected RfcConfigParameters getParameters()
         {
             var settings = Common.GetSysSettings();

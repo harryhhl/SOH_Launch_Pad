@@ -33,31 +33,59 @@ namespace SOH_LaunchPad_CENReport
                 var token = HttpUtility.ParseQueryString(input).Get("Token");
                 var sysfuncid = HttpUtility.ParseQueryString(input).Get("FuncID");
 
+                var customRpt = HttpUtility.ParseQueryString(input).Get("custrpt");
+                var customRptPara1 = HttpUtility.ParseQueryString(input).Get("custp1");
+                var customRptPara2 = HttpUtility.ParseQueryString(input).Get("custp2");
+
                 try
                 {
-                    DataSet rcd = SqlHelper.ExecuteDataset(SqlHelper.GetConnection("SOHDB"), CommandType.Text,
-                    $@"SELECT top 1 [ReportName],[Username],[RequestData]
-                       FROM [dbo].[SAPReportQueue]
-                       where Id = '{qid}'");
-
-                    if (rcd.Tables.Count > 0)
+                    if (!string.IsNullOrEmpty(customRpt))
                     {
-                        var row = rcd.Tables[0].Rows[0];
-
-                        RequstModel req = JsonConvert.DeserializeObject<RequstModel>(row["RequestData"].ToString());
-                        string CreatedBy = row["Username"].ToString();
-                        string ReportName = row["ReportName"].ToString();
-
-                        RequestResult result = await Common.RequestUsername(token, sysfuncid);
-                        if (result.Status == RequestResult.ResultStatus.Failure)
-                            throw new Exception(result.Errmsg);
-
-                        var tmp = JsonConvert.DeserializeObject<Dictionary<string, string>>(result.Data);
-                        req.UpdateSelectionByRestriction(tmp["LAN_ID"]);
-
-                        foreach (var sel in req.Selection)
+                        if (customRpt == "ZMM198")
                         {
-                            string insertquery = $@"INSERT INTO [dbo].[SOH_Selection_Detail]
+                            SAPProc sp = new SAPProc();
+                            string ret = sp.RunZMM198(qid, customRptPara1, customRptPara2);
+
+                            if (ret != "OK")
+                            {
+                                string err = "SAPError: " + ret;
+                                throw new Exception(err);
+                            }
+
+                            System.Threading.Thread.Sleep(500);
+
+                            ReportMessage rm = GetReportMessageResult(qid);
+                            if (rm.Type == "S")
+                                UpdateReportQueueStatus(qid, 1, "", rm.Message);
+                            else
+                                UpdateReportQueueStatus(qid, 2, rm.Message, "");
+                        }
+                    }
+                    else
+                    {
+                        DataSet rcd = SqlHelper.ExecuteDataset(SqlHelper.GetConnection("SOHDB"), CommandType.Text,
+                            $@"SELECT top 1 [ReportName],[Username],[RequestData]
+                           FROM [dbo].[SAPReportQueue]
+                           where Id = '{qid}'");
+
+                        if (rcd.Tables.Count > 0)
+                        {
+                            var row = rcd.Tables[0].Rows[0];
+
+                            RequstModel req = JsonConvert.DeserializeObject<RequstModel>(row["RequestData"].ToString());
+                            string CreatedBy = row["Username"].ToString();
+                            string ReportName = row["ReportName"].ToString();
+
+                            RequestResult result = await Common.RequestUsername(token, sysfuncid);
+                            if (result.Status == RequestResult.ResultStatus.Failure)
+                                throw new Exception(result.Errmsg);
+
+                            var tmp = JsonConvert.DeserializeObject<Dictionary<string, string>>(result.Data);
+                            req.UpdateSelectionByRestriction(tmp["LAN_ID"]);
+
+                            foreach (var sel in req.Selection)
+                            {
+                                string insertquery = $@"INSERT INTO [dbo].[SOH_Selection_Detail]
                                             ([SelectionID]
                                             ,[ProgramID]
                                             ,[SelName]
@@ -81,27 +109,29 @@ namespace SOH_LaunchPad_CENReport
                                             ,'{CreatedBy}')
                                             ";
 
-                            SqlHelper.ExecuteNonQuery(SqlHelper.GetConnection("ReportDB"), CommandType.Text, insertquery);
+                                SqlHelper.ExecuteNonQuery(SqlHelper.GetConnection("ReportDB"), CommandType.Text, insertquery);
+                            }
+
+                            SAPProc sp = new SAPProc();
+                            string ret = sp.Run(qid);
+
+                            if (ret != "OK")
+                            {
+                                string err = "SAPError: " + ret;
+                                HandleEmailNotification(qid, new ReportMessage() { Type = "E", Message = err }, ReportName, token, CreatedBy);
+                                throw new Exception(err);
+                            }
+
+                            System.Threading.Thread.Sleep(500);
+
+                            ReportMessage rm = GetReportMessageResult(qid);
+                            if (rm.Type == "S")
+                                UpdateReportQueueStatus(qid, 1, "", rm.Message);
+                            else
+                                UpdateReportQueueStatus(qid, 2, rm.Message, "");
+
+                            HandleEmailNotification(qid, rm, ReportName, token, CreatedBy);
                         }
-
-                        SAPProc sp = new SAPProc();
-                        string ret = sp.Run(qid);
-                        if (ret != "OK")
-                        {
-                            string err = "SAPError: " + ret;
-                            HandleEmailNotification(qid, new ReportMessage() { Type = "E", Message = err }, ReportName, token, CreatedBy);
-                            throw new Exception(err);
-                        }
-
-                        System.Threading.Thread.Sleep(500);
-
-                        ReportMessage rm = GetReportMessageResult(qid);
-                        if(rm.Type == "S")
-                            UpdateReportQueueStatus(qid, 1, "", rm.Message);
-                        else
-                            UpdateReportQueueStatus(qid, 2, rm.Message, "");
-
-                        HandleEmailNotification(qid, rm, ReportName, token, CreatedBy);
                     }
                 }
                 catch(Exception ex)
@@ -298,7 +328,7 @@ namespace SOH_LaunchPad_CENReport
             try
             {
                 DataSet rcd = SqlHelper.ExecuteDataset(SqlHelper.GetConnection("ReportDB"), CommandType.Text,
-                $@"SELECT [Type],[Message] FROM [dbo].[SOH_Message_Log] where SelectionID='{qid}'");
+                $@"SELECT top 1 [Type],[Message] FROM [dbo].[SOH_Message_Log] where SelectionID='{qid}' order by CreatedOn desc");
 
                 var row = rcd.Tables[0].Rows[0];
 

@@ -14,7 +14,7 @@ namespace SOH_LaunchPad_CENReport
     /// </summary>
     public class GetReportConfig : IHttpHandler
     {
-        public void ProcessRequest(HttpContext context)
+        public async void ProcessRequest(HttpContext context)
         {
             if (HttpContext.Current.Request.HttpMethod == "POST")
             {
@@ -25,6 +25,7 @@ namespace SOH_LaunchPad_CENReport
                 }
                 var rptname = HttpUtility.ParseQueryString(input).Get("Report");
                 var tokenid = HttpUtility.ParseQueryString(input).Get("Token");
+                var sysfuncid = HttpUtility.ParseQueryString(input).Get("FuncID");
 
                 try
                 {
@@ -71,23 +72,37 @@ namespace SOH_LaunchPad_CENReport
                             config.IsMultipleSelect = (int)row["IsMutipleSelection"];
                             config.MstSourceRef = row["RefDataSoure"].ToString().Trim();
 
-                            if (config.Kind == "S" && config.ControlType.Trim().Length < 1)
-                                config.ControlType = "Range";
-
-                            config.RadioGroup = config.RadioGroup.Replace(' ', '_');
-
-                            if(config.MstSource != null && config.MstSource.Length > 1)
+                            if (config.SelDesc == "User ID(No Display)")
                             {
-                                if(config.IsMultipleSelect == 1)
-                                    config.ControlType = "MultiSelectRange";
-                                else
-                                    config.ControlType = "ComboBox";
-                            }
+                                config.ControlType = "TextBox";
 
-                            if(restrictedNameList.Contains(config.SelDesc))
-                            {
-                                config.IsRestrict = 1;
+                                RequestResult result = await Common.RequestUsername(tokenid, sysfuncid);
+                                if (result.Status == RequestResult.ResultStatus.Failure)
+                                    throw new Exception(result.Errmsg);
+
+                                var tmp = JsonConvert.DeserializeObject<Dictionary<string, string>>(result.Data);
+                                config.DefaultValue = tmp["LAN_ID"];
                             }
+                            else
+                            {
+                                if (config.Kind == "S" && config.ControlType.Trim().Length < 1)
+                                    config.ControlType = "Range";
+
+                                config.RadioGroup = config.RadioGroup.Replace(' ', '_');
+
+                                if (config.MstSource != null && config.MstSource.Length > 1)
+                                {
+                                    if (config.IsMultipleSelect == 1)
+                                        config.ControlType = "MultiSelectRange";
+                                    else
+                                        config.ControlType = "ComboBox";
+                                }
+
+                                if (restrictedNameList.Contains(config.SelDesc))
+                                {
+                                    config.IsRestrict = 1;
+                                }
+                            }                            
 
                             configs.Configs.Add(config);
                         }

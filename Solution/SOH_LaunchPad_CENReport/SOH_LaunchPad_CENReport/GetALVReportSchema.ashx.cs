@@ -96,6 +96,10 @@ namespace SOH_LaunchPad_CENReport
                 int datalength = (int)row["DATA_LENGTH"];
                 string title = row["COLUMN_TITLE"].ToString().Trim();
 
+                //if (columnname == "diff") continue;
+                //if (columnname == "old") continue;
+                if (columnname == "new") continue;
+
                 schema.Add(columnname, datatype);
 
                 datalength = colLengthDS == null ? datalength : colLengthDS[columnname];
