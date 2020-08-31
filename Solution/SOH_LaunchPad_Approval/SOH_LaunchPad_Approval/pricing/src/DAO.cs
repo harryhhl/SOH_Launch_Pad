@@ -92,6 +92,7 @@ namespace SOH_LaunchPad_Approval.pricing.src
                     property.SetValue(pad, dt);
                 }
 
+
                 return pad;
             }
             catch (Exception ex)
@@ -145,14 +146,8 @@ namespace SOH_LaunchPad_Approval.pricing.src
 
     public class PricingApproveDetail
     {
-        public DataTable T_GRID { get; set; } //ZSO_PRICING_DETAIL
-        public DataTable T_GROUP { get; set; } //ZSO_PRICING_DETAIL
+        public DataTable T_DETAIL { get; set; } //ZSOH_PRICING_DETAIL
         public DataTable T_HEAD { get; set; } //ZSO_PRICING_HEAD
-        public DataTable T_ITEM { get; set; }//ZSO_PRICING_ITEM
-        public DataTable T_ITEM_GRID { get; set; }//ZSO_PRICING_DETAIL
-        public DataTable T_MAT { get; set; }//ZSO_PRICING_MAT
-        public DataTable T_PO { get; set; } //ZSO_PRICING_PO
-        public DataTable T_PO_GROUP { get; set; } //ZSO_PRICING_DETAIL
         public DataTable T_ZCKB { get; set; } //ZSO_PRICING_KONV
     }
 }

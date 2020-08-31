@@ -126,9 +126,28 @@ namespace SOH_LaunchPad_Approval.po.src
             }
         }
 
-        public bool CheckReleaseAuth(string userid)
+        public DataTable FitlerReleaseAuth(string userid, DataTable dt)
         {
-            return true;
+            DataTable rstTable = dt.Clone();
+
+            for(int r=0; r<dt.Rows.Count; r++)
+            {
+                List<string> plants = new List<string>() { dt.Rows[r]["PLANT"].ToString() };
+                bool Check_1 = Common.CheckAccessByName(userid, "Approve_PO_Plant", plants);
+                if (Check_1 == false) continue;
+
+                List<string> purgps = new List<string>() { dt.Rows[r]["PO_GROUP"].ToString() };
+                bool Check_2 = Common.CheckAccessByName(userid, "Approve_PO_PurGp", purgps);
+                if (Check_2 == false) continue;
+
+                List<string> relcodes = new List<string>() { dt.Rows[r]["RELEASE_CODE"].ToString() };
+                bool Check_3 = Common.CheckAccessByName(userid, "Approve_PO_ReleaseCode", relcodes);
+                if (Check_3 == false) continue;
+
+                rstTable.Rows.Add(dt.Rows[r].ItemArray);
+            }
+
+            return rstTable;
         }
 
         public class POApproveRst

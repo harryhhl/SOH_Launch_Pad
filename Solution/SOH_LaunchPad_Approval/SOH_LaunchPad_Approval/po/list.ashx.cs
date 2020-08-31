@@ -49,14 +49,15 @@ namespace SOH_LaunchPad_Approval.po
                     var inputData = JsonConvert.DeserializeObject<DAO.POApprovalDisplayRequestModel>(data);
                     inputData.I_USERNAME = approverid;
                     DAO dao = new DAO();
-                   
-                    //if (dao.CheckReleaseAuth(approverid, inputData.Get("SONo"), inputData.Get("Vendor")) == false)
-                    //{
-                    //    throw new Exception("You have No Access Rights for this SO! ");
-                    //}
 
                     var retDat = dao.List(inputData);
-                    string retJson = JsonConvert.SerializeObject(retDat);
+                    var retDatFiltered = dao.FitlerReleaseAuth(approverid, retDat);
+                    if(retDat.Rows.Count > 0 && retDatFiltered.Rows.Count <= 0)
+                    {
+                        throw new Exception("You have No Authorization!");
+                    }
+
+                    string retJson = JsonConvert.SerializeObject(retDatFiltered);
 
                     RequestResult ret = RequestResult.Create(RequestResult.ResultStatus.Success, retJson, "");
 
