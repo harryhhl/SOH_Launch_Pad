@@ -408,6 +408,8 @@ function Start()
                 radiogroupinclude.push(item.RadioGroup);
 
                 htmlContent += '<div class="sspcontrol" type="Radio" data-name="ssradio-'+item.RadioGroup+'">';
+                htmlContent += '<div class="k-block">';
+                htmlContent += '<label>'+item.RadioGroup+'</label>';
                 htmlContent += '  <ul class="sspcontrol-radiolist">';
 
                 for(var r=0; r<allgroupitems.length; r++) {
@@ -418,6 +420,7 @@ function Start()
                 }
 
                 htmlContent += '  </ul>';
+                htmlContent += '</div>';
                 htmlContent += '</div>';
             }
             else {

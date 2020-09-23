@@ -34,11 +34,13 @@ function Start()
     var selectAddtoQueue = 0;
     var rptAction = "";
 
-    var masterDataSource = new Map();
+    var uploadID = "ZMM198";
+    var kendoUpload = null;
+    var kendoNotify = null;
+    var kendoDialog = null;
 
-    var listLayout = null;
-    var listLayoutDS = null;
-
+    var PPCorPUR = "";
+ 
     $(document).ready(Begin);
 
     function Begin()
@@ -84,7 +86,6 @@ function Start()
         $('#lbRptName').empty();
         $('#lbRptName').append("<h3>"+ReportDisplayName+"</h3>");
 
-
         $('#btnBack').on( 'click', function() {   
             
             if(Reporthas2Part() && ReportStep == 2) {
@@ -114,8 +115,20 @@ function Start()
             UpdateFuncAccess(FuncID);
         });
         
+        $('#btnShowUpload').on( 'click', function() {           
+            ShowResult(false);
+            ShowUpload(true);
+            if(kendoUpload == null)
+                InitKendoUpload();
+        });
 
+        $('#btnBackFromUpload').on( 'click', function() {               
+            ShowResult(false);
+            ShowUpload(false);
+        });
+        
         ShowResult(false);
+        ShowUpload(false);
 
         $('.FavorStarBtn').click(function(){
             if($(this).children(":last").hasClass('k-i-star-outline')){
@@ -136,6 +149,62 @@ function Start()
                 $('.FavorStarBtn').children(":last").removeClass('k-i-star-outline');
                 $('.FavorStarBtn').children(":last").addClass('k-i-star');
             }
+        });
+    }
+
+    function InitKendoUpload()
+    {
+        kendoUpload = $("#files").kendoUpload(
+        {
+            async: {
+                saveUrl: "../../Upload.ashx"
+            },
+            validation: {
+                allowedExtensions: [".xlsx"]
+            },
+            localization: {
+                select: "UPLOAD FILE"
+            },
+            upload: function(e) {
+                e.data = { id : uploadID };
+            },
+            success: function(e) {
+                $('#btnDoPurUpload').show();
+                $('#btnDoPPCUpload').show();
+            },
+            error: function(e) {
+                alert("Error occured: " + e.XMLHttpRequest.responseText);
+            },
+            select: function(e) {
+                $("#files").data("kendoUpload").trigger("remove");
+                $(".k-widget.k-upload").find("ul").remove();
+            }
+        });
+
+        var addButtonUploadPUR = '<button type="button" class="k-button k-primary hidden" id="btnDoPurUpload">Do PUR Upload</button>';
+        var addButtonUploadPPC = '<button type="button" class="k-button k-primary hidden" id="btnDoPPCUpload">Do PPC Upload</button>';
+        $('.k-dropzone').append($(addButtonUploadPUR));
+        $('.k-dropzone').append($(addButtonUploadPPC));
+
+        
+        $('#btnDoPurUpload').on( 'click', function() {   
+            
+            ShowLoading(true);
+
+            $('#btnDoPurUpload').hide();
+            $('#btnDoPPCUpload').hide();
+
+            UploadFile("5", ReportName);
+        });
+
+        $('#btnDoPPCUpload').on( 'click', function() {  
+            
+            ShowLoading(true);
+
+            $('#btnDoPurUpload').hide();
+            $('#btnDoPPCUpload').hide();
+
+            UploadFile("4", ReportName);
         });
     }
 
@@ -722,6 +791,24 @@ function Start()
         }
     }
 
+    function ShowUpload(doShow)
+    {
+        if(doShow) {
+            $('#btnShowUpload').hide();
+            $('#btnBackFromUpload').show();
+            $('#dvUploadPanel').show();
+            $('#dvNewCallContent').hide();
+            $('#btnSubmit').hide();
+        }
+        else {
+            $('#btnShowUpload').show();
+            $('#btnBackFromUpload').hide();
+            $('#dvUploadPanel').hide();
+            $('#dvNewCallContent').show();
+            $('#btnSubmit').show();
+        }
+    }
+
     function ShowResult(doShow)
     {
         if(doShow) {
@@ -730,7 +817,7 @@ function Start()
             $('#btnSubmit').hide();
             $('#btnAddEmail').hide();
             $('#btnBack').show();
-            $('#btnExport').show();
+            $('#btnExport').show();         
         }
         else {
             $('#dvNewCallContent').show();
@@ -804,7 +891,7 @@ function Start()
         return source;
     }
 
-    function InitALVGrid_Detail(config)
+    function InitALVGrid_Detail(config, editable = false)
     {
         if(alvgrid_detail != null) {
             alvgrid_detail.data("kendoGrid").destroy();
@@ -827,22 +914,64 @@ function Start()
                         console.debug(xhr); console.debug(error);
                     }
                 },
+                update: {
+                    url: "../../Reports/ZMM198/api.ashx",
+                    dataType: "json",
+                    type: "POST",
+                    contentType: "application/json; charset=utf-8",
+                    xhrFields: {
+                        withCredentials: true
+                    },
+                    complete: ALVGridUpdateReturn,
+                    error: function (xhr, error) {
+                        console.debug(xhr); console.debug(error);
+                    }
+                },                
                 parameterMap: function(data, type) {
                     if(data.filter)
                         data.filter = kendo.stringify(data.filter);
                     if(data.sort)
                         data.sort = kendo.stringify(data.sort);
+
+                    if(type == "update") {
+                        if(data.models != null && data.models.length>0) {
+                            for(var i=0; i<data.models.length; i++) {
+                                var dataset = data.models[i];
+                                Object.keys(dataset).forEach(
+                                    function(key) { 
+                                        if(alvgridDataSource_detail.options.schema.model.id == key) return;
+                                        let col = alvgridDataSource_detail.options.schema.model.fields[key];
+                                        if(col == null || col.editable == false) {
+                                            delete dataset[key];
+                                        }
+                                    });                                
+                                Object.keys(dataset).forEach(
+                                    function(key) { 
+                                        if(dataset[key] instanceof Date) {
+                                            dataset[key] = kendo.toString(dataset[key], "yyyy-MM-dd");
+                                        }
+                                    });
+                            }
+                            data.models = kendo.stringify(data.models);
+                            data.Action = "update";
+                            data.PPCorPUR = PPCorPUR;
+                            data.QID = lastQueueID;
+                        }
+                    }
+
                     return data;
                 },
             },
             schema: {
                 model: {
-                    id: "Id",
+                    id: "count",
                     fields: JSON.parse(config.SchemaSetting)
                 },
                 data: "ListData",
                 total: "TotalCount"
             },
+            batch: true,
+            sort: { field: "count", dir: "asc" },
             pageSize: 100,
             serverPaging: true,
             serverFiltering: true,
@@ -870,21 +999,16 @@ function Start()
             scrollable: {
                 virtual: true
             },
-            change: ALVGridonSelect,
             persistSelection: true,
             pageable: false,
             excel: {
                 allPages: true
             },
-            // dataBound: function() {
-            //     for (var i = 0; i < this.columns.length; i++) {
-            //       this.autoFitColumn(i);
-            //     }
-            // },
+            editable: editable,
+            toolbar: editable ? ["save", "cancel"] : null,
             columns: columnSetting
         });     
         
-        //ALVGridReload();
     }
 
     function InitALVGrid_Item(config)
@@ -953,56 +1077,16 @@ function Start()
             scrollable: {
                 virtual: true
             },
-            change: ALVGridonSelect,
             persistSelection: true,
             pageable: false,
             excel: {
                 allPages: true
             },
-            // dataBound: function() {
-            //     for (var i = 0; i < this.columns.length; i++) {
-            //       this.autoFitColumn(i);
-            //     }
-            // },
             columns: columnSetting
         });     
         
-        //ALVGridReload();
     }
 
-    function ALVGridonSelect(e) 
-    {
-        // var dataItemSet = [];
-        // var rows = e.sender.select();
-        // rows.each(function() {
-        //     var dataItem = alvgrid.data("kendoGrid").dataItem(this);
-        //     dataItemSet.push(dataItem);
-        //     //console.log(dataItem);
-        // });
-
-        // ALVGridSetResultSelectBind(dataItemSet);
-    }
-
-    function ALVGridSetResultSelectBind(dataItemSet)
-    {
-        // var selectBindControls = $('#dvNewCallContent input[type=BindResult]');
-        // selectBindControls.each(function(){
-        //     var key = $(this).attr('bind');
-        //     var value = [];
-        //     for(var i=0; i<dataItemSet.length; i++) {
-        //         var dataItem = dataItemSet[i];
-        //         if (key in dataItem) {
-        //             value.push(dataItem[key]);
-        //         }
-        //     }
-        //     $(this).val(value.join(','));
-        // });
-    }
-
-    function ALVGridReload() 
-    {
-        alvgridDataSource.read();
-    }
 
     function ALVGridDataSourceFilter(rptName)
     {
@@ -1018,7 +1102,19 @@ function Start()
     }
 
     function ALVGridGetDataReturn(_jqXHR, _textStatus) 
-    {
+    {        
+    }
+
+    function ALVGridUpdateReturn(_jqXHR, _textStatus) 
+    {        
+        if(_textStatus == "success")
+        {
+            let i_type = "2";
+            if (PPCorPUR == "P_RADPUR")
+                i_type = "2";
+            
+            UpdateGrid(i_type, ReportName);
+        }
     }
 
     function InitResultDvHeader(result_data) {
@@ -1378,6 +1474,9 @@ function Start()
                     sel.Low = (idname == $(this).attr('id')? 'X' : '');
                     sel.High = '';
 
+                    if(sel.Low == 'X')
+                        PPCorPUR = idname;
+
                     reportData.Selection.push(sel);
                 });
             }
@@ -1400,7 +1499,7 @@ function Start()
                 
                 GetResultHeader();
                 GetALVSchema_item();
-                GetALVSchema_detail();
+                GetDetailModuleSchema();
                 
                 ShowResult(true);
                 ShowLoading(false);
@@ -1425,8 +1524,22 @@ function Start()
                 ShowResult(true);
                 ShowLoading(false);
             }
-            else if(q.OutputType == "File") {
+            else if(q.OutputType == "File" || q.LogMessage == "File") {
                 GetExportData();
+            }
+            else if(document.getElementById("dvUploadPanel").offsetParent != null) {
+                ShowLoading(false);
+                if(q.LogMessage.length > 1) {
+                    let dmsg = q.LogMessage.split(";").join("<br>");
+                    ShowDialog(dmsg, "Upload Success", "Result");
+                }
+                else {
+                    ShowNotify(q.OutputType);
+                }
+            }
+            else if(q.LogMessage.length > 1) {
+                ShowLoading(false);
+                ShowNotify(q.LogMessage);
             }
             else {
                 dvResultALV.hide();
@@ -1444,10 +1557,66 @@ function Start()
                 QueueWaitReturn += RetryInterval;
                 setTimeout(GetLastQueue, RetryInterval);
             }
-        }
+        }        
         else {
             alert(q.LogMessage);
             ShowLoading(false);
+        }
+    }
+
+    function ShowDialog(message, title='result', subtitle='result')
+    {
+        let contentHtml = '' +
+        '<span style="display: inline-block; min-width: 180px"><strong>'+subtitle+'</strong></span>' +
+        '<br><br>';
+        contentHtml += '' +
+        '<span style="display: inline-block; min-width: 180px">' + message + '</span>' +
+        '<br>';
+
+        if (kendoDialog == null) {
+            kendoDialog = $("#dvKendoDialog").kendoDialog({
+                width: "400px",
+                buttonLayout: "normal",
+                title: title,
+                closable: true,
+                modal: true,
+                content: contentHtml,
+                actions: [
+                { text: 'OK', primary: true }
+                ]
+            });
+        } else {
+            kendoDialog.data("kendoDialog").content(contentHtml);
+            kendoDialog.data("kendoDialog").open();
+        }
+    }
+
+    function ShowNotify(message)
+    {
+        if(kendoNotify == null) {
+            kendoNotify = $("#centeredNotification").kendoNotification({
+                stacking: "down",
+                show: onShowNotify,
+                button: true
+            }).data("kendoNotification");
+        }
+        kendoNotify.show(message);
+    }
+
+    function onShowNotify(e) 
+    {
+        if (e.sender.getNotifications().length == 1) {
+            var element = e.element.parent(),
+                eWidth = element.width(),
+                eHeight = element.height(),
+                wWidth = $(window).width(),
+                wHeight = $(window).height(),
+                newTop, newLeft;
+
+            newLeft = Math.floor(wWidth / 2 - eWidth / 2);
+            newTop = Math.floor(wHeight / 2 - eHeight / 2);
+
+            e.element.parent().css({ top: newTop, left: newLeft });
         }
     }
 
@@ -1580,6 +1749,101 @@ function Start()
                 DisableSubmit(false);
             }
             
+        });
+    }
+
+    function UpdateGrid(i_type, reportName) 
+    {
+        $.ajax({
+            type: "POST",
+            async: true,
+            url: "../../Reports/ZMM198/api.ashx",
+            data: {
+                Action: "applyupdate",
+                Token: AccessToken,
+                FuncID: FuncID,
+                Report: reportName,
+                Hidden: true,
+                Data: lastDisplayQueueID,
+                QID_data: lastDisplayQueueID,  
+                I_TYPE: i_type  
+            },
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            error: function (request, error) {
+                console.log(request.statusText);
+                alert(request.statusText);
+            },
+            success: function (data) {
+
+                ShowLoading(true);
+                lastQueueID = data.Data;
+                QueueWaitReturn = 0;
+                GetLastQueue();
+            },
+            complete: function() {
+            }
+            
+        });
+    }
+
+    function UploadFile(i_type, reportName) 
+    {
+        $.ajax({
+            type: "POST",
+            async: true,
+            url: "../../Reports/ZMM198/api.ashx",
+            data: {
+                Action: "upload",
+                Token: AccessToken,
+                FuncID: FuncID,
+                Report: reportName,
+                Hidden: true,
+                upfid: uploadID,
+                I_TYPE: i_type  
+            },
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            error: function (request, error) {
+                console.log(request.statusText);
+                alert(request.statusText);
+            },
+            success: function (data) {
+
+                ShowLoading(true);
+                lastQueueID = data.Data;
+                QueueWaitReturn = 0;
+                GetLastQueue();
+            },
+            complete: function() {
+            }
+            
+        });
+    }
+
+    function GetDetailModuleSchema() 
+    {
+        $.ajax({
+            type: "POST",
+            async: true,
+            url: "../../Reports/ZMM198/api.ashx",
+            data: {
+                Action: "getdetailschema",
+                Token: AccessToken,
+                FuncID: FuncID,
+                Report: "ZRMM198_Detail",
+                QID: lastQueueID,
+                PPCorPUR: PPCorPUR
+            },
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            error: function (request, error) {
+                console.log(request.statusText);
+                alert(request.statusText);
+            },
+            success: function (data) {
+                InitALVGrid_Detail(data, true);
+            }
         });
     }
 

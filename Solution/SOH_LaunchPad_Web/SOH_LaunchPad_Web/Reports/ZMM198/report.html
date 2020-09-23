@@ -12,7 +12,7 @@
     <script src="../../scripts/jszip.js"></script>
     <script src="../../scripts/kendo.all.min.js?1"></script>
     <script src="../../scripts/iframeResizer.contentWindow.min.js"></script>
-    <script src="report.js?28"></script>
+    <script src="report.js?69"></script>
 </head>
 <body>
     <div id="dvMainContent">
@@ -25,7 +25,9 @@
                     <!-- <button class="k-button" id="btnAddQueue">Add to Queue</button>
                     <button class="k-button" id="btnAddEmail">Send to Email</button> -->
                     <button class="k-button" id="btnExport">Export</button>
+                    <button class="k-button" id="btnShowUpload">Upload</button>
                     <button class="k-button" id="btnBack">Back</button>
+                    <button class="k-button" id="btnBackFromUpload">Back</button>
                     <button class="FavorStarBtn" title="Toggle Favorite">
                         <span class="k-icon k-i-star-outline"></span>
                     </button>
@@ -34,6 +36,9 @@
             <hr>
             <div id="dvNewCallContent">
           
+            </div>
+            <div id="dvUploadPanel" class="hidden">
+                <input name="files" id="files" type="file" aria-label="files" />
             </div>
             <div id="dvResultPanel_ALV" class="hidden">  
                 <div id="dvResultHeader" style="width: 95%; display: flex; flex-wrap: wrap; align-items: flex-start; margin-left: 0em;"></div>           
@@ -56,6 +61,10 @@
             </div>                      
         </div>
     </div>
+    <div id="dvCenterNotification">
+        <span id="centeredNotification" style="display:none;"></span>
+    </div>
+    <div id="dvKendoDialog"></div>    
     <div id="dvLoadingOverlay" class="overlay-loading">
         <div class="overlay-loading-content">        
             <p><progress></progress></p>

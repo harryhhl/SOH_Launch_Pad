@@ -40,21 +40,23 @@ function Start()
                 $('#imgUserPhoto').show();
             }
 
-            var lbUser = $('#userProfileLabel');
-            lbUser.empty();
-            var lbUserText = "<div>" + AzureAccount.name +"</div>";
-            lbUserText += "<div>" + AzureAccount.userName +"</div>";
-            lbUser.append(lbUserText);
-
-            $('#lbUserOU').text(GetOULabelfromUser(AzureAccount.name));
-            $('#lbUserName').text(AzureAccount.name);
-            $('#dvWelcome').empty();
-            $('#dvWelcome').append('<h2>&nbsp;&nbsp;Good Day! '+AzureAccount.name.split(' ')[0]+'</h2>');
-
-            $('#lbUserInitial').text(AzureAuthen.GetUserInitial());
-
             CheckAuth(function(data){
                 
+                var lbUser = $('#userProfileLabel');
+                lbUser.empty();
+                var lbUserText = "<div>" + AzureAccount.name +"</div>";
+                lbUserText += "<div>" + AzureAccount.userName +"</div>";
+                lbUser.append(lbUserText);
+    
+                let name = AzureAccount.name == null? "":AzureAccount.name;
+
+                $('#lbUserOU').text(GetOULabelfromUser(name));
+                $('#lbUserName').text(name);
+                $('#dvWelcome').empty();
+                $('#dvWelcome').append('<h2>&nbsp;&nbsp;Good Day! '+name.split(' ')[0]+'</h2>');
+    
+                $('#lbUserInitial').text(AzureAuthen.GetUserInitial());
+
                 GetFavorList(function(ret) {
                     BuildAppMenu(data);
 
@@ -639,6 +641,7 @@ function Start()
 
     function GetSafeIDfromName(name)
     {
+        if(name == null) return "";
         let a = name.replace(/\s/g, "_");
         a = a.replace(/&/g, "_");
         return a;
@@ -646,6 +649,8 @@ function Start()
 
     function GetOULabelfromUser(username)
     {
+        if(username == null) return "";
+
         var defaultOU = 'CG';
         var s1 = username.indexOf('/', 0);
         if(s1 == -1) return defaultOU;

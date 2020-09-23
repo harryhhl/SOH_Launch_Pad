@@ -82,4 +82,8 @@ namespace SOH_LaunchPad_Web
 
 
     }
+
+    public class GenericJsonObj : Dictionary<string, dynamic>
+    {
+    }
 }

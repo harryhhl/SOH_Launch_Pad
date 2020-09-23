@@ -328,6 +328,9 @@
       <DependentUpon>SapReport.ashx</DependentUpon>
     </Compile>
     <Compile Include="src\SqlHelper.cs" />
+    <Compile Include="Upload.ashx.cs">
+      <DependentUpon>Upload.ashx</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Content Include="styles\fonts\glyphs\KendoUIGlyphs.eot" />
@@ -531,6 +534,7 @@
     <Content Include="styles\pdfjs\cmaps\V.bcmap" />
     <Content Include="styles\pdfjs\cmaps\WP-Symbol.bcmap" />
     <Content Include="Reports\ZMM198\api.ashx" />
+    <Content Include="Upload.ashx" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

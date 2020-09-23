@@ -158,7 +158,7 @@ var AzureAuthen = (function()
     function getInitial() 
     {
         if(AzureAccount == null) return "";
-
+        if(AzureAccount.name == null) return "";
         var words = AzureAccount.name.split(" ");
         if(words.length >= 2)
         {
