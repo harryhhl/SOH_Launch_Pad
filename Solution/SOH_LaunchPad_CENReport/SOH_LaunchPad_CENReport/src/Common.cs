@@ -172,5 +172,21 @@ namespace SOH_LaunchPad_CENReport
                 return size.Width;
             }
         }
+
+        public static string KendoSaveChar(string text)
+        {
+            List<string> filtered = new List<string>() { "var", "new" };
+
+            if(filtered.Contains(text))
+            {
+                return text + "_1";
+            }
+
+            return text;
+        }
+    }
+
+    public class GenericJsonObj : Dictionary<string, dynamic>
+    {
     }
 }

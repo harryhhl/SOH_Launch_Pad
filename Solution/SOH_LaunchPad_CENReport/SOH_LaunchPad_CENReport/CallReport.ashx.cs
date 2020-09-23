@@ -56,7 +56,7 @@ namespace SOH_LaunchPad_CENReport
 
                             ReportMessage rm = GetReportMessageResult(qid);
                             if (rm.Type == "S")
-                                UpdateReportQueueStatus(qid, 1, "", rm.Message);
+                                UpdateReportQueueStatus(qid, 1, rm.Message, "");
                             else
                                 UpdateReportQueueStatus(qid, 2, rm.Message, "");
                         }
@@ -168,13 +168,13 @@ namespace SOH_LaunchPad_CENReport
                 else if (rptMsg.Message == "ALV")
                 {
                     var config = GetALVReportSchema.GetConfigFromReportDB(rptName, qid);
-                    var columnSettings = JsonConvert.DeserializeObject<List<GetALVReportSchema.KendoGridColumnSetting>>(config.ColumnSetting);
+                    var columnSettings = JsonConvert.DeserializeObject<List<KendoGridColumnSetting>>(config.ColumnSetting);
                     var reportData = GetALVReportData.GetReportData(rptName, qid);
                     var reportLayout = ReportLayout.GetReportObjDefault(rptName, userName);
                     
                     if(reportLayout != null)
                     {
-                        List<GetALVReportSchema.KendoGridColumnSetting> newColumnSettings = new List<GetALVReportSchema.KendoGridColumnSetting>();
+                        List<KendoGridColumnSetting> newColumnSettings = new List<KendoGridColumnSetting>();
                         foreach (var layoutcol in reportLayout.columns)
                         {
                             if (layoutcol.hidden != null && layoutcol.hidden == true) continue;
@@ -328,13 +328,22 @@ namespace SOH_LaunchPad_CENReport
             try
             {
                 DataSet rcd = SqlHelper.ExecuteDataset(SqlHelper.GetConnection("ReportDB"), CommandType.Text,
-                $@"SELECT top 1 [Type],[Message] FROM [dbo].[SOH_Message_Log] where SelectionID='{qid}' order by CreatedOn desc");
+                $@"SELECT [Type],[Message] FROM [dbo].[SOH_Message_Log] where SelectionID='{qid}' order by CreatedOn desc");
 
-                var row = rcd.Tables[0].Rows[0];
+                string type = "";
+                string message = "";
+                for(int r=0; r < rcd.Tables[0].Rows.Count; r++)
+                {                    
+                    var row = rcd.Tables[0].Rows[r];
+                    type = string.IsNullOrEmpty(type) ? row["Type"].ToString() : type;
+                    message = message + row["Message"].ToString() + ";";
+                }
+
+                message = message.TrimEnd(';');
 
                 ReportMessage rm = new ReportMessage();
-                rm.Type = row["Type"].ToString();
-                rm.Message = row["Message"].ToString();
+                rm.Type = type;
+                rm.Message = message;
 
                 return rm;
             }

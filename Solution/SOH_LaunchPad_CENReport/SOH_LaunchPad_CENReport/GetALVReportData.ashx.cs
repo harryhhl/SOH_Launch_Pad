@@ -75,18 +75,18 @@ namespace SOH_LaunchPad_CENReport
                         {
                             var dat = (DateTime)row[col.Key];
                             if(dat < new DateTime(1933, 1, 1))
-                                dic.Add(col.Key, null);
+                                dic.Add(Common.KendoSaveChar(col.Key), null);
                             else
-                                dic.Add(col.Key, row[col.Key]);
+                                dic.Add(Common.KendoSaveChar(col.Key), row[col.Key]);
                         }
                         catch(Exception)
                         {
-                            dic.Add(col.Key, null);
+                            dic.Add(Common.KendoSaveChar(col.Key), null);
                         }
                     }
                     else
                     {
-                        dic.Add(col.Key, row[col.Key]);
+                        dic.Add(Common.KendoSaveChar(col.Key), row[col.Key]);
                     }
                 }
 

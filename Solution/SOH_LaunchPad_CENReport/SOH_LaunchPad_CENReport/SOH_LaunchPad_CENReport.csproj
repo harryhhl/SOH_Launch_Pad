@@ -136,8 +136,8 @@
     <Compile Include="CallReport.ashx.cs">
       <DependentUpon>CallReport.ashx</DependentUpon>
     </Compile>
-    <Compile Include="Common.cs" />
-    <Compile Include="GenericRequest.cs" />
+    <Compile Include="src\Common.cs" />
+    <Compile Include="src\GenericRequest.cs" />
     <Compile Include="GetALVReportData.ashx.cs">
       <DependentUpon>GetALVReportData.ashx</DependentUpon>
     </Compile>
@@ -156,14 +156,20 @@
     <Compile Include="GetReportQueue.ashx.cs">
       <DependentUpon>GetReportQueue.ashx</DependentUpon>
     </Compile>
+    <Compile Include="ImportFile.ashx.cs">
+      <DependentUpon>ImportFile.ashx</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReportLayout.ashx.cs">
       <DependentUpon>ReportLayout.ashx</DependentUpon>
     </Compile>
-    <Compile Include="RequestResult.cs" />
-    <Compile Include="RequstModel.cs" />
-    <Compile Include="SAPProc.cs" />
-    <Compile Include="SqlHelper.cs" />
+    <Compile Include="src\RequestResult.cs" />
+    <Compile Include="src\RequstModel.cs" />
+    <Compile Include="src\SAPProc.cs" />
+    <Compile Include="src\SqlHelper.cs" />
+    <Compile Include="ZMM198.ashx.cs">
+      <DependentUpon>ZMM198.ashx</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Content Include="CallReport.ashx" />
@@ -175,6 +181,7 @@
     <Content Include="GetALVReportData.ashx" />
     <Content Include="GetFileReportData.ashx" />
     <Content Include="GetReportMaster.ashx" />
+    <Content Include="ImportFile.ashx" />
     <None Include="Properties\PublishProfiles\publish1.pubxml" />
     <Content Include="ReportLayout.ashx" />
     <None Include="Properties\PublishProfiles\publish2.pubxml" />
@@ -184,6 +191,7 @@
     <None Include="Web.Release.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
+    <Content Include="ZMM198.ashx" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

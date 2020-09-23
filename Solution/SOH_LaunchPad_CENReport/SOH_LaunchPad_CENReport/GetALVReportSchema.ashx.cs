@@ -98,11 +98,9 @@ namespace SOH_LaunchPad_CENReport
 
                 //if (columnname == "diff") continue;
                 //if (columnname == "old") continue;
-                if (columnname == "new") continue;
-
-                schema.Add(columnname, datatype);
-
                 datalength = colLengthDS == null ? datalength : colLengthDS[columnname];
+                columnname = Common.KendoSaveChar(columnname);
+                schema.Add(columnname, datatype);
 
                 settings.Add(KendoGridColumnSetting.Create(columnname, title, datatype, datalength));
             }
@@ -114,7 +112,7 @@ namespace SOH_LaunchPad_CENReport
             return config;
         }
 
-        private static Dictionary<string, int> GetColumnMaxDataLength(string reportname, string qid)
+        public static Dictionary<string, int> GetColumnMaxDataLength(string reportname, string qid)
         {
             Dictionary<string, int> list = new Dictionary<string, int>();
 
@@ -206,94 +204,6 @@ namespace SOH_LaunchPad_CENReport
             }
         }
 
-        public class KendoGridConfig
-        {
-            public string SchemaSetting;
-            public string ColumnSetting;
-        }
-
-        public class KendoGridSchemaSetting
-        {
-            private List<string> SchemaString = new List<string>();
-
-            public void Add(string columname, string datatype)
-            {
-                SchemaString.Add(string.Format("\"{0}\": {{ \"type\": \"{1}\" }}", columname, GetKendoType(datatype)));
-            }
-
-            public string GetSchemaString()
-            {
-                string delimiter = ",";
-                return "{" + SchemaString.Aggregate((i, j) => i + delimiter + j) + "}";
-            }
-
-            public static string GetKendoType(string datatype)
-            {
-                if (datatype.Contains("date"))
-                    return "date";
-                else if (datatype.Contains("int") || datatype.Contains("decimal"))
-                    return "number";
-                else
-                    return "string";
-            }
-        }
-
-        public class KendoGridColumnSetting
-        {
-            public string field { get; set; }
-            public string title { get; set; }
-            public string width { get; set; }
-            public string template { get; set; }
-            public string type { get; set; }
-
-            public static KendoGridColumnSetting Create(string columname, string title, string datatype, int datalength)
-            {
-                KendoGridColumnSetting s = new KendoGridColumnSetting();
-
-                s.field = columname;
-                s.title = title.Length > 0 ? title : columname;
-                s.type = KendoGridSchemaSetting.GetKendoType(datatype);
-
-                if (KendoGridSchemaSetting.GetKendoType(datatype) == "date")
-                {
-                    int len = 90;
-
-                    int title_len = (int)Math.Ceiling(Common.GetFontSize(title.Trim()) + 36);
-                    len = Math.Max(len, title_len);
-                    s.width = $"{len}px";
-
-
-                    s.template = $"#= {columname}==null? '': kendo.toString({columname}, \"yyyy-MM-dd\" ) #";
-                    //s.template = $"# var x = new Date('1901-01-01'); var y = new Date({columname});if (y > x) {{;# #=kendo.toString({columname}, \"yyyy-MM-dd\" ) # #}}#";
-                }
-                else if(KendoGridSchemaSetting.GetKendoType(datatype) == "number")
-                {
-                    int len = 80;
-
-                    int title_len = (int)Math.Ceiling(Common.GetFontSize(title.Trim()) + 36);
-                    len = Math.Max(len, title_len);
-                    s.width = $"{len}px";
-
-                    s.template = $"#={columname}#";
-                }
-                else
-                {
-                    int len = 50;
-                    if (datalength < 0)
-                        len = 140;
-                    else
-                        len = len + Math.Max(datalength * 8, 40);
-
-                    int title_len = (int)Math.Ceiling(Common.GetFontSize(title.Trim()) + 36);
-                    len = Math.Max(len, title_len);
-                    s.width = $"{len}px";
-
-                    s.template = $"#={columname}#";
-                }
-
-                return s;
-            }
-        }
 
         public bool IsReusable
         {
@@ -301,6 +211,96 @@ namespace SOH_LaunchPad_CENReport
             {
                 return false;
             }
+        }
+    }
+
+    public class KendoGridConfig
+    {
+        public string SchemaSetting;
+        public string ColumnSetting;
+    }
+
+    public class KendoGridSchemaSetting
+    {
+        private List<string> SchemaString = new List<string>();
+
+        public void Add(string columname, string datatype, bool editable = false)
+        {
+            string editphase = editable ? "\"editable\": true" : "\"editable\": false";
+            SchemaString.Add(string.Format("\"{0}\": {{ \"type\": \"{1}\", {2} }}", columname, GetKendoType(datatype), editphase));
+        }
+
+        public string GetSchemaString()
+        {
+            string delimiter = ",";
+            return "{" + SchemaString.Aggregate((i, j) => i + delimiter + j) + "}";
+        }
+
+        public static string GetKendoType(string datatype)
+        {
+            if (datatype.Contains("date"))
+                return "date";
+            else if (datatype.Contains("int") || datatype.Contains("decimal"))
+                return "number";
+            else
+                return "string";
+        }
+    }
+
+    public class KendoGridColumnSetting
+    {
+        public string field { get; set; }
+        public string title { get; set; }
+        public string width { get; set; }
+        public string template { get; set; }
+        public string type { get; set; }
+
+        public static KendoGridColumnSetting Create(string columname, string title, string datatype, int datalength)
+        {
+            KendoGridColumnSetting s = new KendoGridColumnSetting();
+
+            s.field = columname;
+            s.title = title.Length > 0 ? title : columname;
+            s.type = KendoGridSchemaSetting.GetKendoType(datatype);
+
+            if (KendoGridSchemaSetting.GetKendoType(datatype) == "date")
+            {
+                int len = 90;
+
+                int title_len = (int)Math.Ceiling(Common.GetFontSize(title.Trim()) + 36);
+                len = Math.Max(len, title_len);
+                s.width = $"{len}px";
+
+
+                s.template = $"#= {columname}==null? '': kendo.toString({columname}, \"yyyy-MM-dd\" ) #";
+                //s.template = $"# var x = new Date('1901-01-01'); var y = new Date({columname});if (y > x) {{;# #=kendo.toString({columname}, \"yyyy-MM-dd\" ) # #}}#";
+            }
+            else if (KendoGridSchemaSetting.GetKendoType(datatype) == "number")
+            {
+                int len = 80;
+
+                int title_len = (int)Math.Ceiling(Common.GetFontSize(title.Trim()) + 36);
+                len = Math.Max(len, title_len);
+                s.width = $"{len}px";
+
+                s.template = $"#={columname}#";
+            }
+            else
+            {
+                int len = 50;
+                if (datalength < 0)
+                    len = 140;
+                else
+                    len = len + Math.Max(datalength * 8, 40);
+
+                int title_len = (int)Math.Ceiling(Common.GetFontSize(title.Trim()) + 36);
+                len = Math.Max(len, title_len);
+                s.width = $"{len}px";
+
+                s.template = $"#={columname}#";
+            }
+
+            return s;
         }
     }
 }
