@@ -70,7 +70,17 @@ namespace SOH_LaunchPad_CENReport
                     {
                         var layoutID = inputset.Get("LayoutID");
 
-                        UpdateReportLayoutDefault(layoutID);
+                        UpdateReportLayoutDefault(layoutID, username);
+
+                        context.Response.ContentType = "application/json";
+                        context.Response.Write(JsonConvert.SerializeObject(RequestResult.Ok()));
+                    }
+                    else if (action == "updrptlayoutpublic")
+                    {
+                        var layoutID = inputset.Get("LayoutID");
+                        var setPublic = bool.Parse(inputset.Get("public"));
+
+                        UpdateReportLayoutPublic(layoutID, setPublic);
 
                         context.Response.ContentType = "application/json";
                         context.Response.Write(JsonConvert.SerializeObject(RequestResult.Ok()));
@@ -106,11 +116,20 @@ namespace SOH_LaunchPad_CENReport
         internal static List<ReportLayoutData> GetReportLayoutByUser(string rptname, string username)
         {
             DataSet rcd = SqlHelper.ExecuteDataset(SqlHelper.GetConnection("SOHDB"), CommandType.Text,
-                            $@"SELECT [Id],[LayoutName],[LayoutContent],isnull([IsDefault],0) as [IsDefault] FROM [dbo].[SAPReportLayout]
-                                WHERE ReportName='{rptname}' and Username='{username}' order by UpdateDate desc;");
+                            $@"select [Id],[LayoutName],[LayoutContent],isnull(b.[IsDefault],0) as [IsDefault], [Username], [SharePublic] from
+                                (
+                                SELECT [Id],[LayoutName],[LayoutContent],isnull([IsDefault],0) as [IsDefault], [Username], isnull([SharePublic], 0) as [SharePublic] FROM [dbo].[SAPReportLayout]
+                                    WHERE ReportName='{rptname}' and Username='{username}' union 
+                                SELECT [Id],[LayoutName],[LayoutContent],isnull([IsDefault],0) as [IsDefault], [Username], isnull([SharePublic], 0) as [SharePublic] FROM [dbo].[SAPReportLayout]
+                                    WHERE ReportName='{rptname}' and SharePublic=1) a
+                                left join
+                                (SELECT [ReportLayoutId], convert(bit, 'true') as [IsDefault]
+                                    FROM [SOH_Portal].[dbo].[SAPReportLayoutUsrDef] where Username='{username}') b
+                                    on a.Id=b.ReportLayoutId
+                                ");
 
             List<ReportLayoutData> list = new List<ReportLayoutData>();
-            list.Add(new ReportLayoutData() { Id = Guid.NewGuid().ToString(), LayoutName = "Default", LayoutContent = "" });
+            list.Add(new ReportLayoutData() { Id = "000000000", LayoutName = "Original", LayoutContent = "" });
 
             for (int r = 0; r < rcd.Tables[0].Rows.Count; r++)
             {
@@ -121,7 +140,8 @@ namespace SOH_LaunchPad_CENReport
                 item.LayoutName = row["LayoutName"].ToString().Trim();
                 item.LayoutContent = row["LayoutContent"].ToString().Trim();
                 item.IsDefault = bool.Parse(row["IsDefault"].ToString());
-
+                item.UserName = row["Username"].ToString().Trim();
+                item.IsPublic = bool.Parse(row["SharePublic"].ToString());
                 list.Add(item);
             }
 
@@ -173,11 +193,20 @@ namespace SOH_LaunchPad_CENReport
             SqlHelper.ExecuteNonQuery(SqlHelper.GetConnection("SOHDB"), CommandType.StoredProcedure, "p_UpdateSAPReportLayout", paras.ToArray());
         }
 
-        private void UpdateReportLayoutDefault(string id)
+        private void UpdateReportLayoutDefault(string id, string username)
         {
             List<SqlParameter> paras = new List<SqlParameter>();
             paras.Add(new SqlParameter("@layoutID", id));
+            paras.Add(new SqlParameter("@username", username));
             SqlHelper.ExecuteNonQuery(SqlHelper.GetConnection("SOHDB"), CommandType.StoredProcedure, "p_UpdateSAPReportLayoutDefault", paras.ToArray());
+        }
+
+        private void UpdateReportLayoutPublic(string id, bool setPublic)
+        {
+            List<SqlParameter> paras = new List<SqlParameter>();
+            paras.Add(new SqlParameter("@layoutID", id));
+            paras.Add(new SqlParameter("@public", setPublic));
+            SqlHelper.ExecuteNonQuery(SqlHelper.GetConnection("SOHDB"), CommandType.StoredProcedure, "p_UpdateSAPReportLayoutPublic", paras.ToArray());
         }
 
         private void DeleteReportLayout(string id)
@@ -199,6 +228,8 @@ namespace SOH_LaunchPad_CENReport
             public string LayoutName;
             public string LayoutContent;
             public bool IsDefault;
+            public string UserName;
+            public bool IsPublic;
         }
 
         internal class ReportLayoutObj
