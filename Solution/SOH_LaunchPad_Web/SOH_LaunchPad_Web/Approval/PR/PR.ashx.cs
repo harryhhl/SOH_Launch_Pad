@@ -55,6 +55,9 @@ namespace SOH_LaunchPad_Web.Approval.PR
                         }
                         else
                         {
+                            input = input.Replace("Action=approve", "Action=approvesuccess");
+                            input += $@"&retdata={result.Data}";
+                            await Common.APILogging(input, context);
                             context.Response.ContentType = "application/json";
                             context.Response.Write(result.Data);
                         }

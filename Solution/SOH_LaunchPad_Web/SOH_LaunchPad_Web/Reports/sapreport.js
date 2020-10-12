@@ -115,6 +115,7 @@ function Start()
         $('#btnAddQueue').on( 'click', function() {
             selectAddtoQueue = 1;
             $("#btnSubmitHidden").click();
+
             UpdateFuncAccess(FuncID);
         });
 
@@ -168,6 +169,19 @@ function Start()
                 DeleteLayout(dataItem.Id);
             }
         });
+
+        $('#btnLayoutShare').on( 'click', function(){
+            let dataItem = listLayout.data("kendoDropDownList").dataItem();
+            let msg = "";
+            if(dataItem.IsPublic)
+                msg = "This layout is shared public, do you want to cancel sharing?";
+            else
+                msg = "This layout is not shared, do you want to share public?";
+                
+            if (confirm(msg)) {
+                MakeLayoutPublic(dataItem.Id, !dataItem.IsPublic);
+            }
+        });
     }
 
     function InitReportConfig(data)
@@ -176,6 +190,9 @@ function Start()
         var dvContent = $('#dvNewCallContent');
         var htmlContent = '<form id="inputForm">';
         var invalidateContent = '';
+        var inputGrid = null;
+        var inputGridFields = null;
+        var inputGridColumns = null;
 
         htmlContent += "<ul>";
         for(var i = 0; i<data.Configs.length; i++) {
@@ -294,12 +311,12 @@ function Start()
                 invalidateContent += '<div><span data-for="'+item.SelName+'-From" class="k-invalid-msg"></span></div>';
                 invalidateContent += '<div><span data-for="'+item.SelName+'-To" class="k-invalid-msg"</span></div>';
             }           
-            else if(item.ControlType == "Range" && item.DataType == "P") {
+            else if(item.ControlType == "Range" && (item.DataType == "P" || item.DataType == "N" && item.Length == 6)) {
                 htmlContent += '<div class="sspcontrol" type="RangeNum" style="display:flex; align-items:center; flex-wrap: wrap">';
                 htmlContent += '  <div class="sspcontrol-Range"><label for="'+item.SelName+'-low" class="sspcontrol-desc">'+item.SelDesc+''+(item.IsMandatory==1?'<label class="sspcontrol-req">*</label>':'')+'</label></div>';
-                htmlContent += '  <div class="sspcontrol-Range"><input id="'+item.SelName+'-low" name="'+item.SelName+'-From" type="numeric" data-format="c" data-length="'+item.Length+'" data-decimal="'+item.Decimal+'" '+(item.IsMandatory==1?' required ':'')+'></div>';
+                htmlContent += '  <div class="sspcontrol-Range"><input id="'+item.SelName+'-low" name="'+item.SelName+'-From" type="numeric" data-format="'+(item.DataType=="P"?'c':'n')+'" data-length="'+item.Length+'" data-decimal="'+item.Decimal+'" '+(item.IsMandatory==1?' required ':'')+'></div>';
                 htmlContent += '  <div class="sspcontrol-Range"><label for="'+item.SelName+'-high" style="margin-left:2em">to </label></div>';
-                htmlContent += '  <div class="sspcontrol-Range"><input id="'+item.SelName+'-high" name="'+item.SelName+'-To" type="numeric" data-format="c" data-length="'+item.Length+'" data-decimal="'+item.Decimal+'" data-comparevalid-field1="'+item.SelName+'-compare" data-comparevalid-field2="'+item.SelName+'-From"></div>';
+                htmlContent += '  <div class="sspcontrol-Range"><input id="'+item.SelName+'-high" name="'+item.SelName+'-To" type="numeric" data-format="'+(item.DataType=="P"?'c':'n')+'" data-length="'+item.Length+'" data-decimal="'+item.Decimal+'" data-comparevalid-field1="'+item.SelName+'-compare" data-comparevalid-field2="'+item.SelName+'-From"></div>';
                 htmlContent += '  <div class="sspcontrol-Range" style="margin-left:2em">';
                 htmlContent += '    <select name="'+item.SelName+'-compare">';
                 htmlContent += '      <option value="BT">Between</option>';
@@ -423,6 +440,36 @@ function Start()
                 htmlContent += '</div>';
                 htmlContent += '</div>';
             }
+            else if(item.ControlType == "" && item.Kind == "T") {
+
+                if(inputGridFields != null) continue;
+
+                var allgriditems = data.Configs.filter(config=>config.Kind == "T");
+
+                htmlContent += '<div class="sspcontrol" type="InputGrid" style="align-items:left;">';
+                htmlContent += '  <div id="inputGrid" style="width:70%"></div>';
+                htmlContent += '</div>';
+
+                inputGridFields = new Object();
+                inputGridFields["GID"] =  { editable: false, nullable: true };
+                
+                inputGridColumns = [];
+
+                allgriditems.forEach(item => {
+                    let colFormat = "{0}";
+                    if(item.DataType == "P") {
+                        inputGridFields[item.SelName] = {  editable: true, type: "number", validation: { min: 0, required: item.IsMandatory == 1 } };
+                        colFormat = "{0:n"+item.Decimal+"}";
+                    } else {
+                        inputGridFields[item.SelName] = { editable: true, validation: { required: item.IsMandatory == 1 } };
+                    }
+
+                    let widthpx = item.Length * 10 + 20;
+                    inputGridColumns.push({ field: item.SelName, title: item.SelDesc, format: colFormat, width: widthpx + "px" } );
+                });
+
+                inputGridColumns.push({ command: ["destroy"], title: "&nbsp;" });
+            }
             else {
                 htmlContent += "<div>Error: Unmanaged Control Type - "+ item.SelName + "[" + item.ControlType+ "]</div>";
             }
@@ -437,6 +484,25 @@ function Start()
         htmlContent += "</ul></form>";
         
         dvContent.html(htmlContent);
+
+        if(inputGridFields != null) {
+            let dataSourceInputGrid = new kendo.data.DataSource({
+                batch: true,
+                schema: {
+                    model: {
+                        id: "GID",
+                        fields: inputGridFields
+                    }
+                }
+            });
+            ainputgrid = $("#inputGrid").kendoGrid({
+                dataSource: dataSourceInputGrid,
+                height: 300,
+                toolbar: ["create", "cancel"],
+                columns: inputGridColumns,
+                editable: true
+            });
+        }
 
         var selectControls = dvContent.find("select");
         selectControls.each(function(){
@@ -680,6 +746,8 @@ function Start()
         reportconfigready = true;
     }
 
+    var ainputgrid = null;
+
     function InitKendoValidator()
     {
         $("#inputForm").kendoValidator({
@@ -827,7 +895,9 @@ function Start()
                         Id:  { type: "string" },
                         LayoutName: { type: "string" },
                         LayoutContent: { type: "string" },
-                        IsDefault: { type: "boolean" }
+                        IsDefault: { type: "boolean" },
+                        IsPublic: { type: "boolean" },
+                        UserName: { type: "string" }
                     }
                 }
             }
@@ -839,6 +909,7 @@ function Start()
             dataValueField: "LayoutContent",
             dataSource: listLayoutDS,
             noDataTemplate: $("#noLayoutListDataTemplate").html(),
+            template: '<span>#: LayoutName # #if(IsPublic){# (Public Shared) #}#</span>',
             select: function(e) {
                 var dataItem = e.dataItem;
                 if(dataItem.LayoutContent.length > 1) {
@@ -847,6 +918,23 @@ function Start()
                 else {
                     ALVGridLoadCurrentOption();
                 }
+
+                if(dataItem.Id == "000000000") {
+                    $('#btnLayoutDefault').attr('disabled', 'disabled');
+                    $('#btnLayoutDelete').attr('disabled', 'disabled');
+                    $('#btnLayoutSave').attr('disabled', 'disabled');
+                    $('#btnLayoutShare').attr('disabled', 'disabled');
+                } else if(dataItem.IsPublic && dataItem.UserName != UserName) {
+                    $('#btnLayoutDefault').removeAttr('disabled');
+                    $('#btnLayoutDelete').attr('disabled', 'disabled');
+                    $('#btnLayoutSave').attr('disabled', 'disabled');
+                    $('#btnLayoutShare').attr('disabled', 'disabled');
+                } else {
+                    $('#btnLayoutDefault').removeAttr('disabled');
+                    $('#btnLayoutDelete').removeAttr('disabled');
+                    $('#btnLayoutSave').removeAttr('disabled');
+                    $('#btnLayoutShare').removeAttr('disabled');
+                }
             },
             dataBound: function(e) {
                 listLayout.data("kendoDropDownList").select(function(dataItem) {
@@ -854,6 +942,24 @@ function Start()
                     if(dataItem.IsDefault == true)
                     {
                         alvgrid.data("kendoGrid").setOptions(JSON.parse(dataItem.LayoutContent));
+                        
+                        if(dataItem.Id == "000000000") {
+                            $('#btnLayoutDefault').attr('disabled', 'disabled');
+                            $('#btnLayoutDelete').attr('disabled', 'disabled');
+                            $('#btnLayoutSave').attr('disabled', 'disabled');
+                            $('#btnLayoutShare').attr('disabled', 'disabled');
+                        } else if(dataItem.IsPublic && dataItem.UserName != UserName) {
+                            $('#btnLayoutDefault').removeAttr('disabled');
+                            $('#btnLayoutDelete').attr('disabled', 'disabled');
+                            $('#btnLayoutSave').attr('disabled', 'disabled');
+                            $('#btnLayoutShare').attr('disabled', 'disabled');
+                        } else {
+                            $('#btnLayoutDefault').removeAttr('disabled');
+                            $('#btnLayoutDelete').removeAttr('disabled');
+                            $('#btnLayoutSave').removeAttr('disabled');
+                            $('#btnLayoutShare').removeAttr('disabled');
+                        }
+
                         return true;
                     }
 
@@ -1394,6 +1500,26 @@ function Start()
                     reportData.Selection.push(sel);
                 });
             }
+            else if (type == 'InputGrid' && ainputgrid!=null) {
+                let d = ainputgrid.data("kendoGrid").dataSource.data();
+                for(var i=0; i<d.length; i++) {
+                    let datarow = d[i];
+                    Object.keys(datarow).forEach(function(name,index) {
+                        if(name.startsWith("T_")) {
+                            let sel = {};
+                            sel.SelName = name;
+                            sel.Kind = 'T';
+                            sel.Sign = 'I';
+                            sel.SelOption = 'EQ';
+                            sel.Low = datarow[name];
+                            sel.High = (i+1);
+        
+                            reportData.Selection.push(sel);
+                        }
+                    });     
+                }
+
+            }
         });
 
         reportData = SoldtoPartyLeadingZeroApply(reportData);
@@ -1413,7 +1539,7 @@ function Start()
     
                 GetALVSchema();
             }
-            else if(q.OutputType == "File") {
+            else if(q.OutputType.includes("File")) {
                 dvResultALV.hide();
                 dvResultFile.show();
             }
@@ -1740,6 +1866,7 @@ function Start()
                 Token: AccessToken,
                 FuncID: FuncID,
                 Report: ReportName,
+                User: UserName,
                 LayoutID: id 
             },
             contentType: "application/json; charset=utf-8",
@@ -1749,6 +1876,34 @@ function Start()
                 alert(request.statusText);
             },
             success: function (data) {
+                alert("success!");
+            }
+        });
+    }
+
+    function MakeLayoutPublic(id, setpublic) 
+    {
+        $.ajax({
+            type: "POST",
+            async: true,
+            url: "../Reports/SapReport.ashx",
+            data: {
+                Action: "updrptlayoutpublic",
+                Token: AccessToken,
+                FuncID: FuncID,
+                Report: ReportName,
+                User: UserName,
+                LayoutID: id,
+                public: setpublic
+            },
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            error: function (request, error) {
+                console.log(request.statusText);
+                alert(request.statusText);
+            },
+            success: function (data) {
+                listLayoutDS.read();
                 alert("success!");
             }
         });

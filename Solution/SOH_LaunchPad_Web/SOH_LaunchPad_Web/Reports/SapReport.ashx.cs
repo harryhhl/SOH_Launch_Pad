@@ -214,7 +214,7 @@ namespace SOH_LaunchPad_Web
 
                 }
                 else if (action == "getrptlayout" || action == "newrptlayout" || action == "updrptlayout" 
-                          || action == "updrptlayoutdefault" || action == "delrptlayout")
+                          || action == "updrptlayoutdefault" || action == "delrptlayout" || action == "updrptlayoutpublic")
                 {
                     var result = await GenericRequest.Post(Common.SapReportWSEndpointUrl + "ReportLayout.ashx", new StringContent(input));
                     if (result.Status == RequestResult.ResultStatus.Failure)

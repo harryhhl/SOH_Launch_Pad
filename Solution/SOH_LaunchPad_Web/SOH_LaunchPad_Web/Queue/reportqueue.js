@@ -99,6 +99,19 @@ function Start()
             }
         });
 
+        $('#btnLayoutShare').on( 'click', function(){
+            let dataItem = listLayout.data("kendoDropDownList").dataItem();
+            let msg = "";
+            if(dataItem.IsPublic)
+                msg = "This layout is shared public, do you want to cancel sharing?";
+            else
+                msg = "This layout is not shared, do you want to share public?";
+                
+            if (confirm(msg)) {
+                MakeLayoutPublic(dataItem.Id, !dataItem.IsPublic);
+            }
+        });
+
         var eventMethod = window.addEventListener? "addEventListener" : "attachEvent";
         var eventer = window[eventMethod];
         var messageEvent = eventMethod === "attachEvent"? "onmessage" : "message";
@@ -142,7 +155,9 @@ function Start()
                         Id:  { type: "string" },
                         LayoutName: { type: "string" },
                         LayoutContent: { type: "string" },
-                        IsDefault: { type: "boolean" }
+                        IsDefault: { type: "boolean" },
+                        IsPublic: { type: "boolean" },
+                        UserName: { type: "string" }
                     }
                 }
             }
@@ -154,6 +169,7 @@ function Start()
             dataValueField: "LayoutContent",
             dataSource: listLayoutDS,
             noDataTemplate: $("#noLayoutListDataTemplate").html(),
+            template: '<span>#: LayoutName # #if(IsPublic){# (Public Shared) #}#</span>',
             select: function(e) {
                 var dataItem = e.dataItem;
                 if(dataItem.LayoutContent.length > 1) {
@@ -162,6 +178,24 @@ function Start()
                 else {
                     ALVGridLoadCurrentOption();
                 }
+
+                if(dataItem.Id == "000000000") {
+                    $('#btnLayoutDefault').attr('disabled', 'disabled');
+                    $('#btnLayoutDelete').attr('disabled', 'disabled');
+                    $('#btnLayoutSave').attr('disabled', 'disabled');
+                    $('#btnLayoutShare').attr('disabled', 'disabled');
+                } else if(dataItem.IsPublic && dataItem.UserName != UserName) {
+                    $('#btnLayoutDefault').removeAttr('disabled');
+                    $('#btnLayoutDelete').attr('disabled', 'disabled');
+                    $('#btnLayoutSave').attr('disabled', 'disabled');
+                    $('#btnLayoutShare').attr('disabled', 'disabled');
+                } else {
+                    $('#btnLayoutDefault').removeAttr('disabled');
+                    $('#btnLayoutDelete').removeAttr('disabled');
+                    $('#btnLayoutSave').removeAttr('disabled');
+                    $('#btnLayoutShare').removeAttr('disabled');
+                }
+
             },
             dataBound: function(e) {
                 listLayout.data("kendoDropDownList").select(function(dataItem) {
@@ -169,6 +203,24 @@ function Start()
                     if(dataItem.IsDefault == true)
                     {
                         alvgrid.data("kendoGrid").setOptions(JSON.parse(dataItem.LayoutContent));
+                        
+                        if(dataItem.Id == "000000000") {
+                            $('#btnLayoutDefault').attr('disabled', 'disabled');
+                            $('#btnLayoutDelete').attr('disabled', 'disabled');
+                            $('#btnLayoutSave').attr('disabled', 'disabled');
+                            $('#btnLayoutShare').attr('disabled', 'disabled');
+                        } else if(dataItem.IsPublic && dataItem.UserName != UserName) {
+                            $('#btnLayoutDefault').removeAttr('disabled');
+                            $('#btnLayoutDelete').attr('disabled', 'disabled');
+                            $('#btnLayoutSave').attr('disabled', 'disabled');
+                            $('#btnLayoutShare').attr('disabled', 'disabled');
+                        } else {
+                            $('#btnLayoutDefault').removeAttr('disabled');
+                            $('#btnLayoutDelete').removeAttr('disabled');
+                            $('#btnLayoutSave').removeAttr('disabled');
+                            $('#btnLayoutShare').removeAttr('disabled');
+                        }
+
                         return true;
                     }
 
@@ -315,7 +367,7 @@ function Start()
             //     ALVGridReload();
             // }
         }
-        else if(selectedItem.OutputType == "File") {
+        else if(selectedItem.OutputType.includes("File")) {
             dvResultALV.hide();
             dvResultFile.show();
         }
@@ -591,6 +643,7 @@ function Start()
                 Token: AccessToken,
                 FuncID: FuncID,
                 Report: selectedReport,
+                User: UserName,
                 LayoutID: id 
             },
             contentType: "application/json; charset=utf-8",
@@ -600,6 +653,34 @@ function Start()
                 alert(request.statusText);
             },
             success: function (data) {
+                alert("success!");
+            }
+        });
+    }
+
+    function MakeLayoutPublic(id, setpublic) 
+    {
+        $.ajax({
+            type: "POST",
+            async: true,
+            url: "../Reports/SapReport.ashx",
+            data: {
+                Action: "updrptlayoutpublic",
+                Token: AccessToken,
+                FuncID: FuncID,
+                Report: selectedReport,
+                User: UserName,
+                LayoutID: id,
+                public: setpublic
+            },
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            error: function (request, error) {
+                console.log(request.statusText);
+                alert(request.statusText);
+            },
+            success: function (data) {
+                listLayoutDS.read();
                 alert("success!");
             }
         });
