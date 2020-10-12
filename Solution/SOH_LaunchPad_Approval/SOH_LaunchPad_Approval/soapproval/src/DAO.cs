@@ -79,6 +79,7 @@ namespace SOH_LaunchPad_Approval.soapproval.src
 
                 IRfcFunction rfcFunction = sapRfcRepository.CreateFunction("ZBAPI_SOH_SO_APPROVE");
                 rfcFunction.SetValue("I_BNAME", userid.ToUpper());
+                rfcFunction.SetValue("I_USERNAME", userid.ToUpper());
 
                 IRfcTable rtable = rfcFunction.GetTable("TT_RSLT");
                 foreach (var r in rst)
