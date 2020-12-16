@@ -2013,7 +2013,8 @@ function AddNewLayout(widgetId, value) {
         dataSource.add({
             Id: "",
             LayoutName: value,
-            LayoutContent: kendo.stringify(gridoption)
+            LayoutContent: kendo.stringify(gridoption),
+            IsPublic: false
         });
 
         dataSource.one("sync", function() {
