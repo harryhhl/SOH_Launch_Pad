@@ -151,6 +151,24 @@ namespace SOH_LaunchPad_Web
                         context.Response.Write(result.Data);
                     }
                 }
+                else if (action == "getfiledatapreview")
+                {
+                    var result = await GenericRequest.Post(Common.SapReportWSEndpointUrl + "GetFileReportData.ashx", new StringContent(input));
+                    if (result.Status == RequestResult.ResultStatus.Failure)
+                    {
+                        context.Response.StatusCode = 400;
+                        context.Response.StatusDescription = result.GetErrmsgTrim();
+                    }
+                    else
+                    {
+                        string sid = Guid.NewGuid().ToString();
+
+                        HttpContext.Current.Session["ReportFilePreview_" + sid] = result.Data;
+
+                        context.Response.ContentType = "application/json";
+                        context.Response.Write(JsonConvert.SerializeObject(sid));
+                    }
+                }
                 else if (action == "getmasterdata")
                 {
                     var mastername = inputset.Get("MstName");

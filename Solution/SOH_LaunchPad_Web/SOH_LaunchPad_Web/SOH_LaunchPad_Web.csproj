@@ -299,6 +299,9 @@
     <Compile Include="Auth.ashx.cs">
       <DependentUpon>Auth.ashx</DependentUpon>
     </Compile>
+    <Compile Include="Reports\FilePreview.ashx.cs">
+      <DependentUpon>FilePreview.ashx</DependentUpon>
+    </Compile>
     <Compile Include="Reports\ZMM198\api.ashx.cs">
       <DependentUpon>api.ashx</DependentUpon>
     </Compile>
@@ -535,6 +538,7 @@
     <Content Include="styles\pdfjs\cmaps\WP-Symbol.bcmap" />
     <Content Include="Reports\ZMM198\api.ashx" />
     <Content Include="Upload.ashx" />
+    <Content Include="Reports\FilePreview.ashx" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

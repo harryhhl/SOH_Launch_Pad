@@ -1542,6 +1542,8 @@ function Start()
             else if(q.OutputType.includes("File")) {
                 dvResultALV.hide();
                 dvResultFile.show();
+
+                DownloadPDFFilePreview();
             }
             else {
                 dvResultALV.hide();
@@ -1577,6 +1579,12 @@ function Start()
         }
     }
 
+    function InitialPDFPreview(selectedSID)
+    {
+        $('#pdfViewer').empty();
+        var content = '<embed src="' + "FilePreview.ashx?sid=" + selectedSID + '" type="application/pdf" width="90%" height="'+(window.parent.innerHeight - 300)+'px"/>';
+        $('#pdfViewer').append(content);
+    }
     
     function GetLastQueue() 
     {
@@ -1719,6 +1727,32 @@ function Start()
             },
             success: function (resultset) {
                 DataToDownloadFile(resultset);
+            }
+        });
+    }
+    function DownloadPDFFilePreview() 
+    {
+        $.ajax({
+            type: "POST",
+            async: true,
+            url: "../Reports/SapReport.ashx",
+            data: {
+                Action: "getfiledatapreview",
+                Token: AccessToken,
+                FuncID: FuncID,
+                Report: ReportName,
+                Data: '',
+                QID:  lastQueueID,
+                Type: "PDF"
+            },
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            error: function (request, error) {
+                console.log(request.statusText);
+                alert(request.statusText);
+            },
+            success: function (resultset) {
+                InitialPDFPreview(resultset);
             }
         });
     }

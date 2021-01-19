@@ -27,10 +27,11 @@ namespace SOH_LaunchPad_CENReport
                 var token = HttpUtility.ParseQueryString(input).Get("Token");
                 var reportname = HttpUtility.ParseQueryString(input).Get("Report");
                 var qid = HttpUtility.ParseQueryString(input).Get("QID");
+                var type = HttpUtility.ParseQueryString(input).Get("Type");
 
                 try
                 {
-                    List<ReportFileData> rptList = GetReportFileData(qid);
+                    List<ReportFileData> rptList = GetReportFileData(qid, type);
                     
                     RequestResult ret = new RequestResult(RequestResult.ResultStatus.Success);
                     ret.Data = JsonConvert.SerializeObject(rptList);
@@ -52,13 +53,17 @@ namespace SOH_LaunchPad_CENReport
             }
         }
 
-        public static List<ReportFileData> GetReportFileData(string qid)
+        public static List<ReportFileData> GetReportFileData(string qid, string selectedType=null)
         {
             List<ReportFileData> rptList = new List<ReportFileData>();
 
+            string typestr = "";
+            if (!string.IsNullOrEmpty(selectedType))
+                typestr = $"and [FileType]='{selectedType}'";
+
             DataSet rcd = SqlHelper.ExecuteDataset(SqlHelper.GetConnection("ReportDB"), CommandType.Text,
                     $@"SELECT ([FileName]+'.'+[FileType]) as [FileName], [FileData]
-                                FROM [dbo].[SOH_Export_File] where SelectionID='{qid}'");
+                                FROM [dbo].[SOH_Export_File] where SelectionID='{qid}' {typestr}");
 
             for (int r = 0; r < rcd.Tables[0].Rows.Count; r++)
             {
