@@ -25,6 +25,7 @@ function Start() {
 
     function Begin() {
 
+        window.onerror = top.onerror;
         GetActingApprover();
         InitInputSection();
         InitOthers();

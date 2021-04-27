@@ -80,6 +80,9 @@
     <Compile Include="Favourite.ashx.cs">
       <DependentUpon>Favourite.ashx</DependentUpon>
     </Compile>
+    <Compile Include="JSLog.ashx.cs">
+      <DependentUpon>JSLog.ashx</DependentUpon>
+    </Compile>
     <Compile Include="Log.ashx.cs">
       <DependentUpon>Log.ashx</DependentUpon>
     </Compile>
@@ -114,6 +117,7 @@
     <Content Include="Notification.ashx" />
     <Content Include="Common.ashx" />
     <Content Include="Log.ashx" />
+    <Content Include="JSLog.ashx" />
     <None Include="Properties\PublishProfiles\publish1.pubxml" />
     <None Include="Properties\PublishProfiles\publish2.pubxml" />
     <Content Include="UserManage.ashx" />

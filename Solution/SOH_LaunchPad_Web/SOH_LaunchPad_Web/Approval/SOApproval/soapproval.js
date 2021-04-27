@@ -26,6 +26,7 @@ function Start()
 
     function Begin()
     {
+        window.onerror = top.onerror;
         GetActingApprover(function() {
             GetPendingList();
         });

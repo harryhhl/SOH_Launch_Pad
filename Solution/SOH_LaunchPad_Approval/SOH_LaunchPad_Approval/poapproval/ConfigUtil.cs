@@ -70,7 +70,8 @@ namespace crystal_po_api.util
             parameters.Add(RfcConfigParameters.AppServerHost, settings["SAP_Host"]);
             parameters.Add(RfcConfigParameters.SystemNumber, settings["SAP_SysNum"]);
             parameters.Add(RfcConfigParameters.IdleTimeout, "3600");
-            parameters.Add(RfcConfigParameters.PoolSize, "5");
+            parameters.Add(RfcConfigParameters.PoolSize, "10");
+            parameters.Add(RfcConfigParameters.PeakConnectionsLimit, "15");
             return parameters;
         }
     }

@@ -37,6 +37,8 @@ function Start()
 
     function Begin()
     {
+        window.onerror = top.onerror;
+
         if(ReportName.includes(',')) {
             var chunk = ReportName.split(',');
             ReportName = chunk[0];

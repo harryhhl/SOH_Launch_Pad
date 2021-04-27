@@ -173,6 +173,7 @@
     <Content Include="scripts\init.js" />
     <Content Include="scripts\jquery.min.js" />
     <Content Include="scripts\jquery.transit.min.js" />
+    <Content Include="scripts\jserr.js" />
     <Content Include="scripts\jszip.js" />
     <Content Include="scripts\kendo.all.min.js" />
     <Content Include="Approval\poapproval.js" />
@@ -299,6 +300,9 @@
     <Compile Include="Auth.ashx.cs">
       <DependentUpon>Auth.ashx</DependentUpon>
     </Compile>
+    <Compile Include="JSLog.ashx.cs">
+      <DependentUpon>JSLog.ashx</DependentUpon>
+    </Compile>
     <Compile Include="Reports\FilePreview.ashx.cs">
       <DependentUpon>FilePreview.ashx</DependentUpon>
     </Compile>
@@ -362,6 +366,7 @@
     <Content Include="Approval\ConfirmSOPlan\ConfirmSOPlan.ashx" />
     <Content Include="Approval\PO\PO.ashx" />
     <Content Include="Approval\PO\GetPOPrintPreview.ashx" />
+    <Content Include="JSLog.ashx" />
     <None Include="Properties\PublishProfiles\publish1.pubxml" />
     <Content Include="Queue\ReportQueue.ashx" />
     <None Include="Properties\PublishProfiles\publish2.pubxml" />

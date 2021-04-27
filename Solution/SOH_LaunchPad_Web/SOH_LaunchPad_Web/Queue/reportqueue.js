@@ -32,6 +32,8 @@ function Start()
 
     function Begin()
     {
+        window.onerror = top.onerror;
+        
         LoadThemeSetting();
 
         InitHistGrid();

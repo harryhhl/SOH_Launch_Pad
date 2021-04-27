@@ -19,6 +19,8 @@ function Start()
 
     function Begin()
     {
+        JSErrLogInit();
+        
         if(isIE){
             return;
         }
