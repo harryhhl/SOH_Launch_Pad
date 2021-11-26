@@ -33,6 +33,13 @@ function Start()
             localStorage.setItem('SOH_TokenExp', AzureAccount.idToken.exp);
             localStorage.setItem('SOH_Username', AzureAccount.userName);
 
+            //if(((AzureAccount.idToken.exp + 100) * 1000) < (new Date().getTime()) || AzureAccessToken.length < 2)
+            if (AzureAccessToken.length < 2)
+            {
+                alert('Login Session Expired,  please re-login.');
+                AzureAuthen.SignOut();
+            }
+
             $('.btnLoginMain').hide();
 
             if(AzureAccount.Photo != null) {
